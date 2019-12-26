@@ -1,16 +1,16 @@
 ---
 # Display name
-name: Fynbos Node
+name: Jasper Slingsby
 
 # Username (this should match the folder name)
 authors:
-- admin
+- jasper
 
 # Is this the primary user of the site?
 superuser: true
 
 # Role/position
-role: 
+role: Scientist
 
 # Organizations/Affiliations
 organizations:
@@ -18,7 +18,7 @@ organizations:
   url: "www.saeon.ac.za"
 
 # Short bio (displayed in user profile at end of posts)
-bio: We do research on global change in the Fynbos Biome.
+bio: I do research on global change in the Fynbos Biome.
 
 research:
 - Water
@@ -27,7 +27,7 @@ research:
 - People
 - Global Change
 
-data: we got data
+data: I got data
 
 education outreach:
   courses:
@@ -64,13 +64,10 @@ email: ""
 
 # Organizational groups that you belong to (for People widget)
 #   Set this to `[]` or comment out if you are not using People widget.
-# user_groups:
+user_groups:
+ - Staff
 # - Researchers
 # - Visitors
 ---
 
-The SAEON Fynbos Node forms part of the South African Environmental Observation Network (SAEON), a business unit within the National Research Foundation.  The Department of Science and Technology established SAEON to conduct long term environmental observation and promote an informed and timely response to global change. 
-
-SAEON is countrywide, with "Nodes" encompassing the major terrestrial, coastal and oceanic environments. Its activities cover the entire research-development-innovation value chain ranging from collecting, processing, archiving and interpreting data; developing data products and services; and interfacing with end users that include policy makers and environmental managers.
-
-SAEON works in collaboration with government agencies, universities, research institutions, industrial partners and civil society.
+I have fun doing cool stuff at SAEON.
