@@ -18,7 +18,7 @@ organizations:
   url: "www.saeon.ac.za"
 
 # Short bio (displayed in user profile at end of posts)
-bio: I do research on global change in the Fynbos Biome.
+bio: I maintain research sites, equipment and data flows at the Fynbos Node.
 
 research:
 - Water
@@ -44,15 +44,15 @@ social:
 - icon: envelope
   icon_pack: fas
   link: '#contact'  # For a direct email link, use "mailto:test@example.org".
-- icon: twitter
-  icon_pack: fab
-  link: https://twitter.com/GeorgeCushen
-- icon: google-scholar
-  icon_pack: ai
-  link: https://scholar.google.co.uk/citations?user=sIwtMXoAAAAJ
-- icon: github
-  icon_pack: fab
-  link: https://github.com/gcushen
+# - icon: twitter
+#   icon_pack: fab
+#   link: https://twitter.com/GeorgeCushen
+# - icon: google-scholar
+#   icon_pack: ai
+#   link: https://scholar.google.co.uk/citations?user=sIwtMXoAAAAJ
+# - icon: github
+#   icon_pack: fab
+#   link: https://github.com/gcushen
 # Link to a PDF of your resume/CV from the About widget.
 # To enable, copy your resume/CV to `static/files/cv.pdf` and uncomment the lines below.
 # - icon: cv
@@ -68,4 +68,4 @@ user_groups:
 - Staff
 ---
 
-The SAEON Fynbos Node 
+As Technical Officer at the Fynbos Node, I have mostly been involved in the Jonkershoek catchment monitoring programme where I am responsible for stream and meteorological data collection, site and equipment maintenance as well as equipment testing and calibration. In addition to the technical side of my job, I'm also involved in a research project on fog precipitation in fynbos catchments.  Other functions I perform include procurement of field equipment and providing assistance to researchers. Before joining SAEON in November 2010, I was pursuing my interest in ecosystem ecology as a Staff Research Associate in a Landscape and Urban Ecology lab at the University of California: Davis. Here I assisted with projects on African savanna riparian boundary dynamics, atmospheric deposition across rural/urban gradients and linking stream water quality to land use and land cover in an urban ecosystem. I hold a B-Tech degree in Nature Conservation from Cape Peninsula University of Technology. Free time pursuits include reading on politics, economics, history and current affairs.

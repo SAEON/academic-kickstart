@@ -18,7 +18,7 @@ day_night = true
 #   Latest font sets (may require updating): https://sourcethemes.com/academic/themes/
 #   Browse built-in font sets in `themes/academic/data/fonts/`
 #   Browse user installed font sets in `data/fonts/`
-font = ""
+font = "minimal"
 
 # Choose a font size.
 # Sizes: XS (extra small), S (small), M (medium), L (large - DEFAULT), XL (extra large)
@@ -97,7 +97,7 @@ address = {street = "Centre for Biodiversity Conservation, Kirstenbosch Gardens,
 coordinates = {latitude = "-33.981928", longitude = "18.436699"}
 
 # Directions for visitors to locate you.
-directions = "Enter the main gate to Kirstenbosch Gardens. Turn right, sign in at security, and proceed through the booms. At the circle, proceed slight left and continue up the hill. We're on the ground floor of the office building on the right."
+directions = "Enter the main gate to Kirstenbosch Gardens. Turn right, sign in at security, and proceed through the booms. At the circle, proceed slight left and continue up the hill, past the greenhouses, until you see two office buildings. We're on the ground floor of the building on the right."
 
 # Office hours
 # A list of your office hours. To remove, set to an empty list `[]`.
@@ -147,7 +147,7 @@ address_format = "en-us"
 gravatar = false
 
 # Main menu alignment (l = left, c = center, r = right) and logo options.
-main_menu = {align = "l", show_logo = true}
+main_menu = {align = "r", show_logo = true}
 
 # Show estimated reading time for posts? (true/false)
 reading_time = true

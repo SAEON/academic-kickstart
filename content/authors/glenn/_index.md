@@ -46,13 +46,13 @@ social:
   link: '#contact'  # For a direct email link, use "mailto:test@example.org".
 - icon: twitter
   icon_pack: fab
-  link: https://twitter.com/GeorgeCushen
+  link: https://twitter.com/Glennwithtwons
 - icon: google-scholar
   icon_pack: ai
-  link: https://scholar.google.co.uk/citations?user=sIwtMXoAAAAJ
+  link: https://scholar.google.com/citations?user=_FFdaCUAAAAJ&hl=en&oi=ao
 - icon: github
   icon_pack: fab
-  link: https://github.com/gcushen
+  link: https://github.com/GMoncrieff
 # Link to a PDF of your resume/CV from the About widget.
 # To enable, copy your resume/CV to `static/files/cv.pdf` and uncomment the lines below.
 # - icon: cv
@@ -70,4 +70,4 @@ user_groups:
 # - Visitors
 ---
 
-I have fun doing cool stuff at SAEON.
+My research focuses on factors that control vegetation structure and function in disturbance-prone environments and using remote sensing and vegetation models to explore the impacts of global change on fynbos and savannas. I am passionate about using data to solve environmental problems and tell compelling stories that raise interest and increase public engagement with ecological issues. I enjoy sharing my knowledge and experience with data and modeling with young scientists and advocate strongly for the adoption of the tools and techniques used for open science and reproducible research. Outside of science, I dedicate all my spare time to my best friend and trusted advisor - my dog, Murray.

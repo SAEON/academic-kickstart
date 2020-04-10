@@ -1,0 +1,19 @@
+---
+title: RReTool
+author: jasper
+date: '2020-04-05'
+slug: rretool
+categories: []
+tags: ['remote sensing']
+subtitle: ''
+summary: ''
+authors: [jasper, glenn]
+lastmod: '2020-04-05T21:55:07+02:00'
+featured: yes
+image:
+  caption: ''
+  focal_point: 'Smart'
+  preview_only: no
+projects: ['remote sensing']
+---
+Rapid and repeatable tools for natural resource management
