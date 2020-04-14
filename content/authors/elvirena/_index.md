@@ -18,7 +18,7 @@ organizations:
   url: "www.saeon.ac.za"
 
 # Short bio (displayed in user profile at end of posts)
-bio: I do research on global change in the Fynbos Biome.
+bio: I keep the node running smoothly.
 
 research:
 - Water
@@ -44,15 +44,15 @@ social:
 - icon: envelope
   icon_pack: fas
   link: '#contact'  # For a direct email link, use "mailto:test@example.org".
-- icon: twitter
-  icon_pack: fab
-  link: https://twitter.com/GeorgeCushen
-- icon: google-scholar
-  icon_pack: ai
-  link: https://scholar.google.co.uk/citations?user=sIwtMXoAAAAJ
-- icon: github
-  icon_pack: fab
-  link: https://github.com/gcushen
+# - icon: twitter
+#   icon_pack: fab
+#   link: https://twitter.com/GeorgeCushen
+# - icon: google-scholar
+#   icon_pack: ai
+#   link: https://scholar.google.co.uk/citations?user=sIwtMXoAAAAJ
+# - icon: github
+#   icon_pack: fab
+#   link: https://github.com/gcushen
 # Link to a PDF of your resume/CV from the About widget.
 # To enable, copy your resume/CV to `static/files/cv.pdf` and uncomment the lines below.
 # - icon: cv
@@ -70,4 +70,4 @@ user_groups:
 # - Visitors
 ---
 
-I have fun doing cool stuff at SAEON.
+I take care of administration at the Node and help keep things running smoothly. I’ve been in administration support for a number of years, supporting projects and office teams. I also have a BEd degree and taught at an Ambleside school. I enjoy spending time with my family and long walks in green fields and ocean fronts.

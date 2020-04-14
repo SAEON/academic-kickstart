@@ -18,4 +18,4 @@ image:
 projects: []
 ---
 
-Exploring the impact of the drought on the population dynamics of selected species in the Proteaceae. 
+This project explores climate-induced changes on the demography of serotinous Proteaceae, aiming to further long-term monitoring of these iconic species in the Cape Floristic Region (CFR). This forms part of Martina Treurnicht's postdoctoral research (2019-2021). To this end, she is collecting spatiotemporal data on demography, i.e. birth and death rates, and will use these data as a means to understand species responses to changing fire and climatic conditions. The project will explore the impacts of the recent drought in the CFR on the demography and population dynamics of selected Proteaceae species. Here’s a [poster](https://fynbosser.files.wordpress.com/2019/11/treurnicht_poster_climate_proteas2.pdf) from July 2019 that summarises the project proposal and provides more detail on the baseline demographic data.

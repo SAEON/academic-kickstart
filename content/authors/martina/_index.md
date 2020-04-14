@@ -71,4 +71,4 @@ user_groups:
 # - Visitors
 ---
 
-I am a plant ecologist exploring the relationships between plant performance and the environment as a basis for understanding biodiversity responses to ongoing global change. Notably, I study range-wide demographic- and functional trait variation of serotinous Proteaceae in the Cape Floristic Region biodiversity hotspot. My postdoctoral research at SAEON, working with Jasper Slingsby, focuses on quantifying climate-induced changes on demography, and working towards long-term monitoring of several Proteaceae species.
+I am a plant ecologist exploring the relationships between plant performance and the environment as a basis for understanding biodiversity responses to ongoing global change. I study range-wide demographic and functional trait variation of serotinous Proteaceae in the Cape Floristic Region. My postdoctoral research at SAEON, working with Dr Jasper Slingsby, focuses on using long-term monitoring to quantify climate-induced changes in the demography of several Proteaceae species. For more details on my research see https://fynbosser.wordpress.com. 
