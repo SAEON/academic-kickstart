@@ -7,7 +7,7 @@ categories: []
 tags:
   - ecology
 subtitle: ''
-summary: ''
+summary: 'Exploring drought impacts on the demography of serotinous Proteaceae'
 authors: [martina, jasper]
 lastmod: '2020-04-08T20:21:01+02:00'
 featured: yes

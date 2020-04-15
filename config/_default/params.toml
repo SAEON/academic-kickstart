@@ -193,6 +193,7 @@ plugins_js  = []
   post_view = 2
   publication_view = 2
   talk_view = 2
+  abstract_length = 50
 
 ############################
 ## Comments

@@ -6,7 +6,7 @@ slug: rretool
 categories: []
 tags: ['remote sensing']
 subtitle: ''
-summary: ''
+summary: 'Developing remote-sensing tools for natural resource management'
 authors: [jasper, glenn]
 lastmod: '2020-04-05T21:55:07+02:00'
 featured: yes
