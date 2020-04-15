@@ -1,6 +1,6 @@
 ---
 # Display name
-name: Fynbos Node
+title: Fynbos Node
 
 # Username (this should match the folder name)
 authors:

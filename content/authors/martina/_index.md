@@ -1,6 +1,6 @@
 ---
 # Display name
-name: Martina Treurnicht
+title: Martina Treurnicht
 
 # Username (this should match the folder name)
 authors:

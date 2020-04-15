@@ -1,6 +1,6 @@
 ---
 # Display name
-name: Rob Skelton
+title: Rob Skelton
 
 # Username (this should match the folder name)
 authors:

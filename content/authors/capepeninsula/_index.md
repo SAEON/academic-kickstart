@@ -1,6 +1,6 @@
 ---
 # Display name
-name: Cape Peninsula
+title: Cape Peninsula
 
 # Username (this should match the folder name)
 authors:

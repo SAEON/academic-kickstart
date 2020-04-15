@@ -1,6 +1,6 @@
 ---
 # Display name
-name: Elvirena Coetzee
+title: Elvirena Coetzee
 
 # Username (this should match the folder name)
 authors:

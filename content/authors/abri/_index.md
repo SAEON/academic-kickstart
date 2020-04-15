@@ -1,6 +1,6 @@
 ---
 # Display name
-name: Abri De Buys
+title: Abri De Buys
 
 # Username (this should match the folder name)
 authors:

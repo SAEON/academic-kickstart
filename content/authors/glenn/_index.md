@@ -1,6 +1,6 @@
 ---
 # Display name
-name: Glenn Moncrieff
+title: Glenn Moncrieff
 
 # Username (this should match the folder name)
 authors:
