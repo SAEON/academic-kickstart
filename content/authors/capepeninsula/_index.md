@@ -63,6 +63,6 @@ user_groups:
 - Core study sites
 ---
 
-The Cape Peninsula is one of the most biodiverse and imperilled landscapes in the world. Much of the upland vegetation is protected by Table Mountain National Park, but it faces significant threats from surrounding urban areas...
+The Cape Peninsula is one of the most biodiverse and imperilled landscapes in the world. Much of the upland vegetation is protected by Table Mountain National Park, but it faces significant threats from surrounding urban areas.
 
 
