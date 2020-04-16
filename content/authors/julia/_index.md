@@ -49,7 +49,7 @@ social:
 #   link: https://twitter.com/GeorgeCushen
 - icon: google-scholar
   icon_pack: ai
-  link: https://www.researchgate.net/profile/Julia_Glenday
+  link: https://scholar.google.com/citations?hl=en&user=MDq9oawAAAAJ
 # - icon: github
 #   icon_pack: fab
 #   link: https://github.com/gcushen
