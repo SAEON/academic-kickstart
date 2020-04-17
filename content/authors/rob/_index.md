@@ -76,4 +76,4 @@ Broadly, I examine questions pertaining to the biophysical determinants of terre
 
 My research website: www.robertskelton.org
 
-My personal blogsite: www.wondrousbiographies.org
+My personal blogsite: www.wondrousbiographies.com
