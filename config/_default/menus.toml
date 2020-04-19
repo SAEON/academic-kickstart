@@ -19,19 +19,19 @@
   weight = 20
 
 [[main]]
-  name = "Sites"
+  name = "Sites & Datasets"
   url = "#sites"
-  weight = 23
-
-[[main]]
-  name = "Dashboards"
-  url = "#dashboards"
   weight = 25
 
 [[main]]
-  name = "Tutorials"
-  url = "docs/"
+  name = "Dashboards & Tutorials"
+  url = "#docs/"
   weight = 30
+
+#[[main]]
+#  name = "Tutorials"
+#  url = "docs/"
+#  weight = 30
 
 [[main]]
   name = "News"

@@ -6,6 +6,9 @@ title: Glenn Moncrieff
 authors:
 - glenn
 
+# Order in display
+weight: 10
+
 # Is this the primary user of the site?
 superuser: true
 

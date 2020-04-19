@@ -6,11 +6,14 @@ title: Jasper Slingsby
 authors:
 - jasper
 
+# Order in display
+weight: 15
+
 # Is this the primary user of the site?
 superuser: true
 
 # Role/position
-role: Scientist
+role: Scientist (Acting Manager)
 
 # Organizations/Affiliations
 organizations:

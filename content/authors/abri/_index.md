@@ -2,6 +2,9 @@
 # Display name
 title: Abri De Buys
 
+# Order in display
+weight: 1
+
 # Username (this should match the folder name)
 authors:
 - abri
