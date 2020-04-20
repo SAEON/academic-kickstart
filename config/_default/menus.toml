@@ -24,14 +24,14 @@
   weight = 25
 
 [[main]]
-  name = "Dashboards & Tutorials"
-  url = "#docs/"
-  weight = 30
+  name = "Dashboards"
+  url = "#dashboards"
+  weight = 27
 
-#[[main]]
-#  name = "Tutorials"
-#  url = "docs/"
-#  weight = 30
+[[main]]
+  name = "Tutorials"
+  url = "docs/"
+  weight = 30
 
 [[main]]
   name = "News"
@@ -54,3 +54,20 @@
 #    name = "CV"
 #    url = "files/cv.pdf"
 #    weight = 70
+
+# Documentation
+
+#[[docs]]
+#  name = "Overview"
+#  weight = 10
+#  url = "/docs/"
+
+#[[menu.learningR]]
+#  name = "Learning R"
+#  weight = 5
+#  identifier = "LearningR"
+
+#[[docs]]
+#  name = "Create Content"
+#  weight = 30
+#  identifier = "content"
