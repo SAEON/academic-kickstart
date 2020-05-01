@@ -17,7 +17,8 @@ type: docs  # Do not modify.
 # - weight: Position of link in menu.
 menu:
   docs:
-    name: Overview
+    learningR:
+      name: Overview
     weight: 1
 ---
 

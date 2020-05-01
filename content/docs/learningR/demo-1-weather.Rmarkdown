@@ -1,0 +1,421 @@
+---
+title: 'R Intro 1: Weather Data'
+author: jasper
+date: '2020-05-01'
+slug: demo-1-weather
+categories: []
+tags: ["R-tutorial", "Cape Peninsula", "data", "climate"]
+linktitle: R Intro 1
+summary: ~
+lastmod: '2020-05-01T21:49:48+02:00'
+toc: yes
+type: docs
+menu:
+  docs:
+    learningR:
+      name: 
+    weight: 20
+---
+
+```{r setup, echo = FALSE}
+library(knitr)
+opts_knit$set(root.dir = "/home/jasper/GIT/academic-kickstart/static/datasets/")
+```
+
+
+This tutorial relies on data provided as supplementary material for the paper *Slingsby et al. 2017. Intensifying postfire weather and biological invasion drive species loss in a Mediterranean-type biodiversity hotspot. PNAS.* [**http://dx.doi.org/10.1073/pnas.1619014114**](http://dx.doi.org/10.1073/pnas.1619014114). The data can be downloaded [**here**](https://www.pnas.org/highwire/filestream/29863/field_highwire_adjunct_files/0/pnas.1619014114.sd01.xlsx). It's a ~13MB .xlsx file. 
+
+The study presents the results of 44 years of observation of permanent vegetation plots in the Cape of Good Hope Section of Table Mountain National Park, South Africa. The plots are dubbed "The Taylor Plots" in honour of Hugh Taylor, who established them in 1966. We'll describe the details of the data as we work through the different tutorials, but for this first one we will only use the rainfall and temperature data for the reserve.
+
+
+## First, a few R basics
+
+R can do basic calculations
+```{r}
+1 + 1 
+```
+
+But to do more complex calculations, its easier to work with objects, which you assign, e.g.
+
+```{r}
+x <- 1 
+x
+```
+
+You can assign objects from other objects - usualy once you've performed an operation on them
+
+```{r}
+y <- x + 1
+y
+```
+
+You can perform operations with multiple objects
+
+```{r}
+y + x
+```
+
+Combine objects
+
+```{r}
+z <- c(x, y)
+z
+```
+
+Or apply functions to objects
+
+```{r}
+sum(z)
+```
+
+You can also access elements within an object using *indexing* with square brackets
+
+```{r}
+z[1] #the first element in vector z
+```
+
+
+```{r}
+z[2] #the second element in vector z
+```
+
+Or evaluate them using logical expressions
+
+```{r}
+z == 1
+```
+
+```{r}
+z < 1
+```
+
+```{r}
+z > 1
+```
+
+Note that you can reassign (or overwrite) objects, so you need to use unique object names if you want to keep them
+
+```{r}
+x <- sum(z)
+x
+```
+
+R keeps these objects in memory
+
+```{r}
+ls() #function to call the list of objects in memory - and "#" lets you put comments like this in your code...
+```
+
+This is useful, but if the objects are large, it will slow down the speed of calculations, so it is good practice to discard (large) objects once you're done with them (or only read them in when you need to)
+
+```{r}
+rm(x, y, z)
+ls()
+```
+
+Now let's explore real data!
+
+## Reading in data
+
+First we'll call the packages/libraries that contain the functions we need
+
+```{r}
+library(tidyverse)
+library(readxl)
+```
+
+Now we need some data.
+
+When reading data from a file into R you need to know the system path to the file on your computer, e.g. `"/home/jasper/GIT/academic-kickstart/static/datasets"`.
+
+Typing the whole thing out (or even copying and pasting) can get tedious, so its often better to set your working directory so R knows where to look for files, like so.
+
+```{r}
+setwd("/home/jasper/GIT/academic-kickstart/static/datasets")
+```
+
+If you are trying to run this code on your own, you'll get an error when trying to set your working directory to a folder on my computer :) - You need to change the line of code above to the folder where you put the data. If you're on Windows, you'll need to specify the route drive, e.g. `C:`. You also need to make sure to use single forwardslashes `/` or double backslashes `\\`, rather than the single backslash `\` that is the default on Windows. 
+
+So my file path on windows would look like:
+
+`"C:/jasper/GIT/academic-kickstart/static/datasets"`
+
+or 
+
+`"C:\\jasper\\GIT\\academic-kickstart\\static\\datasets"`
+
+Or on Mac it would be:
+
+`"/Users/jasper/GIT/academic-kickstart/static/datasets"`
+
+Lastly, if you've tried all that and it's still not working try adding (or removing) slash(es) at the end.
+
+We can check if we got it right using
+
+```{r}
+getwd()
+```
+
+Ok, once all that's done, we can use R to have a look at what files are in that directory
+
+```{r}
+list.files()
+```
+
+And in this case we want to read data from `pnas.1619014114.sd01.xlsx`, but given that this is an excel workbook, it may have multiple separate worksheets of data. Let's have a quick glimpse the lazy way
+
+```{r}
+excel_sheets("pnas.1619014114.sd01.xlsx")
+```
+
+There are 11 different sheets. Let's start with the weather
+
+```{r}
+weather <- read_excel("pnas.1619014114.sd01.xlsx", sheet = "weather")
+
+#Let's have a look at teh first few lines?
+head(weather) #
+```
+
+or last few lines
+
+```{r}
+tail(weather)
+```
+
+There are `r nrow(weather)` rows of data, so it's a bit tricky to inspect it all! Fortunately we can call a summary like so
+
+```{r}
+summary(weather)
+```
+
+Nice, but this doesn't help see trends etc. It's difficult to eyeball daily rainfall so let's calculate the annual totals
+
+## Data wrangling
+
+Here we use the `group_by()` and `summarise()` functions provided by `library(dplyr)` to calculate the annual rainfall totals using `sum()`.
+
+```{r}
+annualrain <- weather %>% group_by(Year) %>% summarise(Rainfall = sum(Rain))
+
+head(annualrain) #to see what we get
+```
+
+If you were to translate this line of code into English it would say:
+
+> Take the `weather` dataframe, and for each Year, sum the total rainfall across all observation (months in this case).
+
+`library(dplyr)` and other *tidyverse* packages contain a series of functions that can be thought of as *verbs*, providing the *grammar* for you develop code statements, e.g.:
+
+- `arrange()`
+- `filter()`
+- `mutate()`
+- `slice()`
+- `summarise()`
+- `group_by()`
+
+(Pro tip: Do yourself a favour and apply the fourth law here!)
+
+Binding the *verbs* together into code sentences is made possible by the pipe `%>%` function, which essentially allows you to pass the output of one function (or verb) to the next without making a new object in memory each time. 
+
+i.e. without `%>%` this code would have to be written
+
+```{r}
+step1 <- group_by(weather, Year)
+step2 <- summarise(step1, Rainfall = sum(Rain))
+head(step2)
+```
+
+Which creates the unwanted objects like `step1`, which just waste memory, so let's get rid of them
+
+```{r}
+rm(step1, step2)
+```
+
+
+So looking at annual totals is easier to interpret than daily data, but not as good as a graph...
+
+
+## Plotting data with `library(ggplot2)`
+
+To plot the data using the functions in `library(ggplot2)` we first describe the data, telling ggplot what data object we want to use and which variables should be our x and y axes, like so.
+
+```{r}
+r <- ggplot(annualrain, aes(x = Year, y = Rainfall))
+```
+
+Then we can play with different plot types
+
+```{r}
+r + geom_line() #A line graph - as easy as that!!!
+```
+
+I find time-series are often easier to look at if you shade one side, like so
+
+```{r}
+r + geom_area()
+```
+
+Which is obviously easier to interpret than a scatterplot of points
+
+```{r}
+r + geom_point()
+```
+
+Unless you add a trend line, like a loess spline
+
+```{r}
+r + geom_point() + geom_smooth(method = 'loess')
+```
+
+So there have been spells of wetter and dryer years, but no clear trend. What about if we wanted to see if there've been any changes in seasonality? I.e. particular months show patterns of getting wetter or dryer?
+
+## More data wrangling and plotting
+
+To summarise the data by month is very easy, all we need do is add **Month** to the `group_by()` statement in the code we used to get the annual totals.
+
+```{r}
+monthlyrain <- weather %>% group_by(Year, Month) %>% summarise(Rainfall = sum(Rain))
+
+head(monthlyrain)
+```
+
+The only issue now is that it is difficult to interpret the table directly, and we have 3 variables, so it's not as simple to plot.
+
+Fortunately, `library(ggplot2)` has the functions `facet_grid()` and `facet_wrap()` that make it very easy to make multi-panel plots. Here we use the same code as the line plot above, but apply it to the object `monthlyrain` and add `facet_grid()` indicating that the rows of the mutiplot should be the months.
+
+
+```{r}
+r <- ggplot(monthlyrain, aes(x = Year, y = Rainfall))
+
+r + geom_line() + facet_grid(rows = vars(Month))
+```
+
+Nice! We can clearly see that months 4 to 8 (April to August) are the wetter months in this region, but its still difficult to tell which years were wetter or drier relative to the long term average. To do this we need to calculate the anomalies (i.e. the differences from the mean).
+
+Getting the mean for each month is very easy to do by adapting our code above and applying it to the `monthlyrain` dataframe we have already calculated. We simply change the function passed to `summarise()` from `sum()` to `mean()`, and remove *Year* from the `group_by()` statement.
+
+i.e we're saying
+
+> Take the `monthlyrain` dataframe, and for each Month, calculate the average rainfall across all years.
+
+like so
+
+```{r}
+monthlymean <- monthlyrain %>% group_by(Month) %>% summarise(MeanMonthlyRainfall = mean(Rainfall))
+
+head(monthlymean)
+```
+
+Ok, but now we need to match the `MeanMonthlyRainfall` with each month in `monthlyrain`. This is very easy with the function `merge()`.
+
+```{r}
+monthlyrain <- merge(monthlyrain, monthlymean)
+
+head(monthlyrain)
+```
+
+Ok, now we want to calculate the positive and negative differences from the mean. For plotting purposes we'll do this as separate `Positive` and `Negative` columns. `R` makes this easy, by allowing simple mathematical operations and allowing us to access or assign new columns using the `$` operator, like so.
+
+```{r}
+monthlyrain$Positive <- monthlyrain$Rainfall - monthlyrain$MeanMonthlyRainfall 
+
+head(monthlyrain)
+```
+
+Now we have negative values in our Positive column, but that's ok, because we can set them to zero using a logical operator that detects negative values, like so:
+
+```{r}
+monthlyrain$Positive[which(monthlyrain$Positive < 0)] <- 0
+
+head(monthlyrain)
+```
+
+Ok, there were a few steps that went into that. Let's break it down:
+1) the logical expression `<` returns `TRUE` or `FALSE` for whether the values in `monthlyrain$Positive` are less than zero or not;
+2) the `which()` function translates all the values that are `TRUE` to their position in the vector/column `monthlyrain$Positive`;
+3) the square brackets (or *indexing*) allows us to call all those values in the vector/column `monthlyrain$Positive`; and 
+4) assign them the value zero with `<- 0`
+
+Now we do the same for the `Negative` values:
+
+```{r}
+monthlyrain$Negative <- monthlyrain$Rainfall - monthlyrain$MeanMonthlyRainfall
+monthlyrain$Negative[which(monthlyrain$Negative > 0)] <- 0
+
+head(monthlyrain)
+```
+
+And we're ready to start plotting. I'll build this up piece by piece. First we'll set up the plot and add the positive anomaly as a "ribbon" plot
+
+```{r}
+g <- ggplot(monthlyrain, aes(x = Year))
+
+g <- g + geom_ribbon(aes(ymin = 0, ymax = Positive, fill="Positive"))
+
+g
+```
+
+Now we'll add the negative anomaly ribbon
+
+```{r}
+g <- g + geom_ribbon(aes(ymin = Negative, ymax = 0 ,fill="Negative"))
+
+g
+```
+
+Next we can set colours to make sure they make sense - e.g. positive (wetter) anomalies should be blue and negative (drier) should be red.
+
+```{r}
+g <- g + scale_fill_manual(name="",values=c("#D6604D", "#4393C3"))
+
+g
+```
+
+Now we can split it into a multipanel by month using `facet_grid()`
+
+```{r}
+g <- g + facet_grid(cols = vars(Month))
+
+g
+```
+
+And add a title, meaningful y-axis label and flip the axes so we can read the graph properly
+
+```{r}
+g <- g + ggtitle("Monthly Rainfall Anomaly (1961-2010)") + coord_flip() + ylab("Rainfall (mm)")
+
+g
+```
+
+Not much to observe other than the positive anomalies are typically bigger than the negative anomalies. This is not surprising, because the negative anomalies are bounded by zero (i.e. no rain is the driest it can get), while there are no constraints on the positive anomaly. For example, the wettest day on record had `r max(weather$Rain)` mm.
+
+## What about summer anomalies?
+
+Now see if you can adapt the code above to develop the same figure using the `Temp` data in the object `weather`.
+
+Note that you'll need to calculate monthly means, not sum the totals, and better to swap the colours so red is the positive anomaly (hotter) and blue the negative (cooler).
+
+It should look like this:
+
+```{r, echo = FALSE}
+y <- weather %>% group_by(Year, Month) %>% summarise(MMT=mean(Temp)) # monthly means by year
+x <- weather %>% group_by(Month) %>% summarise(MMMT=mean(Temp)) # monthly means across all years
+y <- merge(y, x)
+
+y$Positive <- y$MMT - y$MMMT # calculate anomalies
+y$Positive[which(y$Positive<0)] <- 0
+y$Negative <- y$MMT - y$MMMT
+y$Negative[which(y$Negative>0)] <- 0
+
+g <- ggplot(y, aes(x = Year))
+g <- g + geom_ribbon(aes(ymin = 0, ymax = Positive, fill="Positive")) + geom_ribbon(aes(ymin = Negative, ymax = 0 ,fill="Negative"))
+g <- g + scale_fill_manual(name="",values=c("#4393C3","#D6604D"))
+g <- g + facet_grid(cols = vars(Month))
+g <- g + ggtitle("Mean monthly Max Temp Anomaly (1961-2010)") + coord_flip() + ylab("Degrees Celcius")
+g
+```
+
+This looks a bit more interesting, with fewer cool anomalies and more hot anomalies as we head towards the present. It turns out the temperature has risen by ~1.2 degrees over the observation period.
+
+

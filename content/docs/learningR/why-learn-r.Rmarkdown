@@ -4,7 +4,7 @@ author: jasper
 date: '2020-04-19'
 slug: why-learn-r
 categories: []
-tags: []
+tags: ["R-tutorial"]
 linktitle: Why Learn R?
 summary: ~
 lastmod: '2020-04-19T20:54:48+02:00'
@@ -12,7 +12,8 @@ toc: yes
 type: docs
 menu:
   docs:
-    name: Introduction to R
+    learningR:
+      name:
     weight: 10
 ---
 
