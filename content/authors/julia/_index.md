@@ -18,7 +18,7 @@ organizations:
   url: "www.saeon.ac.za"
 
 # Short bio (displayed in user profile at end of posts)
-bio: I do research on global change in the Fynbos Biome.
+bio: I'm a hydrologist doing research on global change in the Fynbos Biome and beyond.
 
 research:
 - Water
@@ -71,6 +71,6 @@ user_groups:
 # - Visitors
 ---
 
-I am interested in flows and cycles of nature and how humans interact with them.  I myself have been slowly flowing down the African coast for many years and have now found myself at the southern tip, in the Fynbos zone!  I started my work as a researcher while in Kenya, where I measured carbon stocks and growth in vegetation and soils of various forest types across the country. I continued my tree-hugging, carbon cycling work in the eThekwini Municipality Environmental Management Department, Durban, where I was also involved in river health programmes. This inspired me to return to university to study hydrology and hydrologic modelling, which I applied to the Baviaanskloof catchment in the Eastern Cape. Here I used monitoring and modelling to predict the likely impacts of vegetation and river channel restoration on streamflow and groundwater supplies.  Now at the SAEON Fynbos node I will continue research in ecohydrology, using monitoring data and hydrologic models to look at impacts of land management and climate change on water resources in various catchments in the Fynbos region.
+I'm a post-doctoral researcher with a focus on catchment hydrology and modelling. My interests are wide and I love looking at the flows and cycles of nature and how humans interact with them. I've been slowly flowing down the African coast myself and have reached the southern tip, the Fynbos! I started work as a researcher while in Kenya, where I measured carbon stocks and growth in vegetation and soils of various forest types. I continued tree-hugging, carbon cycling work in the eThekwini Municipality Environmental Management Department, where I was also involved in river health programmes. This inspired me to do post-graduate studies in hydrology and hydrologic modelling. My dissertation research took me to the Baviaanskloof catchment in the Eastern Cape where I used monitoring and modelling to explore the likely impacts of vegetation and river channel restoration on streamflow and groundwater supplies. At the SAEON Fynbos node I am using field monitoring data to improve modelling of catchment processes and using data and models to look at the impacts of land management and climate change on water resources in various catchments. Check out the HydroMIP project for info on some of my work.
 
-I love being outdoors, hiking, climbing mountains, climbing trees, swimming in rivers, and swimming in the sea. If I'm not crunching numbers, that's where I'll be. 
+I love being outdoors, climbing mountains and trees, swimming in rivers and seas. If I'm not crunching numbers, that's where I'll be.
