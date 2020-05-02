@@ -3,16 +3,16 @@
 widget = "portfolio"  # See https://sourcethemes.com/academic/docs/page-builder/
 headless = true  # This file represents a page section.
 active = true  # Activate this widget? true/false
-weight = 20  # Order that this section will appear.
+weight = 27  # Order that this section will appear.
 
-title = "Projects"
+title = "Dashboards"
 subtitle = ""
 
 [content]
 
 
   # Page type to display. E.g. project.
-  page_type = "project"
+  page_type = "dashboards"
   
   # Filter toolbar (optional).
   # Add or remove as many filters (`[[content.filter_button]]` instances) as you like.
@@ -23,25 +23,25 @@ subtitle = ""
   # Default filter index (e.g. 0 corresponds to the first `[[filter_button]]` instance below).
   filter_default = 0
   
-   [[content.filter_button]]
-     name = "All"
-     tag = "*"
+ # [[content.filter_button]]
+ #   name = "All"
+ #   tag = "*"
   
-   [[content.filter_button]]
-     name = "Dashboards"
-     tag = "dashboards"
+ # [[content.filter_button]]
+ #   name = "Dashboards"
+ #   tag = "dashboards"
      
-   [[content.filter_button]]
-     name = "Hydrology"
-     tag = "hydrology"
+ # [[content.filter_button]]
+ #   name = "Hydrology"
+ #   tag = "hydrology"
      
-   [[content.filter_button]]
-     name = "Ecology"
-     tag = "ecology"
+ # [[content.filter_button]]
+ #    name = "Ecology"
+ #   tag = "ecology"
      
-   [[content.filter_button]]
-     name = "Remote Sensing"
-     tag = "remote sensing"
+ # [[content.filter_button]]
+ #   name = "Remote Sensing"
+ #   tag = "remote sensing"
      
   # [[content.filter_button]]
   #   name = "Other"

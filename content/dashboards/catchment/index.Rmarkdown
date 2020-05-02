@@ -1,0 +1,671 @@
+---
+title: Catchment Monitor
+author: 'jasper'
+date: '2020-05-02'
+slug: catchment
+categories: []
+tags:
+  - dashboards
+  - climate
+  - hydrology
+  - data
+  - Jonkershoek
+subtitle: ''
+summary: "Rainfall and streamflow from the catchments that feed Cape Town's major dams"
+authors: [jasper, abri]
+lastmod: '2020-05-02T21:36:22+02:00'
+featured: yes
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+<br>
+
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of March 2020. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams that feed Cape Town and surrounds.
+
+<!--more-->
+
+We plan to update this page monthly. For live weather data and the record over the past month please access the [**Dwarsberg weather station directly**](http://lognet.saeon.ac.za:8088/Dwarsberg/index.html). You may also be interested in our [**Constantiaberg weather station**](http://lognet.saeon.ac.za:8088/Constantiaberg/index.html) on the Cape Peninsula or our [**Engelsmanskloof weather station**](http://lognet.saeon.ac.za:8088/EngCed/index.html) in the Cederberg.
+
+
+*PLEASE NOTE: We cannot guarantee that these data or analyses are error free, particularly with regards to the older historical data and the comparability of the older and newer instrumentation. Gaps in the data were filled using linear interpolation from the most recent data for up to a 30 day period. This filled all gaps other than the period August 2008 to September 2011 - these data exist in hardcopy, but are still being digitized. There are much better gap-filling techniques, but the appropriate method depends on the question being asked.*
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+if(Sys.getenv("USER") == "jasper") {setwd("/home/jasper/Dropbox/Shared/Jonkershoek Weather and Streamflow/")}
+
+if(Sys.getenv("USERNAME") == "abri") {setwd("C://Dropbox//Shared//jonkershoek//")}
+
+
+suppressWarnings(suppressMessages(library(xts, quietly=T, warn.conflicts=F))) #WARNING!!! Suppressing warnings like this is dodgy as it hides conflicts. If this script creates weird output or fails, run the internal "library(...)" separately for each package and see if it gives you important warnings...
+suppressWarnings(suppressMessages(library(dygraphs, quietly=T, warn.conflicts=F)))
+suppressWarnings(suppressMessages(library(dplyr, quietly=T, warn.conflicts=F)))
+suppressWarnings(suppressMessages(library(ggplot2, quietly=T, warn.conflicts=F)))
+suppressWarnings(suppressMessages(library(readxl, quietly=T, warn.conflicts=F)))
+suppressWarnings(suppressMessages(library(reshape2, quietly=T, warn.conflicts=F)))
+suppressWarnings(suppressMessages(library(lubridate, quietly=T, warn.conflicts=F)))
+suppressWarnings(suppressMessages(library(RColorBrewer, quietly=T, warn.conflicts=F)))
+suppressWarnings(suppressMessages(library(wesanderson, quietly=T, warn.conflicts=F)))
+
+### Get Langrivier stream flow from the different instruments
+#Orpheus Mini
+om <- read.csv("Streamflow/Langrivier streamflow data_Jasper/Orpheus Mini.csv") #cumecs (m^3/s)
+om <- om[-which(substr(om$Date, 15, 16) == "30"),] #remove half-hourly values
+om$Value <- om$Value*3.6 #Convert to Total hourly streamflow volume in ML
+om$Offering <- rep("Total hourly streamflow volume", nrow(om))
+om$Symbol <- rep("ML", nrow(om))
+
+#Belfort charts
+bf <- read.csv("Streamflow/Langrivier streamflow data_Jasper/Belfort.csv") #m^3
+bf$Value <- bf$DataValue/1000
+bf <- bf[,which(colnames(bf)%in%colnames(om))]
+
+#Kent charts - STILL NEED TO INCLUDE!!! - Having some wierd issue with merging and interpolating...
+kt <- read.csv("Streamflow/Langrivier streamflow data_Jasper/Kent.csv") #m^3
+kt$Value <- kt$DataValue/1000
+kt <- kt[,which(colnames(kt)%in%colnames(om))]
+
+#Combine instruments and reformat date
+ldat <- bind_rows(kt, bf, om)
+x <- gsub("T", " ", ldat$Date)
+x <- gsub("+02:00", "", x, fixed=T)
+x <- gsub(".000", "", x, fixed=T)
+
+ldat$Date <- strptime(x, format = "%Y-%m-%d %H:%M:%S", tz="Africa/Johannesburg")
+ldat$Value[which(ldat$Value==0)] <- NA
+ldat$Instrument <- c(rep("Kent", nrow(kt)), rep("Belfort", nrow(bf)), rep("Orpheus mini", nrow(om)))
+
+#Split, interpolate missing and [recombine -later (interpolation procedure messes up the Kent Chart data...)]
+#ldk <- ldat[which(ldat$Instrument=="Kent"),] #Kent chart data
+ldn <- ldat[-which(ldat$Instrument=="Kent"),] #Everything else...
+
+#Get start and end of orpheus mini data
+beginom <- head(ldat[which(ldat$Instrument=="Orpheus mini"),]$Date, 1)
+endom <- tail(ldat[which(ldat$Instrument=="Orpheus mini"),]$Date, 1)
+
+#Make data an xts object and interpolate
+lang <- xts(ldn$Value, order.by = ldn$Date) #Make xts object
+lang <- merge(lang, timeBasedSeq(paste(start(lang), end(lang), "H", sep="::"))) #Fill in missing dates (with NA)
+#miss <- lang[which(is.na(lang))] # ID missing data
+langI <- na.approx(lang, maxgap=720) #interpolate missing values (up to a month)
+#bmiss <- langI[which(is.na(langI))] # ID big missing data that remains
+tzone(langI) <- "Africa/Johannesburg"
+
+names(langI) <- "Streamflow Volume" #"Streamflow Rate"
+langId <- apply.daily(langI, "sum", na.rm=F)
+langIm <- apply.monthly(langI, "sum", na.rm=F)
+langIm <- langIm[-nrow(langIm),] #Remove most recent (i.e. incomplete) month
+langIa <- apply.yearly(langI, "sum", na.rm=F)
+langIa <- langIa[-nrow(langIa),] #Remove most recent (i.e. incomplete) year
+
+#Make summaries for barplot
+x <- tbl_df(data.frame(Streamflow = langIm[,1], Date = time(langIm)))
+mmeans <- summarise(group_by(x, months(Date, abbreviate=T)), mean(Streamflow.Volume, na.rm=T))
+colnames(mmeans) <- c("Month", "Streamflow")
+mmeans$Month <- as.factor(mmeans$Month)
+mmeans$Month <- reorder(mmeans$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,9,7,6,2,12,11,10,3)
+mmeans <- mmeans[order(mmeans$Month),]
+
+#summarise(group_by(x, months(Date, abbreviate=T)), min(Streamflow.Volume, na.rm=T)) #Minimum by month
+#test <- subset(x, months(Date, abbreviate=T) == "Aug") #Select a month
+#test[order(test$Streamflow.Volume),]
+
+#Calculate confidence intervals
+sds <- summarise(group_by(x, months(Date, abbreviate=T)), sd(Streamflow.Volume, na.rm=T)) #Standard deviation
+colnames(sds) <- c("Month", "Streamflow")
+sds$Month <- as.factor(sds$Month)
+sds$Month <- reorder(sds$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,9,7,6,2,12,11,10,3)
+sds <- sds[order(sds$Month),]
+mmeans$StreamflowCI <- (sds$Streamflow / sqrt(nrow(x)/12)) *qt(0.975/2 + .5, sqrt(nrow(x)/12-1)) #convert to standard error and then confidence interval
+
+#Calculate cummulative flows
+m2015 <- data.frame(Month = levels(mmeans$Month), Streamflow = as.numeric(langIm["2015"]), StreamflowCI = NA) # All months in 2015                   
+m2016 <- as.numeric(langIm["2016"])
+m2016 <- data.frame(Month = levels(mmeans$Month)[1:length(m2016)], Streamflow = m2016, StreamflowCI = NA) # All months in 2016
+m2017 <- as.numeric(langIm["2017"])
+m2017 <- data.frame(Month = levels(mmeans$Month)[1:length(m2017)], Streamflow = m2017, StreamflowCI = NA) # All months in 2017
+m2018 <- as.numeric(langIm["2018"])
+m2018 <- data.frame(Month = levels(mmeans$Month)[1:length(m2018)], Streamflow = m2018, StreamflowCI = NA) # All months in 2018
+m2019 <- as.numeric(langIm["2019"])
+m2019 <- data.frame(Month = levels(mmeans$Month)[1:length(m2019)], Streamflow = m2019, StreamflowCI = NA) # All months in 2019
+m2020 <- as.numeric(langIm["2020"])
+m2020 <- data.frame(Month = levels(mmeans$Month)[1:length(m2020)], Streamflow = m2020, StreamflowCI = NA) # All months in 2019
+
+mmeans$Cumulative_Streamflow <- cumsum(mmeans$Streamflow)
+m2015$Cumulative_Streamflow <- cumsum(m2015$Streamflow)
+m2016$Cumulative_Streamflow <- cumsum(m2016$Streamflow)
+m2017$Cumulative_Streamflow <- cumsum(m2017$Streamflow)
+m2018$Cumulative_Streamflow <- cumsum(m2018$Streamflow)
+m2019$Cumulative_Streamflow <- cumsum(m2019$Streamflow)
+m2020$Cumulative_Streamflow <- cumsum(m2020$Streamflow)
+
+monthvals <- rbind(mmeans, m2015, m2016, m2017, m2018, m2019, m2020) 
+monthvals$Time <- c(rep("Mean (1961 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)), rep("2018", nrow(m2018)), rep("2019", nrow(m2019)), rep("2020", nrow(m2020)))
+
+#Calculate annual summer and winter streamflow
+
+#Calculate Summer streamflow
+Summer1 = apply.yearly(langIm[.indexmon(langIm) %in% 9:11], "sum", na.rm=F)  # last summer months for all years (note zero-based indexing!)
+Summer2 = apply.yearly(langIm[.indexmon(langIm) %in% 0:2], "sum", na.rm=F)  # Summer months for all years (note zero-based indexing!)
+Summer1$Year <- format(index(Summer1),"%Y")
+Summer2$Year <- format(index(Summer2),"%Y")
+Summer2$Year <- Summer2$Year - 1
+names(Summer1)[1] <- "Streamflow"
+Hmm <- merge(as.data.frame(Summer1), as.data.frame(Summer2))
+Summer <- data.frame(Year = Hmm$Year, Streamflow.Volume = rowSums(Hmm[,2:3]), Season = "Summer")
+
+#Calculate Winter streamflow
+Winter = apply.yearly(langIm[.indexmon(langIm) %in% c(3:8)], "sum", na.rm=F)   
+Winter$Year <- format(index(Winter),"%Y")
+Winter <- as.data.frame(Winter)
+Winter$Season <- "Winter"
+if (length(which(Winter$Year == format(Sys.time(), "%Y")))>1) {
+if (format(Sys.time(), "%m")<10) {Winter <- Winter[-which(Winter$Year == format(Sys.time(), "%Y")),]}} #Drop current year if "winter" period is not complete
+
+#Highlight driest summers and winters
+Winter$Season[which(Winter$Streamflow.Volume < quantile(Winter$Streamflow.Volume, 0.1, na.rm = T))] <- "Winter (lowest 10%)"
+Summer$Season <- as.character(Summer$Season)
+Summer$Season[which(Summer$Streamflow.Volume < quantile(Summer$Streamflow.Volume, 0.1, na.rm = T))] <- "Summer (lowest 10%)"
+
+#Combine summer and winter streamflow
+sdat <- rbind(Winter, Summer)
+#sdat$Year <- as.factor(sdat$Year)
+
+#Make plot
+as <- ggplot(sdat, aes(Year, y = Streamflow.Volume, fill=as.factor(Season))) + 
+  geom_bar(stat="identity") +
+  scale_x_continuous(limits = c(1960, NA), breaks = seq(1960, max(sdat$Year)+5, 5)) +
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
+  ylab(bquote("Streamflow (ML)")) +
+  geom_hline(yintercept = mean(langIa, na.rm = T)) +
+#  geom_vline(xintercept = 47.5, linetype=3) +
+  annotate("text", x = 5, y = mean(langIa, na.rm = T) + 400, label = "Average") +
+  annotate("text", x = 55, y = 4000, angle=90, label = "*") +
+  scale_fill_manual(name="",values=c("#D6604D", "goldenrod1", "#4393C3", "slateblue4"))
+#+
+#  scale_x_date (date_labels = "%Y", date_breaks = "10 years", limits = c(as.Date("1960-01-01"), as.Date("2020-01-01")), expand = c(0,0))
+
+#pdf("/Users/jasper/GIT/Jonkershoek/Output/dwarsberg_annual_streamflow2016.pdf", height = 5, width = 12)
+#as
+#dev.off()
+
+#png("/Users/jasper/GIT/Jonkershoek/Output/dwarsberg_annual_streamflow2016.png", height = 5, width = 12, units = "in", res=600)
+#as
+#dev.off()
+
+
+###Fetch weather data
+
+#Historical data from Cape Nature 17B
+cn <- read_excel("Weatherdata/Monthly high elevation rainfall_Cape Nature.xls", sheet = 4, skip = 1)
+mcn <- melt(cn[,1:13], id = "Year")
+mcn$Date <- as.Date(paste0(mcn$Year, "-", as.numeric(mcn$variable), "-01"), format = "%Y-%m-%d", tz="Africa/Johannesburg")
+dbgH <- xts(mcn$value, order.by = mcn$Date)
+
+#dbgH <- read.csv("Weatherdata/Dwarsberg rainfall data_Jasper/Historic Dwarsberg rainfall 2_Allsopp2015.csv")
+#dbgH$Comment <- rep("", nrow(dbgH))
+#dbgH$Date <- strptime(substr(dbgH$Date, 1, 10), format = "%Y-%m-%d")#, tz="Africa/Johannesburg")
+#dbgH <- xts(dbgH$Value, order.by = dbgH$Date)
+
+#New
+dbgHrs <- read.csv("Weatherdata/Dwarsberg rainfall data_Jasper/Dwarsberg hourly rainfall.csv")
+x <- gsub("T", " ", dbgHrs$Date)
+x <- gsub("+02:00", "", x, fixed=T)
+x <- gsub(".000", "", x, fixed=T)
+dbgHrs$Date <- strptime(x, format = "%Y-%m-%d %H:%M:%S")#, tz="Africa/Johannesburg")
+dbgHrs <- xts(dbgHrs$DataValue, order.by = dbgHrs$Date)
+dbgN <- apply.monthly(dbgHrs, "sum", na.rm=F)
+index(dbgN) <- as.Date(paste0(substr(index(dbgN), 1, 7), "-01"), format = "%Y-%m-%d")
+
+#Bind data
+dbgm <- c(dbgH["/2013-02-01"], dbgN)
+names(dbgm) <- "Summed.rainfall"
+# dbg <- rbind(dbgH, dbgN)
+# x <- substr(dbg$Date, 1, 10)
+# #x <- gsub("T", " ", dbg$Date)
+# #x <- gsub("+02:00", "", x, fixed=T)
+# #dbg$Date <- strptime(x, format = "%Y-%m-%d %H:%M:%S", tz="Africa/Johannesburg")
+# dbg$Date <- strptime(x, format = "%Y-%m-%d", tz="Africa/Johannesburg")
+# dbg <- xts(dbg$Value, order.by = dbg$Date)
+# #dbg <- merge(dbg, timeBasedSeq(paste("1991-09-01", end(dbg), sep="::"))) #Fill in missing dates (with NA)
+# #dbg <- na.approx(dbg, maxgap=720) #interpolate missing values (up to a day)
+# tzone(dbg) <- "Africa/Johannesburg"
+
+#Calculate monthly and annual summaries
+dbgm <- dbgm[-nrow(dbgm),] #Drop last current (incomplete) month
+dbga <- apply.yearly(dbgm, "sum", na.rm=F)
+dbga <- dbga[-nrow(dbga),] #Drop last current (incomplete) year
+
+#Make summaries for barplot
+xR <- tbl_df(data.frame(Rainfall = dbgm[,1], Date = time(dbgm)))
+sumsR <- summarise(group_by(xR, months(Date, abbreviate=T)), mean(Summed.rainfall, na.rm=T))
+colnames(sumsR) <- c("Month", "Rainfall")
+sumsR$Month <- as.factor(sumsR$Month)
+sumsR$Month <- reorder(sumsR$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,9,7,6,2,12,11,10,3)) 
+sumsR <- sumsR[order(sumsR$Month),]
+
+#summarise(group_by(xR, months(Date, abbreviate=T)), min(Summed.rainfall, na.rm=T))
+#Minimum by month
+#test <- subset(xR, months(Date, abbreviate=T) == "Jul") #Select a month
+#test[order(test$Summed.rainfall),]
+
+#test <- subset(xR, months(Date, abbreviate=T) %in% month.abb) #Select a month
+#test[order(test$Summed.rainfall),]
+
+#Calculate confidence intervals
+sds <- summarise(group_by(xR, months(Date, abbreviate=T)), sd(Summed.rainfall, na.rm=T)) #Standard deviation
+colnames(sds) <- c("Month", "Summed.rainfall")
+sds$Month <- as.factor(sds$Month)
+sds$Month <- reorder(sds$Month, c(4,8,12,2,1,7,6,3,5,11,10,9)) #c(5,4,8,1,9,7,6,2,12,11,10,3)
+sds <- sds[order(sds$Month),]
+sumsR$RainfallCI <- (sds$Summed.rainfall / sqrt(nrow(xR)/12)) *qt(0.975/2 + .5, sqrt(nrow(xR)/12-1)) #convert to standard error and then confidence interval
+
+#Calculate cumulative rainfall
+m2015 <- data.frame(Month = levels(sumsR$Month), Rainfall = as.numeric(dbgm["2015"]), RainfallCI = NA) # All months in 2015  
+
+m2016 <- as.numeric(dbgm["2016"])
+m2016 <- data.frame(Month = levels(sumsR$Month)[1:length(m2016)], Rainfall = m2016, RainfallCI = NA) # All months in 2016
+m2017 <- as.numeric(dbgm["2017"])
+m2017 <- data.frame(Month = levels(sumsR$Month)[1:length(m2017)], Rainfall = m2017, RainfallCI = NA) # All months in 2017
+m2018 <- as.numeric(dbgm["2018"])
+m2018 <- data.frame(Month = levels(sumsR$Month)[1:length(m2018)], Rainfall = m2018, RainfallCI = NA) # All months in 2018
+m2019 <- as.numeric(dbgm["2019"])
+m2019 <- data.frame(Month = levels(sumsR$Month)[1:length(m2019)], Rainfall = m2019, RainfallCI = NA) # All months in 2019
+m2020 <- as.numeric(dbgm["2020"])
+m2020 <- data.frame(Month = levels(sumsR$Month)[1:length(m2020)], Rainfall = m2020, RainfallCI = NA) # All months in 2019
+
+
+sumsR$Cumulative_Rainfall <- cumsum(sumsR$Rainfall)
+m2015$Cumulative_Rainfall <- cumsum(m2015$Rainfall)
+m2016$Cumulative_Rainfall <- cumsum(m2016$Rainfall)
+m2017$Cumulative_Rainfall <- cumsum(m2017$Rainfall)
+m2018$Cumulative_Rainfall <- cumsum(m2018$Rainfall)
+m2019$Cumulative_Rainfall <- cumsum(m2019$Rainfall)
+m2020$Cumulative_Rainfall <- cumsum(m2020$Rainfall)
+
+monthvalsR <- rbind(sumsR, m2015, m2016, m2017, m2018, m2019, m2020) 
+monthvalsR$Time <- c(rep("Mean (1945 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)), rep("2018", nrow(m2018)), rep("2019", nrow(m2019)), rep("2020", nrow(m2020)))
+monthvalsR$Missing <- ""
+monthvalsR$Missing[which(monthvalsR$Time==2015 & monthvalsR$Month %in% c("May", "Jun", "Jul"))] <- "*"
+
+
+#Calculate annual summer and winter rainfall
+#Calculate Summer rainfall
+Summer1 = apply.yearly(dbgm[.indexmon(dbgm) %in% 9:11], "sum", na.rm=F)  # last summer months for all years (note zero-based indexing!)
+Summer2 = apply.yearly(dbgm[.indexmon(dbgm) %in% 0:2], "sum", na.rm=F)  # Summer months for all years (note zero-based indexing!)
+Summer1$Year <- format(index(Summer1),"%Y")
+Summer2$Year <- format(index(Summer2),"%Y")
+Summer2$Year <- Summer2$Year - 1
+names(Summer1)[1] <- "Rain"
+Hmm <- merge(as.data.frame(Summer1), as.data.frame(Summer2))
+Summer <- data.frame(Year = Hmm$Year, Summed.rainfall = rowSums(Hmm[,2:3]), Season = "Summer")
+
+#Calculate Winter rainfall
+Winter = apply.yearly(dbgm[.indexmon(dbgm) %in% c(3:8)], "sum", na.rm=F)   
+Winter$Year <- format(index(Winter),"%Y")
+Winter <- as.data.frame(Winter)
+Winter$Season <- "Winter"
+if (length(which(Winter$Year == format(Sys.time(), "%Y")))>1) {
+if (format(Sys.time(), "%m")<10) {Winter <- Winter[-which(Winter$Year == format(Sys.time(), "%Y")),]}} #Drop current year if "winter" period is not complete
+
+#Highlight driest summers and winters
+Winter$Season[which(Winter$Summed.rainfall < quantile(Winter$Summed.rainfall, 0.1))] <- "Winter (lowest 10%)"
+Summer$Season <- as.character(Summer$Season)
+Summer$Season[which(Summer$Summed.rainfall < quantile(Summer$Summed.rainfall, 0.1, na.rm = T))] <- "Summer (lowest 10%)"
+
+#Combine summer and winter rainfall
+dat <- rbind(Winter, Summer)
+#dat$Year <- as.factor(dat$Year)
+
+ar <- ggplot(dat, aes(Year, y = Summed.rainfall, fill=as.factor(Season))) + 
+  geom_bar(stat="identity") +
+  scale_x_continuous(limits = c(1960, NA), breaks = seq(1960, max(sdat$Year)+5, 5)) +
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +
+  ylab(bquote("Rainfall (mm)")) +
+  geom_hline(yintercept = mean(dbga, na.rm = T)) +
+  geom_vline(xintercept = 47.5, linetype=3) +
+  geom_vline(xintercept = 68.5, linetype=3) +
+  annotate("text", x = 4, y = mean(dbga, na.rm = T) + 200, label = "Average") +
+  annotate("text", x = (47+68)/2, y = -100, angle=0, label = "Volunteer data (1992-2013)") +
+  scale_fill_manual(name="",values=c("#D6604D", "goldenrod1", "#4393C3", "slateblue4")) 
+
+#pdf("/Users/jasper/GIT/Jonkershoek/Output/dwarsberg_annual_rainfall2016.pdf", height = 5, width = 12)
+#ar
+#dev.off()
+
+#png("/Users/jasper/GIT/Jonkershoek/Output/dwarsberg_annual_rainfall2016.png", height = 5, width = 12, units = "in", res=600)
+#ar
+#dev.off()
+
+#write.csv(as.data.frame(dbgm), "/Users/jasper/Dropbox/Public/DwarsbergMonthlyRainfallSept2018.csv", row.names = T)
+#write.csv(as.data.frame(langIm), "/Users/jasper/Dropbox/Public/LangrivierMonthlyStreamflowSept2018.csv")
+
+```
+
+***
+
+## Streamflow record
+
+***
+
+
+Here are the recent monthly streamflow values for Langrivier relative to averages across the entire time period (1961 to current).
+
+```{r, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
+g <- ggplot(monthvals, aes(Month, Streamflow, fill=Time), na.rm=TRUE) +
+geom_bar(stat="identity", position="dodge", na.rm=TRUE) + scale_fill_manual(values = c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000","darkgrey")) + 
+  #c(wes_palette("Zissou1", 6, type = "continuous"), "darkgrey")) 
+ggtitle("Monthly Streamflow") + ylab(bquote("Streamflow (ML)")) +
+geom_errorbar(aes(ymin=Streamflow-StreamflowCI, ymax=Streamflow+StreamflowCI), width=.2, position=position_dodge(.9), na.rm =T)
+
+g
+```
+
+Black error bars around the mean (grey column) indicate 95% confidence intervals. Monthly values lower than the lower bar are among the lowest 5% of recorded flows for that month. Note that missing months (e.g. October-November 2015) are those that overlap a data gap of over 30 days.
+
+
+We can also view this cumulatively:
+
+
+```{r, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
+monthvalsNA <- monthvals[!is.na(monthvals$Streamflow),]
+
+ggplot(monthvalsNA, aes(x = Month, y = Cumulative_Streamflow, colour=Time)) + geom_point() + scale_colour_manual(values = c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000","darkgrey")) + 
+  #c(wes_palette("Zissou1", 6, type = "continuous"), "darkgrey")) +
+  ylab(bquote("Cumulative Streamflow (ML)"))
+```
+
+
+Or compare across all years on record:
+
+
+```{r, echo = F, fig.align="center", message=FALSE, warning=FALSE, fig.width=8, fig.height=4}
+as
+```
+
+
+Note that the latest season is not yet complete. We just indicate it for reference. "Summer" denotes the Austral summer (here defined as October - March), overlapping 2 years. In this figure we have lumped summers by the preceding year, e.g. summer 2016 represents the period October 2016 to March 2017, which incidentally was the driest summer on record in terms of streamflow.
+
+*Data for October - December from the summer of 2015/2016 are missing due to vandalism of the weir, but January - March 2016 was among the lowest 10% of flows for that period, suggesting that 2015 was likely the driest year on record. Of those with complete data, 2003 was the driest year, followed by 1974.
+
+```{r, echo=FALSE}
+#The following dynamic figures illustrate the mean monthly stream flow. You can hover over a piece of the time series to get the date and streamflow value, and adjust and zoom the window of interest by sliding the toggles in the bar at the bottom of each figure. Note the historical data (pre September 2011) has been infilled previously, but we still need to ascertain where the gaps were and what method was used.
+```
+
+```{r, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
+# dygraph(langIm, ylab = "Streamflow (ML)", xlab = "Date", main = "Langrivier Monthly Streamflow")  %>% 
+#   dyRangeSelector() %>%
+#   dyLimit(mean(langIm, na.rm=T), label = "Mean", labelLoc = "left", color = "black", strokePattern = "dashed") %>%
+#   dyLimit(min(mmeans[,2]), labelLoc = "left", color = "#D6604D", strokePattern = "dashed", label = "Mean Flow of Driest Month") %>%
+#   dyLimit(max(mmeans[,2]), labelLoc = "left", color = "#4393C3", strokePattern = "dashed", label = "Mean Flow of Wettest Month")  %>%
+#   dyShading(from = beginom, to = endom)
+```
+
+
+```{r, echo=FALSE, fig.align="center"}
+#dygraph(langIa, ylab = "Streamflow (ML)", xlab = "Date", main = "Langrivier Annual Streamflow")  %>% 
+#  dyRangeSelector() %>%
+#  dyLimit(mean(langIa, na.rm=T), label = "Mean", labelLoc = "left", color = "black", strokePattern = "dashed")
+
+```
+
+<br>
+
+***
+
+## Rainfall Record
+
+***
+
+Here are the recent monthly rainfall values relative to averages across the entire time period (1945 to current):
+
+```{r, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
+g <- ggplot(monthvalsR, aes(Month, Rainfall, fill=Time))
+g <- g + geom_bar(stat="identity", position="dodge") + scale_fill_manual(values = #c(wes_palette("Zissou1", 6, type = "continuous"), "darkgrey")) +  
+  c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000", "darkgrey")) + 
+  ggtitle("Monthly Rainfall") + ylab("Rainfall (mm)") + geom_text(data=monthvalsR, aes(label=Missing), vjust=0, hjust=1) +
+  geom_errorbar(aes(ymin=Rainfall-RainfallCI, ymax=Rainfall+RainfallCI), width=.2, position=position_dodge(.9), na.rm =T)
+
+g
+```
+
+Black error bars around the mean (grey column) indicate 95% confidence intervals. Monthly values lower than the lower bar are among the lowest 5% of recorded flows for that month.
+
+*Indicates that these months were missing data in 2015 due to power supply problems.
+
+<br>
+
+And if we view this cumulatively:
+
+
+```{r, echo=FALSE, fig.align="center"}
+ggplot(monthvalsR, aes(x = Month, y = Cumulative_Rainfall, colour=Time)) + 
+  geom_point() + scale_colour_manual(values = 
+  #c(wes_palette("Zissou1", 6, type = "continuous"), "darkgrey")) +
+  c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000", "darkgrey")) + 
+  ylab(bquote("Cumulative Rainfall (mm)"))
+```
+
+
+Or compare across all years on record:
+
+
+```{r, echo = F, fig.align="center", message=FALSE, warning=FALSE, fig.width=8, fig.height=4}
+ar
+```
+
+
+So 2015 and 2016 have been the lowest rainfall years on record, while 2017 and 2014 were not far behind... Note that data for the period 1992-2013 were collected by volunteers and were not necessarily collected on the first of the month or every month, creating issues in the split between years and between summer vs winter data. This appears to be more of an issue in the 2000s. Nevertheless, the low rainfall reported for 2000-2004 does coincide with a period of low streamflow.
+
+
+```{r, echo=FALSE, fig.align="center"}
+#Or dynamically:
+  
+# dygraph(dbgm, ylab = "Rainfall (mm)", xlab = "Date", main = "Monthly Rainfall record for Dwarsberg")  %>% 
+# dyRangeSelector() %>%
+# dyLimit(mean(dbgm, na.rm=T), label = "Mean", labelLoc = "left", color = "black", strokePattern = "dashed") %>%
+# dyShading(from = "1991-09-01", to = "2013-03-03")
+```
+
+<br>
+
+Note the frequent "zero-rainfall" months in the period 2000 to 2013, likely because the volunteers who collected the data were not able to visit the rain gauge in those months. The gauge can collect >1000mm before overflowing, so this is unlikely to have been a problem for rainfall totals.
+
+<br>
+
+***
+
+## Streamflow ~ Rainfall
+
+***
+
+There have been various calls for some sort of indication as to how streamflow responds to rainfall. We all want to know how much it needs to rain to fill the dams. While we don't have a fully coupled atmosphere-hydrological model on hand, and we're still reading up on the most appropriate time-series modelling approach (especially considering the data gaps...), here're some quick and dirty indicators based on the periods of overlapping streamflow and rainfall data (1961 - 1991, 2013 - 2018).
+
+Firstly, cumulative monthly streamflow as a function of monthly rainfall:
+
+```{r, echo=F, fig.align="center", message=FALSE, warning=FALSE}
+###Old code for annual record - ignore for now
+#dygraph(dbga, ylab = "Rainfall (mm)", xlab = "Date", main = "Annual Rainfall record for Dwarsberg")  %>% 
+#dyRangeSelector() %>%
+#dyLimit(mean(dbga, na.rm=T), label = "Mean", labelLoc = "left", color = "black", strokePattern = "dashed") %>%
+#dyShading(from = "1991-09-01", to = "2013-03-03")
+
+rainm <- to.monthly(dbgm)
+streamm <- to.monthly(langIm)
+rscomp <- na.omit(merge(rainm, streamm))
+
+rscomp <- data.frame(Rainfall = as.numeric(rscomp$dbgm.Open), 
+                    Streamflow = as.numeric(rscomp$langIm.Volume), 
+                    Month = factor(months(index(rscomp)), levels = month.name), 
+                    Year = year(index(rscomp)))
+
+ggplot(rscomp, aes(x = Rainfall, y = Streamflow, colour=Month)) + 
+  geom_point() + 
+  facet_wrap(facets = ~Month) + 
+  ylab(bquote("Streamflow (ML)")) +
+  xlab(bquote("Rainfall (mm)"))
+```
+
+<br>
+
+While it looks messy, one clear pattern is that a rainfall event in a winter month typically results in greater streamflow than a similar sized event in a summer month. This is especially evident if you compare large rainfall events in late summer/autumn (March, April, May) with those in winter (June, July, August). This is not surprising and likely a result of accumulated soil moisture (or lack thereof) throughout the season, while lower evapotranspiration in winter will also be coming into play.
+
+What does this look like if we aggregate months by season (following the Summer = October to March, Winter = April to September approach from above).
+
+
+```{r, echo=F, fig.align="center", message=FALSE, warning=FALSE}
+dat$Season[which(dat$Season == "Winter (lowest 10%)")] <- "Winter"
+dat$Season[which(dat$Season == "Summer (lowest 10%)")] <- "Summer"
+
+sdat$Season[which(sdat$Season == "Winter (lowest 10%)")] <- "Winter"
+sdat$Season[which(sdat$Season == "Summer (lowest 10%)")] <- "Summer"
+
+rsdat <- merge(dat, sdat)
+colnames(rsdat)[3:4] <- c("Rainfall", "Streamflow")
+
+ggplot(rsdat, aes(x = Rainfall, y = Streamflow, colour=Season)) + 
+  geom_point() +
+  xlim(0, NA) + 
+  ylim(0, NA) + 
+  ylab(bquote("Streamflow (ML)")) +
+  xlab(bquote("Rainfall (mm)"))
+```
+
+The trend shows an inflection reflecting in increase in streamflow for a given unit of rainfall as the total amount of rainfall increases. This could relate to seasonal soil moisture accumulation, but may also relate to groundwater deficit over longer periods.
+
+<br>
+
+***
+
+## Soil Moisture!!!
+
+***
+
+Here we present soil moisture data from soil moisture probes at three different depths (10, 20 and 30cm) at Dwarsberg from 2013 to current. Data are presented as Volumetric Water Content (VWC) converted to percentage.
+
+```{r, echo=F, fig.align="center", message=FALSE, warning=FALSE}
+###Get soil moisture data
+fls <- list.files("/home/jasper/Dropbox/Shared/Jonkershoek Weather and Streamflow/Soil moisture/", pattern = "Dwarsberg hourly VWC", full.names = T)
+
+fls <- lapply(fls, read.csv, header = T)
+
+###Fix date
+fixdate <- function(x){
+y <- gsub("T", " ", x$Date)
+y <- gsub("+02:00", "", y, fixed=T)
+y <- gsub(".000", "", y, fixed=T)
+x$Date <- as.POSIXct(strptime(y, format = "%Y-%m-%d %H:%M:%S", tz="Africa/Johannesburg"))
+return(x)
+}
+
+fls <- lapply(fls, fixdate)
+
+###Add depth column
+fls[[1]]$Depth <- -10
+fls[[2]]$Depth <- -30
+fls[[3]]$Depth <- -30
+fls[[4]]$Depth <- -20
+fls[[5]]$Depth <- -20
+fls[[6]]$Depth <- -10
+
+###Extract from list into one data.frame
+dat <- do.call(rbind, fls)
+dat$Year <- substr(dat$Date,1,4)
+dat$DayOfYear <- yday(dat$Date)
+
+###Plot
+
+brewer.div <- colorRampPalette(brewer.pal(11, "Spectral"), interpolate = "spline")
+
+pg <- ggplot(dat, aes(DayOfYear, Depth, fill = Value)) +
+  geom_tile() + 
+  scale_fill_gradientn("Value", colours = brewer.div(200),
+                       guide = guide_legend(title = "VWC (%)")) +
+  facet_grid(rows = vars(Year))
+
+pg
+```
+
+Notice the late onset of wetter soils in 2015 and 2017, and early drying in 2015 and 2016. 
+
+We hope to add an analysis of monthly streamflow received for a given rainfall and soil moisture for this period soon, but that will have to wait for now. Another thing to think about is including evapotranspiration...
+
+```{r, echo = F}
+# 
+# # ###Streamflow
+# # smon <- as.data.frame(langIm)
+# # smon$Year <- substr(rownames(smon),1,4)
+# # smon$Month <- as.numeric(substr(rownames(smon),6,7))
+# # 
+# # ###Rainfall
+# # rmon <- as.data.frame(dbgm)
+# # rmon$Year <- substr(rownames(rmon),1,4)
+# # rmon$Month <- as.numeric(substr(rownames(rmon),6,7))
+# 
+# 
+# ###Merge daily rainfall and streamflow
+# dbgD <- apply.daily(dbgHrs, "sum", na.rm=F)
+# 
+# rs <- na.omit(merge(dbgD, langId))
+# 
+# rs <- data.frame(Rainfall = as.numeric(rs$dbgD), 
+#                     Streamflow = as.numeric(rs$Streamflow.Volume),
+#                     Day = as.Date(index(rs)))
+# 
+# #                    Month = factor(months(index(rs)), levels = month.name), 
+# #                    Year = year(index(rs)))
+# 
+# ###Soil moisture
+# #dat$Month <- month(dat$Date)
+# dat$Day <- as.Date(dat$Date)
+# soil10 <- dat %>% group_by(Day) %>% summarise(VWC = mean(Value))
+# #soil10 <- dat %>% group_by(Day, Depth) %>% summarise(VWC = mean(Value)) %>% filter(Depth == -30)
+# #soil10$Year <- as.numeric(soil10$Year)
+# soil10_yesterday <- soil10
+# soil10_yesterday$Day <- soil10_yesterday$Day + 1
+# names(soil10_yesterday)[2] <- "VWCyesterday"
+# 
+# ###Merge all
+# wdat <- inner_join(soil10, rs)
+# wdat <- inner_join(soil10_yesterday, wdat)
+# wdat$Year <- year(wdat$Day)
+# 
+# # streamfow ~ rainfall + (soil moisture - 1) #monthly
+# 
+# rwdat <- wdat[-which(wdat$Rainfall==0),]
+# nrwdat <- wdat[-which(wdat$Rainfall>0),]
+# 
+# ggplot(rwdat, aes(x = Rainfall, y = Streamflow, colour=VWCyesterday)) + geom_point() +  
+#   scale_colour_gradientn(colours = brewer.div(200),
+#                        guide = guide_legend(title = "VWC (%)")) +
+#   #scale_colour_gradient2(low = "#132B43", mid = "white", high = "#56B1F7") + 
+#   ylab(bquote("Streamflow (ML)")) +
+#   xlab(bquote("Rainfall (mm)")) +
+#   facet_wrap(~Year) +
+#   geom_smooth(method = "lm")
+# 
+# # library(plotly)
+# # 
+# # p <- plot_ly(wdat, x = ~VWC, y = ~Rainfall, z = ~Streamflow) %>% #, color = ~am, colors = c('#BF382A', '#0C4B8E')
+# #   layout(xaxis = list(autorange = "reversed")) %>%
+# #   add_markers() %>%
+# #   layout(scene = list(xaxis = list(title = 'Soil Water Content'),
+# #                      yaxis = list(title = 'Rainfall'),
+# #                      zaxis = list(title = 'Streamflow')))
+# # 
+# # p
+```
+
+
+Feel free to post comments/suggestions below!
+
+***
+
+If you spot any issues, have any queries, or would like to use or cite these data please contact us.
+
+***
