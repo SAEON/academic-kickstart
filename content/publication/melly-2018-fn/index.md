@@ -4,7 +4,7 @@ date: 2018-01-01
 publishDate: 2020-04-22T20:43:46.490154Z
 authors: ["B L Melly", "P T Gama", "D M Schael"]
 publication_types: ["2"]
-abstract: "This study establishes whether analysing the distribution patterns of wetlands could identify key systems that would focus conservation and management decisions, without site-specific data which requires significant logistical and financial resources. In the proposed approach …"
+abstract: "[Access the paper here.](https://link.springer.com/article/10.1007/s11273-018-9626-7) This study establishes whether analysing the distribution patterns of wetlands could identify key systems that would focus conservation and management decisions, without site-specific data which requires significant logistical and financial resources. In the proposed approach …"
 featured: false
 publication: "*Wetlands Ecol. Manage.*"
 tags: ["hydrology", "conservation", "land-use management"]

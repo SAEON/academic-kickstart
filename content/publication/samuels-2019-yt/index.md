@@ -4,7 +4,7 @@ date: 2019-01-01
 publishDate: 2020-04-22T20:43:46.517434Z
 authors: ["M I Samuels", "N Allsopp", "M T Hoffman"]
 publication_types: ["2"]
-abstract: "Pastoral systems are regarded as complex social-ecological systems with components that interact and change over a range of spatial and temporal scales. As such, herd mobility has traditionally been used to respond to the dynamic nature of these systems. However, mobile …"
+abstract: "[Access the paper here.](https://doi.org/10.1016/j.rama.2018.08.005) Pastoral systems are regarded as complex social-ecological systems with components that interact and change over a range of spatial and temporal scales. As such, herd mobility has traditionally been used to respond to the dynamic nature of these systems. However, mobile …"
 featured: false
 publication: "*Rangeland Ecol. Manage.*"
 ---
