@@ -6,6 +6,7 @@ slug: flair
 categories: []
 tags:
   - ecology
+  - ecophysiology
 subtitle: ''
 summary: 'Developing robust mechanistic frameworks of plant response to the environment'
 authors: [rob]

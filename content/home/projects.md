@@ -26,11 +26,7 @@ subtitle = ""
    [[content.filter_button]]
      name = "All"
      tag = "*"
-  
-   [[content.filter_button]]
-     name = "Dashboards"
-     tag = "dashboards"
-     
+
    [[content.filter_button]]
      name = "Hydrology"
      tag = "hydrology"
