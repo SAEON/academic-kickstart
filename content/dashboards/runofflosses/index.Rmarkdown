@@ -15,7 +15,7 @@ authors: [glenn]
 lastmod: '2020-05-03T20:50:15+02:00'
 featured: yes
 image:
-  caption: ''
+  caption: 'Photo by Donavan Kirkwood'
   focal_point: ''
   preview_only: no
 projects: []

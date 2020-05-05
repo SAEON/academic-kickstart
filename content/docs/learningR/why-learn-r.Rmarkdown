@@ -12,8 +12,7 @@ toc: yes
 type: docs
 menu:
   docs:
-    learningR:
-      name:
+    parent: R basics
     weight: 10
 ---
 
