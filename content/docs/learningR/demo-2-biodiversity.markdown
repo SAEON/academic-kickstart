@@ -3,6 +3,7 @@ title: 'R Intro 2: Biodiversity'
 author: jasper
 date: '2020-05-01'
 slug: r-intro-2-biodiversity
+authors: [jasper]
 categories: []
 tags:
   - biodiversity
@@ -33,7 +34,7 @@ library(tidyverse)
 ```
 
 ```
-## ── Attaching packages ──────────────────────────────────────── tidyverse 1.2.1 ──
+## ── Attaching packages ───────────────────────────────────────── tidyverse 1.2.1 ──
 ```
 
 ```
@@ -44,7 +45,7 @@ library(tidyverse)
 ```
 
 ```
-## ── Conflicts ─────────────────────────────────────────── tidyverse_conflicts() ──
+## ── Conflicts ──────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()
 ```

@@ -3,6 +3,7 @@ title: 'R Intro 1: Weather Data'
 author: jasper
 date: '2020-05-01'
 slug: demo-1-weather
+authors: [jasper]
 categories: []
 tags: ["R-tutorial", "Cape Peninsula", "data", "climate"]
 linktitle: R Intro 1
@@ -191,7 +192,7 @@ library(tidyverse)
 ```
 
 ```
-## ── Attaching packages ──────────────────────────────────────── tidyverse 1.2.1 ──
+## ── Attaching packages ───────────────────────────────────────── tidyverse 1.2.1 ──
 ```
 
 ```
@@ -202,7 +203,7 @@ library(tidyverse)
 ```
 
 ```
-## ── Conflicts ─────────────────────────────────────────── tidyverse_conflicts() ──
+## ── Conflicts ──────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()
 ```

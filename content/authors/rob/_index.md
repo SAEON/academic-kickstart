@@ -10,7 +10,7 @@ authors:
 superuser: false
 
 # Role/position
-role: Postdoctoral Fellow
+role: Research Fellow
 
 # Organizations/Affiliations
 organizations:
@@ -65,7 +65,7 @@ email: ""
 # Organizational groups that you belong to (for People widget)
 #   Set this to `[]` or comment out if you are not using People widget.
 user_groups:
- - Postdocs
+ - Postdocs and Fellows
 # - Staff
 # - Researchers
 # - Visitors

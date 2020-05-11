@@ -10,7 +10,7 @@ authors:
 superuser: false
 
 # Role/position
-role: Postdoctoral Fellow
+role: Research Fellow
 
 # Organizations/Affiliations
 organizations:
@@ -65,12 +65,12 @@ email: ""
 # Organizational groups that you belong to (for People widget)
 #   Set this to `[]` or comment out if you are not using People widget.
 user_groups:
- - Postdocs
+ - Postdocs and Fellows
 # - Staff
 # - Researchers
 # - Visitors
 ---
 
-I'm a post-doctoral researcher with a focus on catchment hydrology and modelling. My interests are wide and I love looking at the flows and cycles of nature and how humans interact with them. I've been slowly flowing down the African coast myself and have reached the southern tip, the Fynbos! I started work as a researcher while in Kenya, where I measured carbon stocks and growth in vegetation and soils of various forest types. I continued tree-hugging, carbon cycling work in the eThekwini Municipality Environmental Management Department, where I was also involved in river health programmes. This inspired me to do post-graduate studies in hydrology and hydrologic modelling. My dissertation research took me to the Baviaanskloof catchment in the Eastern Cape where I used monitoring and modelling to explore the likely impacts of vegetation and river channel restoration on streamflow and groundwater supplies. At the SAEON Fynbos node I am using field monitoring data to improve modelling of catchment processes and using data and models to look at the impacts of land management and climate change on water resources in various catchments. Check out the HydroMIP project for info on some of my work.
+I'm a research fellow with a focus on catchment hydrology and modelling. My interests are wide and I love looking at the flows and cycles of nature and how humans interact with them. I've been slowly flowing down the African coast myself and have reached the southern tip, the Fynbos! I started work as a researcher while in Kenya, where I measured carbon stocks and growth in vegetation and soils of various forest types. I continued tree-hugging, carbon cycling work in the eThekwini Municipality Environmental Management Department, where I was also involved in river health programmes. This inspired me to do post-graduate studies in hydrology and hydrologic modelling. My dissertation research took me to the Baviaanskloof catchment in the Eastern Cape where I used monitoring and modelling to explore the likely impacts of vegetation and river channel restoration on streamflow and groundwater supplies. At the SAEON Fynbos node I am using field monitoring data to improve modelling of catchment processes and using data and models to look at the impacts of land management and climate change on water resources in various catchments. Check out the HydroMIP project for info on some of my work.
 
 I love being outdoors, climbing mountains and trees, swimming in rivers and seas. If I'm not crunching numbers, that's where I'll be.

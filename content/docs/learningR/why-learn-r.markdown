@@ -1,8 +1,9 @@
 ---
-title:
+title: Why Learn R?
 author: jasper
 date: '2020-04-19'
 slug: why-learn-r
+authors: [jasper]
 categories: []
 tags: ["R-tutorial"]
 linktitle: Why Learn R?
@@ -15,8 +16,6 @@ menu:
     parent: R basics
     weight: 10
 ---
-
-## Why Learn R?
 
 If you've opened this post, you're clearly interested in learning R and probably don't need much convincing, but I'll provide a few quick reminders just to keep your morale up. If your morale is pretty good, feel free to jump to the sections where I explain **How** best to learn R (including installation), and **Where** to find good resources.
 
