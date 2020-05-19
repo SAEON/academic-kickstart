@@ -75,4 +75,3 @@ SAEON is countrywide, with "Nodes" encompassing the major terrestrial, coastal a
 
 SAEON works in collaboration with government agencies, universities, research institutions, industrial partners and civil society.
 
-# Link to [our science]
