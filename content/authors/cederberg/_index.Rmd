@@ -1,0 +1,59 @@
+---
+title: "Cederberg"
+bio: On the dry edge of the Fynbos Biome, the Cederberg offers the opportunity to explore the implications of a drier future for the biome.
+data: null
+education outreach:
+  courses:
+  - course: stuff
+    institution: stuff
+    year: 2019
+email: ''
+organizations:
+- name: South African Environmental Observation Network
+  url: www.saeon.ac.za
+research: null
+role: null
+superuser: no
+authors: cederberg
+user_groups: Satellite study sites
+tags: 
+- Cederberg
+---
+
+On the dry edge of the Fynbos Biome, the Cederberg offers the opportunity to explore the implications of a drier future for the biome. 
+
+The blue dots in the map below indicate the locations of our weather monitoring equipment in the reserve. Hover over each dot for details of the variables being collected.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+#library(rgdal)
+#library(sp)
+#library(rgeos)
+library(leaflet)
+library(htmltools)
+
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+name = c("Sneeukop hut rain gauge <br/> (Hourly Rainfall and Temperature)",	"Engelsmanskloof weather station <br/> (Hourly Rainfall, Temperature, RH, Wind, Solar Rad)", "Sneeuberg rain gauge <br/> (Hourly Rainfall and Temperature)")
+
+out <- data.frame(lat = c(-32.34862845,	-32.35355187,	-32.48524612), lon = c(19.17024213, 19.15030551, 19.16132639))
+
+#offering <- c("Hourly Rainfall and Temperature", "Hourly Rainfall, Temperature, RH, Wind, Solar Rad", 	"Hourly Rainfall and Temperature")
+
+###Plot the map
+leaflet(data = out) %>%
+  addTiles(group = "Default") %>%  # Add default OpenStreetMap map tiles
+# addProviderTiles(provider = "Esri.WorldImagery", group = "Satellite") %>%
+# addProviderTiles(provider = "Esri.WorldTopoMap", group = "Topo") %>%
+  addCircleMarkers(label = 
+                  lapply(name, HTML), 
+                  radius = 3) #%>%
+#   addLayersControl(
+#    baseGroups = c("Default", "Satellite", "Topo"),
+#    options = layersControlOptions(collapsed = FALSE)) %>%
+#  hideGroup(c("Default", "Satellite"))
+
+```
