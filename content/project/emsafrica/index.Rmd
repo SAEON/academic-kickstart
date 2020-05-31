@@ -19,6 +19,11 @@ image:
   focal_point: ''
   preview_only: no
 projects: []
+links:
+  - icon_pack: fab
+    icon: twitter
+    name: Follow
+    url: 'https://twitter.com/EMSAfrica'
 ---
 
 EMSAfrica is a collaborative research project between South Africa and Germany, bringing together different scientific disciplines and approaches to understand the impacts of land-use and climate change on the structure and function of South African terrestrial ecosystems. The data and products are used to develop and test models and produce information relevant to ecosystem management in the region.
