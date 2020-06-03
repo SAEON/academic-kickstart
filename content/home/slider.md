@@ -17,7 +17,7 @@ height = "500px"
 # Duplicate an `[[item]]` block to add more slides.
 [[item]]
   title = "Our Science"
-  content = "We use long term observation to explore how the abiotic and biotic composition of our ecosystems are changing, and how this affects ecological and regional processes and the services they provide to society. More >>"
+  content = "We use long term observation to explore how the abiotic and biotic composition of our ecosystems are changing, and how this affects ecological processes and the services they provide to society. More >>"
 
   align = "center"  # Choose `center`, `left`, or `right`.
 

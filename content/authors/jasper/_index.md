@@ -75,4 +75,4 @@ user_groups:
 
 My current research is focused on global change in South African ecosystems and revolves around field studies and spatial data analyses with the goal of informing policy and management. Most of my projects predominantly focus on fire, water, land cover (including invasive species) and climate change, but I've increasingly included people in the mix as I've come to accept that sustainable management of ecosystems has little to do with ecology.
 
-Check out my [personal blog](www.ecologi.st) for more.
+Check out my [personal blog](https://www.ecologi.st/) for more.
