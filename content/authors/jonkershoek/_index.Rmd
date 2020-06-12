@@ -66,13 +66,13 @@ user_groups:
 ---
 ## Overview
 
-SAEON have focussed on establishing Jonkershoek as an open, long term, cross-disciplinary platform with comprehensive equipment arrays for observing climate, water, carbon and biodiversity, where the longevity and quality of the data are assured and readily accessible. We have also focused on capturing and making available the historical archives of hydrological and ecological datasets. Some of the long term rainfall and stream flow data are presented in our [**Catchment Monitor**](/dashboards/catchment/) and you can view real time data from our high altitude weather station [**here**](http://lognet.saeon.ac.za:8088/Dwarsberg/index.html). We illustrate the current and historical observation sites in the following map and describe some of the history of the site below. 
+SAEON have focussed on establishing Jonkershoek as an open, long term, cross-disciplinary platform with comprehensive equipment arrays for observing climate, water, carbon and biodiversity, where the longevity and quality of the data are assured and readily accessible. We have also focused on capturing and making available the historical archives of hydrological and ecological datasets. Some of the long term rainfall and stream flow data are presented in our [**Catchment Monitor**](/dashboards/catchment/) and you can view real time data from our high altitude weather station [**here**](http://lognet.saeon.ac.za:8088/Dwarsberg/index.html). We illustrate the current and historical observation sites in the following map and describe some of the history of the site and ecological data below. We have almost completed a preliminary archive of the ecological datasets and hope to provide more descriptive information and details on how to access them soon.
 
 <br>
 
 ## Map of field instruments
 
-The blue dots in the map below indicate our instrumented sites. Hover over each dot for details of the variables being collected. If you are interested in accessing any of our data please [**contact us**](/#contact).
+The blue dots in the map below indicate our instrumented sites. Hover over each dot for details of the variables being collected. If you are interested in accessing any of these data please [**contact us**](/#contact). 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 
@@ -118,7 +118,7 @@ The initial experiment consists of six neighbouring catchments previously suppor
 
 The 1930s to the early 1990s saw the accumulation of the longest continuous records for stream flow in the Southern hemisphere, which revealed that afforestation results in dramatic reduction in stream flow. It also saw the gathering of a large amount of data dealing with fire experiments, detailed vegetation plot surveys, rare plant surveys and ecological studies, and the development of management plans for catchments around the Western Cape.
 
-The JFRC was disbanded and absorbed by the CSIR and other bodies in the early 1990s. Data collection from the catchment experiment was maintained by volunteers on an ad hoc basis. SAEON inherited the catchment experiment in 2009 and has refurbished the instrumentation to continue their long term observations to address global change related questions. 
+The JFRC was disbanded and absorbed by the CSIR and other bodies in the early 1990s. Data collection from the catchment experiment was maintained by volunteers on an ad hoc basis until SAEON inherited the catchment experiment in 2009. We have since refurbished the instrumentation to continue their long term observations to address global change related questions. 
 
 
 
