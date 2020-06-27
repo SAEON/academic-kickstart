@@ -4,7 +4,7 @@ author: jasper
 date: '2020-20-05'
 slug: rretool
 categories: []
-tags: ['remote sensing', 'land cover change', 'invasive alien plants', 'land-use management', 'fire']
+tags: ['remote sensing', 'land cover change', 'invasive alien plants', 'land-use management', 'fire', 'RReTool']
 subtitle: ''
 summary: 'Developing remote-sensing tools for natural resource management'
 authors: [jasper, glenn]

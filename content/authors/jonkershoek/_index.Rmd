@@ -85,23 +85,36 @@ library(htmltools)
 
 dat <- read_xlsx("/home/jasper/Dropbox/SAEON/Management/Website/SAEON_field instrument list.xlsx", sheet = 1)
 
-dat <- dat[which(dat$Site == "Jonkershoek" & dat$Owner =="SAEON"),]
+mdat <- dat[which(dat$Site == "Jonkershoek" & dat$Owner == "SAEON"  & dat$Class %in% c("Meteorological", "Micro meteorological")),]
+mname = paste0(mdat$`Station name`, " <br/> ", "(", mdat$Variables, ")")
+mdat <- data.frame(lat = mdat$Latitude, lon = mdat$Longitude)
 
-name = paste0(dat$`Station name`, " <br/> ", "(", dat$Variables, ")")
-  
-dat <- data.frame(lat = dat$Latitude, lon = dat$Longitude)
+hdat <- dat[which(dat$Site == "Jonkershoek" & dat$Owner == "SAEON"  & dat$Class == "Hydrological"),]
+hname = paste0(hdat$`Station name`, " <br/> ", "(", hdat$Variables, ")")
+hdat <- data.frame(lat = hdat$Latitude, lon = hdat$Longitude)
+
 
 #offering <- c("Hourly Rainfall and Temperature", "Hourly Rainfall, Temperature, RH, Wind, Solar Rad", 	"Hourly Rainfall and Temperature")
 
 ###Plot the map
-leaflet(data = dat) %>%
+leaflet() %>%
   addTiles(group = "Default") %>%  # Add default OpenStreetMap map tiles
 # addProviderTiles(provider = "Esri.WorldImagery", group = "Satellite") %>%
 # addProviderTiles(provider = "Esri.WorldTopoMap", group = "Topo") %>%
-  addCircleMarkers(label = 
-                  lapply(name, HTML), 
-                  radius = 3) #%>%
-#   addLayersControl(
+  addCircleMarkers(data = mdat,
+                   label = 
+                  lapply(mname, HTML), 
+                  group = "Meteorological",
+                  radius = 3) %>%
+  
+  addCircleMarkers(data = hdat,
+                   label = 
+                  lapply(hname, HTML), 
+                  group = "Hydrological",
+                  radius = 3, 
+                  color = "red") %>%
+   addLayersControl(overlayGroups = 
+                      c("Meteorological", "Hydrological"))
 #    baseGroups = c("Default", "Satellite", "Topo"),
 #    options = layersControlOptions(collapsed = FALSE)) %>%
 #  hideGroup(c("Default", "Satellite"))

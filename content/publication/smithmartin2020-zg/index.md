@@ -1,0 +1,12 @@
+---
+title: "Lack of vulnerability segmentation among woody species in a diverse dry sclerophyll woodland community"
+date: 2020-04-11
+publishDate: 2020-04-11T20:43:46.523789Z
+authors: ["Chris M. Smith-Martin", "Robert Paul Skelton", "Kate M. Johnson", "Christopher Lucani", "Timothy J. Brodribb"]
+publication_types: ["2"]
+abstract: "[Access the paper here.](http://dx.doi.org/10.1111/1365-2435.13519) Recent findings suggest that tree mortality and post-drought recovery of gas exchange can be predicted from loss of function within the water transport system. Understanding the susceptibility of plants to hydraulic damage requires knowledge about the vulnerability of different plant organs to stress-induced hydraulic dysfunction. This is particularly important in the context of vulnerability segmentation between plant tissues which is believed to protect more energetically costly tissues, such as woody stems, by sacrificing cheaper leaves early under drought conditions. Differences in vulnerability segmentation between co-occurring plant species could explain divergent behaviours during drought, yet there are few studies considering how this characteristic may vary within a plant community. Here we investigated community-wide vulnerability segmentation by comparing leaf/shoot and stem vulnerability in all coexistent dominant canopy and understory woody species in a diverse dry sclerophyll woodland community, including multiple angiosperms and one gymnosperm. Previously published terminal leaf/shoot vulnerability to loss of water transport capacity was compared with stem xylem vulnerability to embolism measured on the same species at the same site. We calculated hydraulic safety margins for stems to determine variation in the risk of hydraulic failure during drought among species. The xylem of all species was found to be highly resistant to hydraulic dysfunction, with only two of the eight species exhibiting significantly different vulnerability to the overall mean. No evidence of vulnerability segmentation between shoots/leaves and stems was found in seven of the eight species. Phylogenetically diverse canopy and understory species in this evergreen sclerophyll woodland appear to have evolved similar strategies of drought resistance, including low xylem vulnerability to embolism and general lack of vulnerability segmentation. This convergence in hydraulic safety indicates a lack of hydraulic niche partitioning in this woodland community."
+featured: false
+publication: "*Functional Ecology*"
+tags: ["ecophysiology", "drought"]
+---
+

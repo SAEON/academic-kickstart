@@ -63,6 +63,8 @@ user_groups:
 - Core study sites
 ---
 
-The Cape Peninsula is one of the most biodiverse and imperilled landscapes in the world. Much of the upland vegetation is protected by Table Mountain National Park, but it faces significant threats from surrounding urban areas.
+The Cape Peninsula is one of the most biodiverse and imperilled landscapes in the world. Much of the upland vegetation is protected by Table Mountain National Park, but it faces significant threats from surrounding urban areas. It is also has perhaps the best biodiversity data in South Africa. 
+
+Most of the Fynbos Node's research on the Cape Peninsula is in collaboration with Table Mountain National Park and relates to detecting, monitoring and managing the impacts of fire, invasive species and climate change on biodiversity. For a list of published research, many with open datasets, see [here](/tags/cape-peninsula/). We also maintain a live [online weather station at Constantiaberg Peak](http://lognet.saeon.ac.za:8088/Constantiaberg/index.html) and a network of temperature and humidity loggers exploring topoclimates across the Park.
 
 
