@@ -1,0 +1,91 @@
+---
+# Display name
+title: Ecology
+
+# Username (this should match the folder name)
+authors:
+- ecology
+
+# Is this the primary user of the site?
+superuser: false
+
+# Role/position
+role: 
+
+# Organizations/Affiliations
+organizations:
+- name: South African Environmental Observation Network
+  url: "www.saeon.ac.za"
+
+# Short bio (displayed in user profile at end of posts)
+# bio: One of the most biodiverse and imperilled landscapes in the world.
+# 
+# research:
+# 
+# data: Lots
+# 
+# education outreach:
+#   courses:
+#   - course: stuff
+#     institution: stuff
+#     year: 2019
+
+
+# Social/Academic Networking
+# For available icons, see: https://sourcethemes.com/academic/docs/page-builder/#icons
+#   For an email link, use "fas" icon pack, "envelope" icon, and a link in the
+#   form "mailto:your-email@example.com" or "#contact" for contact widget.
+# social:
+# - icon: envelope
+#   icon_pack: fas
+#   link: "mailto:elvirena@saeon.ac.za"  # For a direct email link, use "mailto:test@example.org".
+# - icon: twitter
+#   icon_pack: fab
+#   link: https://twitter.com/saeonews
+# - icon: google-scholar
+#   icon_pack: ai
+#   link: https://scholar.google.com/citations?view_op=search_authors&hl=en&mauthors=SAEON&before_author=Kwbp_-MBAAAJ&astart=0
+#- icon: github
+#  icon_pack: fab
+#  link: https://github.com/saeon
+# Link to a PDF of your resume/CV from the About widget.
+# To enable, copy your resume/CV to `static/files/cv.pdf` and uncomment the lines below.
+# - icon: cv
+#   icon_pack: ai
+#   link: files/cv.pdf
+
+# Enter email to display Gravatar (if Gravatar enabled in Config)
+email: ""
+
+# Organizational groups that you belong to (for People widget)
+#   Set this to `[]` or comment out if you are not using People widget.
+user_groups:
+- Datasets
+---
+
+# Jonkershoek Forestry Research Centre
+
+We have scanned the majority of the historical ecological studies contained within the Jonkershoek Forestry Research Centre archives at Stellenbosch. This is a rich set of datasets from across the Cape Floristic Region, including population surveys and trend assessments, vegetation community surveys, and veld condition assessments, among others. We are in the process of finalizing the metadata and once this process is complete we will these studies available through our datasystems. If you are interested in these data before then you are welcome to [contact us](/#contact).
+
+
+# Vegetation survey
+
+The SAEON Fynbos Node have put a concerted effort into resurveying historical permanently marked vegetation plots (or releves) and making these publicly available on publication. Unpublished surveys include a 2017/18 resurvey of the Cape of Good Hope plots (see below), a set of repeat surveys of permanently marked plots exploring the impact of invasive species on the Cape Peninsula, and a 2015 survey of the Bartholomeus Klip reserve on Elandsberg Farms. If you are interested in these data before they are published you are welcome to [contact us](/#contact). Published datasets are listed below.
+
+**Baviaanskloof - Kouga**
+
+*Aiello-Lammens, Matthew E., Jasper A. Slingsby, Cory Merow, Hayley Kilroy Mollmann, Douglas Euston-Brown, Cynthia S. Jones, and John A. Silander Jr. 2017. “Processes of Community Assembly in an Environmentally Heterogeneous, High Biodiversity Region.” Ecography 40 (4): 561–76.* [Access dataset.](http://dx.doi.org/10.5061/dryad.kk174)
+
+**Cape of Good Hope**
+
+*Slingsby, Jasper A., Cory Merow, Matthew Aiello-Lammens, Nicky Allsopp, Stuart Hall, Hayley Kilroy Mollmann, Ross Turner, Adam M. Wilson, and John A. Silander Jr. 2017. “Intensifying Postfire Weather and Biological Invasion Drive Species Loss in a Mediterranean-Type Biodiversity Hotspot.” Proceedings of the National Academy of Sciences of the United States of America 114 (18): 4697–4702.* [Access dataset.](https://doi.org/10.6084/m9.figshare.4737358.v1)
+
+**The Clanwilliam Cedar**
+
+We have also published a map of all known wild localities of the Clanwilliam Cedar as of 2013. See *Slingsby, Jasper A., and Peter W. O. Slingsby. 2019. “Monitoring the Critically Endangered Clanwilliam Cedar with Freely Available Google Earth Imagery.” PeerJ 7 (July): e7005.* [Access dataset.](https://doi.org/10.6084/m9.figshare.7670435.v1)
+
+
+# Global Datasets
+
+We have also contributed to the [TRY plant trait database](https://www.try-db.org/TryWeb/Home.php), the [BioTIME database of biodiversity time series](http://biotime.st-andrews.ac.uk/) and a large number of DNA sequences for Fynbos plant species on [Genbank](https://www.ncbi.nlm.nih.gov/genbank/).
+

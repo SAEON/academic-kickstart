@@ -29,7 +29,7 @@ Here we present the record of stream flow rates for the Langrivier catchment and
 
 <!--more-->
 
-We plan to update this page monthly. For live weather data and the record over the past month please access the [**Dwarsberg weather station directly**](http://lognet.saeon.ac.za:8088/Dwarsberg/index.html). You may also be interested in our [**Constantiaberg weather station**](http://lognet.saeon.ac.za:8088/Constantiaberg/index.html) on the Cape Peninsula or our [**Engelsmanskloof weather station**](http://lognet.saeon.ac.za:8088/EngCed/index.html) in the Cederberg.
+We plan to update this page monthly. For live weather data and the record over the past month please access the [Dwarsberg weather station directly](http://lognet.saeon.ac.za:8088/Dwarsberg/index.html). You may also be interested in our [Constantiaberg weather station](http://lognet.saeon.ac.za:8088/Constantiaberg/index.html) on the Cape Peninsula or our [Engelsmanskloof weather station](http://lognet.saeon.ac.za:8088/EngCed/index.html) in the Cederberg.
 
 
 *PLEASE NOTE: We cannot guarantee that these data or analyses are error free, particularly with regards to the older historical data and the comparability of the older and newer instrumentation. Gaps in the data were filled using linear interpolation from the most recent data for up to a 30 day period. This filled all gaps other than the period August 2008 to September 2011 - these data exist in hardcopy, but are still being digitized. There are much better gap-filling techniques, but the appropriate method depends on the question being asked.*

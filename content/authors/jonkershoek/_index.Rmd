@@ -114,9 +114,10 @@ leaflet() %>%
                   radius = 3, 
                   color = "red") %>%
    addLayersControl(overlayGroups = 
-                      c("Meteorological", "Hydrological"))
-#    baseGroups = c("Default", "Satellite", "Topo"),
-#    options = layersControlOptions(collapsed = FALSE)) %>%
+                      c("Meteorological", "Hydrological"),
+                  #  baseGroups = 
+                  #    c("Default", "Satellite"),
+    options = layersControlOptions(collapsed = FALSE)) #%>%
 #  hideGroup(c("Default", "Satellite"))
 
 ```
