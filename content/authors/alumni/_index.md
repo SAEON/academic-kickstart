@@ -18,7 +18,7 @@ role:
 # Organizations/Affiliations
 organizations:
 - name: South African Environmental Observation Network
-  url: "www.saeon.ac.za"
+  url: http://www.saeon.ac.za
 
 # Short bio (displayed in user profile at end of posts)
 bio: Former students and postdocs supervised by members of the Fynbos Node.

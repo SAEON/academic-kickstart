@@ -15,7 +15,7 @@ role: Research Fellow
 # Organizations/Affiliations
 organizations:
 - name: South African Environmental Observation Network
-  url: "www.saeon.ac.za"
+  url: http://www.saeon.ac.za
 
 # Short bio (displayed in user profile at end of posts)
 bio: I study the biophysical determinants of terrestrial plant functionality, productivity, abundance and geographical distributions at scales ranging from whole plants to entire ecosystems.

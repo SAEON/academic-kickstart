@@ -1,6 +1,6 @@
 ---
 # Display name
-title: Abri De Buys
+title: Abri de Buys
 
 # Order in display
 weight: 1
@@ -18,7 +18,7 @@ role: Technician
 # Organizations/Affiliations
 organizations:
 - name: South African Environmental Observation Network
-  url: "www.saeon.ac.za"
+  url: http://www.saeon.ac.za
 
 # Short bio (displayed in user profile at end of posts)
 bio: I maintain research sites, equipment and data flows at the Fynbos Node.

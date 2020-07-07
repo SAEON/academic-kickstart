@@ -8,9 +8,9 @@ tags:
   - 
 subtitle: ''
 summary: ''
-authors: [Abri, Elvirena, Glenn, Jasper, Julia, Martina, Rob]
+authors: []
 lastmod: '2020-05-11T21:40:30+02:00'
-featured: yes
+featured: no
 image:
   caption: ''
   focal_point: ''
@@ -18,9 +18,18 @@ image:
 projects: []
 ---
 
-See links below for SAEON eNews articles on recent outreach and training events:
+News on recent outreach and training events from the Fynbos Node reported in [SAEON's eNewsletter](https://enews.saeon.ac.za/) over the past few years:
 
-[Leaves to landscapes – Fynbos Node career day exhibit](https://enews.saeon.ac.za/issue-02-2020/fynbos-node-career-day-exhibit/)
+2020
 
-[Data Visualisation R and QGIS workshop equips students to analyse datasets](https://enews.saeon.ac.za/issue-02-2020/data-visualisation-r-and-qgis-workshop/)
+* [Leaves to landscapes – Fynbos Node career day exhibit](https://enews.saeon.ac.za/issue-02-2020/fynbos-node-career-day-exhibit/)
+
+* [Data Visualisation R and QGIS workshop equips students to analyse datasets](https://enews.saeon.ac.za/issue-02-2020/data-visualisation-r-and-qgis-workshop/)
+
+
+2019
+
+* [Google Earth Engine comes to South Africa](http://www.saeon.ac.za/enewsletter/archives/2019/august2019/doc06)
+
+* [Data life-cycle training for students and researchers](http://www.saeon.ac.za/enewsletter/archives/2019/april2019/doc11)
 

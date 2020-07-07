@@ -34,7 +34,7 @@
   weight = 27
 
 [[main]]
-  name = "Tutorials"
+  name = "Data skills"
   url = "docs/"
   weight = 30
 

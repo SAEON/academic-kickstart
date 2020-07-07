@@ -15,7 +15,7 @@ role: Research Fellow
 # Organizations/Affiliations
 organizations:
 - name: South African Environmental Observation Network
-  url: "www.saeon.ac.za"
+  url: http://www.saeon.ac.za
 
 # Short bio (displayed in user profile at end of posts)
 bio: I'm a hydrologist doing research on global change in the Fynbos Biome and beyond.

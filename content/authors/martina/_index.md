@@ -15,7 +15,7 @@ role: Postdoctoral Fellow
 # Organizations/Affiliations
 organizations:
 - name: South African Environmental Observation Network
-  url: "www.saeon.ac.za"
+  url: http://www.saeon.ac.za
 
 # Short bio (displayed in user profile at end of posts)
 bio: I do research on global change in the Fynbos Biome.
