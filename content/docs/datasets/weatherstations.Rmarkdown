@@ -1,0 +1,365 @@
+---
+title: Weatherstation data
+author: jasper
+date: '2020-07-14'
+slug: weatherstations
+categories: []
+tags:
+  - hydrology
+  - climate
+  - data
+  - R-tutorial
+linktitle: Weatherstation Data
+summary: ~
+lastmod: '2020-07-14T22:31:54+02:00'
+toc: yes
+type: docs
+menu:
+  docs:
+    parent: Datasets
+    weight: 10
+---
+
+I have found that one of the biggest challenges as a scientist working on global change issues in South Africa has been not having access to my country's long-term weather records. Our weather service charges a hefty fee for data. 
+
+While one can occassionally access data for research purposes, this is usually only if there's a student involved, and requires tracking down an individual within the organization who's willing to field your query. 
+
+Thus it is with great excitement that I've discovered that we can access a lot of South Africa's data through the National Oceanic and Atmospheric Administration of the USA (NOAA) for free here (https://www.ncei.noaa.gov/access/search/dataset-search)!!!
+
+NOAA serve a massive range of datasets, but my explorations so far have found the following to be the most useful in terms of station data:
+
+- The Integrated Surface Dataset (Global) (https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00532), 
+ 
+- The Global Historical Climatology Network (https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00861), 
+ 
+- Global Summaries of the Day/Month/Year (https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00946)
+
+
+BUT WAIT, THERE'S MORE! If you call now, you'll get this dedicated R package written by the amazing fellows at rOpenSci (https://ropensci.org/) absolutely free!!!
+
+
+I've put together a quick demo for using library(rnoaa) below, largely using repurposed and updated code from Scott Chamberlain's blog posts here (https://recology.info/2015/10/noaa-isd/) and here (https://recology.info/2015/07/weather-data-with-rnoaa/), and from the package vignette.
+
+*DISCLAIMER: I haven't read the documentation for the datasets and make no guarantee of their accuracy or of the validity of my assumptions when summarizing and presenting the data. This applies to data quality, gaps, units, etc. etc*
+
+Let's get set up...
+
+```{r libraries, message = FALSE}
+library("rnoaa")
+library("dplyr")
+library("reshape2")
+library("lawn")
+library("leaflet")
+library("lubridate")
+library("ggplot2")
+library("htmltools")
+```
+
+
+***
+
+## The Integrated Surface Dataset
+
+***
+
+This dataset "is composed of worldwide surface weather observations from over 35,000 stations", nominally at hourly resolution. See link above for more details.
+
+Let's see what stations we can find for South Africa and surrounds?
+
+```{r isdsearch}
+###Make a bounding box
+bbox <- c(16, -35, 34, -22)
+
+###Search the bounding box for stations
+out <- isd_stations_search(bbox = bbox)
+
+###Have a look at the output
+head(out)
+```
+
+Difficult to read a table, so let's put them on the map.  
+
+```{r leaflet, warning = F, message = F}
+###Make the popup labels
+out$uw <- paste("usaf/wban = ", out$usaf, "/", out$wban, sep = "")
+out$period <- paste("years = ", substr(out$begin,1,4), " to ", substr(out$end,1,4), sep = "")
+name <- paste(sep = "<br/>", out$station_name, out$period, out$uw)
+
+###Plot the map
+leaflet(data = out) %>%
+  addTiles() %>%
+  addCircleMarkers(label = lapply(name, HTML), radius = 3)
+```
+
+Note that hovering your cursor over the blue circles gives the name of the station, the years operational and the *usaf* and *wban* codes required to pull them out of the database (see further down).
+
+There's also a function for searching for all stations within a specified radius of a point of interest.
+
+```{r radius_search, warning = F, message = F}
+out <- isd_stations_search(lat = -34.1, lon = 18.45, radius = 40)
+head(out)
+```
+
+And if we visualize the area searched...
+
+```{r radius_plot}
+pt <- lawn::lawn_point(c(18.45, -34.1))
+lawn::lawn_buffer(pt, dist = 40) %>% view
+```
+
+
+Ok, now let's get a smattering of stations from across the Cape Peninsula that have data for 2019, combine them into one object and plot
+
+```{r compare2019, warning = F, message = F}
+###Pull data from online database to local file and then read in
+res1 <- isd(usaf=out$usaf[2], wban="99999", year=2019, force = T)
+res2 <- isd(usaf=out$usaf[3], wban="99999", year=2019, force = T)
+res3 <- isd(usaf=out$usaf[5], wban="99999", year=2019, force = T)
+res4 <- isd(usaf=out$usaf[9], wban="99999", year=2019, force = T)
+
+###Combine data into one dataframe
+res_all <- bind_rows(res1, res2, res3, res4) #Note that not all stations have all variables and bind_rows() fills empty columns with NAs
+
+###Create a combined date + time column
+res_all$date_time <- ymd_hm(
+  sprintf("%s %s", as.character(res_all$date), res_all$time)
+)
+
+###Convert "temperature" column from codes to numeric and divide by 10 (the data come in tenths of a degree)
+res_all$temperature <- as.numeric(substr(res_all$temperature, 2, 5))/10
+
+###Remove the "NA" values, which NOAA code as "999"
+res_all$temperature[which(res_all$temperature > 900)] <- NA
+
+###Visualize the data
+ggplot(res_all, aes(date_time, temperature)) +
+  geom_line() + 
+  facet_wrap(~usaf_station, scales = "free_x")
+```
+
+Recall that the ISD dataset is hourly (or mostly 3-hourly in this case), so perhaps better to look at daily max or min temperatures and precipitation?
+
+```{r isd_summary, message=F, fig.height=4}
+###Some dodgy cleaning of the rainfall data - CHECK MY ASSUMPTION THAT NA = 0mm RAINFALL 
+res_all$AA1_depth[is.na(res_all$AA1_depth)] <- 0
+res_all$AA1_depth[which(res_all$AA1_depth == 9999)] <- NA
+res_all$AA1_depth <- as.numeric(res_all$AA1_depth)
+
+res_all$date <- as.Date(res_all$date, format = "%Y%m%d")
+
+###Summarize Tmin, Tmax and Precipitation
+dayres <- res_all %>% group_by(usaf_station, date) %>% summarise(tmax = max(temperature, na.rm = T), tmin = min(temperature, na.rm = T), prec = max(AA1_depth, na.rm = T)/10) #note I take max precip and divide by ten, because it seems to be a hourly cumulative sum in tenths of a mm (Check this!)
+
+###Melt and plot
+dayres %>% melt(id = c("usaf_station", "date")) %>% ggplot(aes(date, value, colour = usaf_station)) +
+  geom_line() + 
+  facet_wrap(~variable, scales = "free_y")
+```
+
+Or monthly...
+
+```{r isd_monthly, warning = F, message = F, fig.height=4}
+###Fix dates
+res_all$month <- month(res_all$date_time) #note this is all in 2019
+
+###Summarize Tmin, Tmax and Precipitation
+monthres <- res_all %>% group_by(usaf_station, month) %>% summarise(tmax = max(temperature, na.rm = T), tmin = min(temperature, na.rm = T), prec = sum(AA1_depth, na.rm = T)/30)
+
+###Melt and plot
+monthres %>% melt(id = c("usaf_station", "month")) %>% ggplot(aes(month, value, colour = usaf_station)) +
+  geom_line() + 
+  facet_wrap(~variable, scales = "free_y")
+
+```
+
+Note that the rnoaa functions save files in a local cache. If you repeat a search, they usually just read in that cache rather than redoing the search and download. Some functions allow you to specify `force = TRUE` to force a new download, but others don't. In this case you will need to clear the cache manually. You can find the cache on your machine by calling `rappdirs::user_cache_dir("rnoaa/ghcnd")`.
+
+What if we wanted to look at a longer record? The `isd()` function only allows us to pull one year at a time so we need to automate using a loop or similar.
+
+We may also be keen to see the names? Or select stations by name rather than usaf/wban codes. You can easily pick your own station names by exploring the interactive map we made above. Then we'll loop through a few years for each station to get a multi-year record.
+
+Here's the daily Tmin and Tmax for the period 2013 to 2020 for a few stations around Cape Town.
+
+```{r compare2013_2019, warning = F, message = F}
+###Select stations by name and filter
+stations <- c("SLANGKOP", "MOLTENO RESERVIOR", "CAPE TOWN INTL", "CAPE POINT")
+sout <- filter(out, station_name %in% stations)
+
+###Set date range
+yr <- 2013:2020
+
+###Ok, now I'll use 2 nested "for" loops to extract data for all years for each station. "for" loops can often be slower than other approaches like writing functions, but in this case its not a problem because the API call and data download are the slow bit. Using a "for" loop is perhaps easier to follow what I'm doing too. 
+
+drtdat <- list() #Make list object to capture outputs (elements will be stations)
+
+#For each station
+for (i in 1:nrow(sout)) { 
+  
+  res <- list() #Make list object to capture interim outputs stations by station (elements will be years)
+  
+  #For each year (j), extract the data for station (i)
+  for (j in 1:length(yr)) {
+    res[[j]] <- tryCatch({
+      isd(usaf=sout$usaf[i], wban=sout$wban[i], year=yr[j]) }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+  }
+  
+  res <- bind_rows(res) #Convert the interim list object into a dataframe
+  drtdat[[i]] <- res #Add the dataframe for station i to the output list
+}
+
+###Convert output to a dataframe and add the station names
+names(drtdat) <- stations
+dat <- bind_rows(drtdat)
+dat <- right_join(sout[,c("station_name", "usaf")], dat, by = c("usaf"="usaf_station"))
+
+###Create a combined date + time column and year/month/day columns
+dat$date_time <- ymd_hm(
+  sprintf("%s %s", as.character(dat$date), dat$time)
+)
+dat$year <- year(dat$date_time) #note this is NOT all in 2019 this time
+dat$month <- month(dat$date_time) 
+dat$day <- month(dat$date_time) 
+dat$date <- as.Date(dat$date, format = "%Y%m%d")
+
+###Convert "temperature" column from codes to numeric
+dat$temperature <- as.numeric(substr(dat$temperature, 2, 5))/10
+
+###Remove the "NA" values, which NOAA code as "999"
+dat$temperature[which(dat$temperature > 900)] <- NA
+
+###Some dodgy cleaning of the rainfall data - CHECK MY ASSUMPTION THAT NA = 0mm RAINFALL 
+dat$AA1_depth[is.na(dat$AA1_depth)] <- 0
+dat$AA1_depth[which(dat$AA1_depth == 9999)] <- NA
+dat$AA1_depth <- as.numeric(dat$AA1_depth)
+
+###Daily summary of Tmin and Tmax
+daydat <- dat %>% group_by(station_name, date) %>% summarise(tmax = max(temperature, na.rm = T), tmin = min(temperature, na.rm = T)) 
+
+###Melt and plot
+daydat %>% melt(id = c("station_name", "date")) %>% ggplot(aes(date, value, colour = variable)) +
+  geom_line() + 
+  facet_wrap(~station_name)
+
+```
+
+Or precipitation by month?
+
+```{r compare2014_2019_monthly, warning = F, message = F}
+###Summarize Tmin, Tmax and Precipitation
+monthdat <- dat %>% group_by(station_name, year, month) %>% summarise(prec = sum(AA1_depth, na.rm = T)/30)
+monthdat$date <- as.Date(paste(monthdat$year, monthdat$month, "01", sep = "/"), format = "%Y/%m/%d")
+
+###Melt and plot
+monthdat %>% select(station_name, date, prec) %>% ggplot(aes(date, prec)) +
+  geom_line() + 
+  facet_wrap(~station_name, scales = "free_y")
+```
+
+
+Ok, what about looking at even longer records? Most of South Africa has experienced pretty extreme drought in the past 5 years or so, so let's pull out a few major cities and towns that give us good coverage of the country.
+
+
+***
+
+## The Global Historical Climatology Network
+
+***
+
+Note that the Integrated Surface Dataset (ISD) gives us hourly data, which is overkill for looking at longer records as the dataset gets very large. For this operation it is better to query the Global Historical Climatology Network as described by [**Menne et al. 2012**](https://doi.org/10.1175/JTECH-D-11-00103.1). CAVEAT: I take no responsibility for the data. Have a look at the paper for details on error corrections, biases, etc.
+
+Let's have a look at Cape Town International Airport
+
+```{r airportGHCND, warning = F, message = F}
+ct <- meteo_tidy_ghcnd(stationid = "SFM00068816", var = c("TMAX", "TMIN", "PRCP"))
+
+head(ct)
+```
+
+Note that I had to know the station ID "SFM00068816". For some reason you can't query the database of stations using the same method as for the ISD and you have to download the entire list of all ~630 000 global weather stations and query that locally to get the station ID.
+
+```{r get_ghcnd_stations, warning = F, message = F}
+station_data <- ghcnd_stations() # Takes a while to run
+head(station_data)
+```
+
+You can now query this database using the `meteo_nearby_stations()` function, which allows you to find all stations within a certain radius of a coordinate or the closest `x` stations. Here are the closest stations to Cape Point lighthouse.
+
+```{r search_ghcnd_stations, warning = F, message = F}
+lat_lon_df <- data.frame(id = "somewhere",
+                         latitude = -34.35,
+                         longitude = 18.48)
+nearby_stations <-  meteo_nearby_stations(lat_lon_df = lat_lon_df,
+                    station_data = station_data, radius = 100)
+
+nearby_stations$somewhere
+```
+
+Interesting... Cape Point lighthouse isn't on the list, even though it's a Global Atmospheric Watch station (GAWS) and is in the ISD data. I have no idea why...
+
+Note that you can also just do a good old text search for the names of a few stations you know. This also allows you to filter by multiple criteria at once, e.g. we can filter for `element = PRCP` to only get rainfall data. You can use the map we made earlier to get your own list of names, but note that like "CAPE POINT" they're not all in the GHCND database.
+
+Since most of South Africa has experienced extreme drought in the past few years, perhaps we should pull out and compare the rainfall for a few stations from around the country? In this case I've selected a few of the larger towns and cities. 
+
+```{r select_regional_capitals, warning = F, message = F}
+###Select stations by name and filter
+stations <- c("CAPE TOWN INTL",
+"SPRINGBOK",
+"BLOEMFONTEIN AIRPOR",
+"PORT ELIZABETH INTL",
+"DURBAN INTL", 
+"JOHANNESBURG INTL")
+
+stas <- station_data %>% filter(element == "PRCP") %>%
+  filter(name %in% stations)
+
+stas
+```
+
+Looks like we should be able to compare the period 1980 to 2019 for all stations. Let's download the data.
+
+```{r extract_ghcnd, warning = F, message = F}
+dat <- meteo_pull_monitors(stas$id, var = c("TMAX", "TMIN", "PRCP"), date_min = "1980-01-01", date_max = "2019-12-31")
+
+dat[1:5,]
+```
+
+Ok, now let's add our station names, summarize by year, and plot.
+
+```{r plot_ghcnd, warning = F, message = F}
+stas$shortname <- c("SBK", "BFN", "JHB", "DBN", "CPT", "PE")
+dat <- left_join(dat, stas[,c("id", "name", "shortname")])
+dat$year <- substr(dat$date,1,4)
+
+mdat <- dat %>% group_by(shortname, year) %>% summarise(rain = sum(prcp, na.rm = T)/10) #Get annual totals
+
+mdat$year <- as.numeric(mdat$year)
+mdat$rain <- as.numeric(mdat$rain)
+
+###Visualize the data
+ggplot(mdat, aes(x = year, y = rain)) +
+  geom_line() + 
+  facet_wrap(~shortname)
+
+```
+
+Or something prettier?
+
+```{r pretty_ghcnd, warning = F, message = F}
+###calculate average rainfall and yearly anomalies
+ymean <- mdat %>% group_by(shortname) %>% summarise(mean = mean(rain, na.rm = T))
+mdat <- left_join(mdat, ymean, by = "shortname")
+mdat$positive <- mdat$rain - mdat$mean
+mdat$positive[which(mdat$positive<0)] <- 0
+mdat$negative <- mdat$rain - mdat$mean
+mdat$negative[which(mdat$negative>0)] <- 0
+
+###Plot
+ggplot(mdat, aes(x = year)) + 
+  geom_ribbon(aes(ymin = 0, ymax = positive, fill="positive")) + geom_ribbon(aes(ymin = negative, ymax = 0 ,fill="negative")) +
+  scale_fill_manual(name="",values=c("#D6604D", "#4393C3")) +
+  facet_grid(shortname ~ ., scales = "free_y") +
+  ylab("rainfall anomaly in mm")
+```
+
+I haven't dealt with data gaps, data quality verification, etc etc, but this quick and dirty analysis suggests it's been a pretty dismal decade for South Africa all round...
+

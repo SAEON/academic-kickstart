@@ -1,15 +1,15 @@
 ---
 title: Science
 author: jasper
-date: '2020-05-11'
+date: '2020-07-11'
 slug: science
 categories: []
 tags:
   - 
 subtitle: ''
-summary: ''
+summary: 'Recent fieldwork, new research projects or publications'
 authors: []
-lastmod: '2020-05-11T21:40:30+02:00'
+lastmod: '2020-07-11T21:40:30+02:00'
 featured: no
 image:
   caption: ''

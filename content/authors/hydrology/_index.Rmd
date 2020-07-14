@@ -63,7 +63,7 @@ user_groups:
 - Datasets
 ---
 
-We maintain various surface and groundwater logging equipment at Jonkershoek (current and archival data), Baviaanskloof and Kromme and the Agulhas Plain as indicated in the map below. We hope to add links to the data in the near future, but in the mean time please [contact us](/#contact) if you're interested.
+We maintain various surface and groundwater logging equipment at Jonkershoek (current and archival data), Baviaanskloof and Kromme and the Agulhas Plain as indicated in the map below. Zoom in and hover over the sites to see what is being measured where. We hope to add links to the data in the near future, but in the mean time please [contact us](/#contact) if you're interested.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 

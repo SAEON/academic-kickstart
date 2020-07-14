@@ -63,14 +63,8 @@ user_groups:
 - Satellite study sites
 ---
 
-The Agulhas Plain...
+The Agulhas Plain is an area of spectacular natural beauty, biodiversity and deep history, including a number of archaeological sites that are revealing the origins of modern humans.
 
-- origins of modern humans
-
-The Fynbos Node's research in this area largely revolves around hydrological monitoring and modelling to explore the impacts of land use and land cover change on the health of the Heuningnes catchment in collaboration with researchers at the University of the Western Cape and others (https://www.uwc.ac.za/Faculties/NS/Water_Studies/Pages/heuningnes-catchment-group.aspx). We're also collaborating with Grootbos Private Nature Reserve on a set of long term monitoring plots first established in 1996/7 and resurveyed in 2015/6. 
-
-SALDI
-UWC (Jonella)
-Renosterveld change detection
+The Fynbos Node's research in this area largely revolves around hydrological monitoring and modelling to explore the impacts of land use and land cover change on the health of the Heuningnes catchment in collaboration with researchers at the [University of the Western Cape and others](https://www.uwc.ac.za/Faculties/NS/Water_Studies/Pages/heuningnes-catchment-group.aspx). We're also collaborating with Grootbos Private Nature Reserve on a set of long term monitoring plots first established in 1996/7 and resurveyed in 2015/6. Parts of the Agulhas Plain fall within our Renosterveld change detection test area as part of the [RReTool project](/project/rretool/).
 
 

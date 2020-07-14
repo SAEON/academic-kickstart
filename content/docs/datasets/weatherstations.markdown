@@ -1,0 +1,491 @@
+---
+title: Weatherstation data
+author: jasper
+date: '2020-07-14'
+slug: weatherstations
+categories: []
+tags:
+  - hydrology
+  - climate
+  - data
+  - R-tutorial
+linktitle: Weatherstation Data
+summary: ~
+lastmod: '2020-07-14T22:31:54+02:00'
+toc: yes
+type: docs
+menu:
+  docs:
+    parent: Datasets
+    weight: 10
+---
+
+I have found that one of the biggest challenges as a scientist working on global change issues in South Africa has been not having access to my country's long-term weather records. Our weather service charges a hefty fee for data. 
+
+While one can occassionally access data for research purposes, this is usually only if there's a student involved, and requires tracking down an individual within the organization who's willing to field your query. 
+
+Thus it is with great excitement that I've discovered that we can access a lot of South Africa's data through the National Oceanic and Atmospheric Administration of the USA (NOAA) for free here (https://www.ncei.noaa.gov/access/search/dataset-search)!!!
+
+NOAA serve a massive range of datasets, but my explorations so far have found the following to be the most useful in terms of station data:
+
+- The Integrated Surface Dataset (Global) (https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00532), 
+ 
+- The Global Historical Climatology Network (https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00861), 
+ 
+- Global Summaries of the Day/Month/Year (https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00946)
+
+
+BUT WAIT, THERE'S MORE! If you call now, you'll get this dedicated R package written by the amazing fellows at rOpenSci (https://ropensci.org/) absolutely free!!!
+
+
+I've put together a quick demo for using library(rnoaa) below, largely using repurposed and updated code from Scott Chamberlain's blog posts here (https://recology.info/2015/10/noaa-isd/) and here (https://recology.info/2015/07/weather-data-with-rnoaa/), and from the package vignette.
+
+*DISCLAIMER: I haven't read the documentation for the datasets and make no guarantee of their accuracy or of the validity of my assumptions when summarizing and presenting the data. This applies to data quality, gaps, units, etc. etc*
+
+Let's get set up...
+
+
+```r
+library("rnoaa")
+library("dplyr")
+library("reshape2")
+library("lawn")
+library("leaflet")
+library("lubridate")
+library("ggplot2")
+library("htmltools")
+```
+
+
+***
+
+## The Integrated Surface Dataset
+
+***
+
+This dataset "is composed of worldwide surface weather observations from over 35,000 stations", nominally at hourly resolution. See link above for more details.
+
+Let's see what stations we can find for South Africa and surrounds?
+
+
+```r
+###Make a bounding box
+bbox <- c(16, -35, 34, -22)
+
+###Search the bounding box for stations
+out <- isd_stations_search(bbox = bbox)
+
+###Have a look at the output
+head(out)
+```
+
+```
+## # A tibble: 6 x 11
+##   usaf  wban  station_name ctry  state icao    lat   lon elev_m  begin
+##   <chr> <chr> <chr>        <chr> <chr> <chr> <dbl> <dbl>  <dbl>  <dbl>
+## 1 6730… 99999 CHICUALACUA… MZ    ""    ""    -22.1  31.7  453   1.97e7
+## 2 6730… 99999 DINDIZA-GAZA MZ    ""    ""    -22.1  33.4  102   2.01e7
+## 3 6733… 99999 MAPULANGUEN… MZ    ""    ""    -24.5  32.1  151   2.01e7
+## 4 6733… 99999 XAI XAI      MZ    ""    "FQX… -25.0  33.6    5   1.97e7
+## 5 6733… 99999 MAPUTO       MZ    ""    ""    -26.0  32.6   59   1.95e7
+## 6 6734… 99999 MAPUTO       MZ    ""    "FQM… -25.9  32.6   44.2 1.97e7
+## # … with 1 more variable: end <dbl>
+```
+
+Difficult to read a table, so let's put them on the map.  
+
+
+```r
+###Make the popup labels
+out$uw <- paste("usaf/wban = ", out$usaf, "/", out$wban, sep = "")
+out$period <- paste("years = ", substr(out$begin,1,4), " to ", substr(out$end,1,4), sep = "")
+name <- paste(sep = "<br/>", out$station_name, out$period, out$uw)
+
+###Plot the map
+leaflet(data = out) %>%
+  addTiles() %>%
+  addCircleMarkers(label = lapply(name, HTML), radius = 3)
+```
+
+<!--html_preserve--><div id="htmlwidget-a16bfe34838d5d9fa65b" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a16bfe34838d5d9fa65b">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[-22.083,-22.083,-24.483,-25.05,-25.967,-25.921,-26.283,-22.217,-22.612,-28.585,-26.667,-24.167,-24.017,-28.75,-24.767,-26.783,-28,-22.05,-22.05,-24.605,-23.867,-22.567,-23.5,-23.25,-22.48,-22.5,-23.083,-23.367,-23.683,-23.733,-23.967,-23.15,-23.6,-22.683,-23.867,-23.15,-23.15,-22.267,-22.617,-23.083,-23.067,-25.1,-24.55,-25.1,-23.833,-23.824,-23.767,-23.937,-23.9,-23.933,-22.967,-22.45,-22.683,-24.5,-23.667,-24.017,-25.033,-23.8,-24.602,-25.833,-24.555,-24.683,-25.8,-25.798,-25.883,-24.6,-24.667,-25.333,-34.533,-25.717,-24.583,-25.65,-25.25,-24.233,-25.817,-25.733,-25.833,-25.917,-25.939,-25.83,-25.654,-23.16,-25.983,-26.5,-25.986,-26.15,-25.644,-26.248,-23.083,-22.058,-23.867,-29.122,-24.9,-25.767,-24.2,-25.183,-25.833,-24.183,-25.767,-25.692,-24.933,-24.933,-25.433,-25.45,-24.367,-25.433,-24.369,-30.562,-25.383,-25.334,-24.35,-24.533,-24.983,-24.983,-25.733,-25.517,-25.832,-25.983,-25.967,-26.566,-26.54,-25.267,-25.817,-26.467,-25.45,-26.05,-26.883,-26.883,-23.15,-27.667,-27.467,-27.433,-27.55,-27.65,-26.982,-26.176,-26.817,-27.65,-27.983,-28,-27.998,-26.243,-26.496,-26.871,-26.32,-26.733,-26.671,-27.661,-26.567,-27.666,-26.15,-27.267,-26.2,-26.017,-26.139,-30.85,-26.25,-26.467,-26.517,-26.933,-27.433,-27.767,-27.733,-27.771,-27.783,-26.067,-32.767,-27.162,-26.957,-27.017,-26.115,-27.783,-27.033,-25.883,-26.333,-27.05,-26.704,-26.722,-26.082,-27.267,-27.017,-26.967,-26.529,-27.467,-26.433,-26.85,-27.383,-28.575,-28.567,-29.233,-28.769,-28.117,-29.133,-28.36,-28.399,-28.6,-28.333,-28.317,-28.803,-25.433,-29.093,-29.117,-28.95,-28.817,-29.267,-29.462,-29.304,-30.067,-28.248,-28.167,-28.367,-28.683,-28.883,-28.582,-29,-28.567,-27.417,-29.217,-29.083,-28.367,-28.2,-28.321,-29.15,-28.733,-28.5,-29.649,-28.95,-28.8,-29.689,-26.93,-30.2,-28.967,-30.467,-30.35,-29.667,-29.667,-29.067,-30.65,-30.667,-29.754,-29.767,-30.533,-30.783,-30.717,-29.9,-29.733,-30.933,-30.967,-30.983,-30.35,-29.8,-30.533,-30.15,-30.5,-30.75,-29.533,-29.633,-29.65,-29.7,-30.733,-29.767,-30.4,-31.067,-29.97,-29.267,-29.85,-30.85,-29.617,-29.771,-32.033,-31.641,-31.6,-31.5,-31.35,-31.917,-31.4,-31.183,-25.685,-31.5,-31.917,-31.92,-31.117,-31.333,-31.548,-31.606,-31.95,-32.833,-33.717,-32.969,-33.467,-33.013,-33.8,-32.95,-32.383,-33.2,-32.35,-32.35,-32.35,-32.194,-32.2,-32.933,-32.733,-32.167,-32.783,-32.897,-32.9,-32.517,-32.233,-33.2,-33.8,-33.433,-33.083,-33.965,-33.9,-33.35,-33.217,-33.933,-33.617,-33.183,-33.5,-33.607,-33.9,-34.006,-33.283,-33.833,-33.767,-33.8,-33.7,-33.05,-33.45,-33.985,-33.567,-33.833,-33.6,-33.283,-33.036,-34.15,-34.15,-34.2,-34.35,-34.35,-34.433,-34.833,-34.533,-34.8,-34.15,-34.139,-34.083,-34.555,-34.367,-34.183,-34.017,-34.09,-34.033,-34.05,-34.2,-34.217,-32.9,-33.967],[31.683,33.367,32.083,33.633,32.6,32.573,32.183,30,17.08,16.447,16.292,19.167,19.733,17.617,16.983,19.633,18.75,27.817,27.817,17.925,18,17.1,17,17.067,17.471,18.967,26.8,25.85,27.7,27.683,26.917,28.217,28.383,29.1,29.45,29.567,29.7,29.9,30.167,30.283,30.383,30.467,30.867,30.467,30.15,30.329,30.067,31.155,30.683,31.15,30.5,31.317,31.017,17.867,24.167,21.883,22.133,24.433,24.691,23.533,25.918,26.2,25.55,25.548,25.65,26.517,25.917,27.167,20.033,27.3,27.417,27.233,27.217,28.033,28.25,28.183,28.217,28.217,27.926,28.223,28.224,29.697,28.133,29.983,28.14,28,27.271,28.398,26.8,27.829,29.433,30.587,28.333,28.2,29,29.333,29.183,29.017,29.55,30.034,30.833,30.85,30.983,30.967,31.067,30.983,31.049,25.528,31.106,27.173,31.05,31.033,31.583,31.6,31,31.9,29.192,31.983,31.25,27.961,18.111,23.25,29.167,20.617,25.417,22.45,22.05,22.05,29.683,23,23.433,23.45,24.767,23,24.729,26.185,26.017,25.617,26.133,26.667,26.67,28.151,29.98,26.718,26.82,27.067,27.082,27.316,27.95,27.314,28,28.5,28.45,29.6,28.246,30.333,28.15,29.45,28.367,29.233,29.167,29.983,29.917,29.977,30.8,30.117,25.75,31.439,31.955,30.8,31.45,30.8,30.8,31.5,31.133,31.1,31.426,30.912,31.886,31.817,31.933,31.317,31.308,32.583,31.95,31.917,32.183,16.533,16.533,16.867,17.623,29.967,19.383,23.439,21.26,20.35,23.067,23.067,24.765,31.933,26.302,26.183,26.333,27.9,29.133,27.553,27.503,28.7,28.336,28.767,29.383,28.95,31.45,29.75,29.883,29.767,31.6,30,30.6,31.217,32.417,31.417,31.4,32.083,32.4,30.399,31.7,32.1,17.94,29.22,17.283,18.1,20.483,21.817,22.733,22.75,23.75,24.017,24.017,25.323,25.317,25.533,25.8,26.717,26.867,27.033,27.6,26.317,28.383,28.8,29.35,29.483,30.067,29.4,30.267,30.283,30.4,30.4,31.05,30.45,31.067,30.667,30.233,30.951,29.517,31.05,30.333,31.133,31.058,18.333,18.545,18.75,19.726,19.083,21.517,23.117,24.95,29.44,26.95,26.883,26.882,26.8,27.85,28.674,29.52,29.133,17.85,18.967,18.16,18.717,18.977,19.9,19.433,20.667,20.867,22.55,22.583,22.583,24.541,24.55,24.667,25.583,25.617,26.633,27.279,27.283,27.467,28.917,18.117,18.367,18.083,18.017,18.602,18.433,20.05,22.033,18.417,19.467,22.017,21.283,22.189,18.5,22.379,23.5,23.867,24.817,25.667,25.433,25.717,25.75,25.617,26.883,26.283,26.883,26.5,27.826,18.85,18.317,18.433,18.5,18.5,19.217,20.017,20.033,20.067,19.9,19.023,21.25,20.251,21.383,22.15,24.783,23.328,23.9,23.083,24.833,24.85,27.283,18.6],3,null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2},null,null,null,null,["CHICUALACUALA<br/>years = 1973 to 2015<br/>usaf/wban = 673080/99999","DINDIZA-GAZA<br/>years = 2007 to 2020<br/>usaf/wban = 673090/99999","MAPULANGUENE-MAPUTO<br/>years = 2007 to 2019<br/>usaf/wban = 673310/99999","XAI XAI<br/>years = 1973 to 2020<br/>usaf/wban = 673350/99999","MAPUTO<br/>years = 1949 to 2019<br/>usaf/wban = 673390/99999","MAPUTO<br/>years = 1973 to 2020<br/>usaf/wban = 673410/99999","CHANGALANE<br/>years = 1980 to 2019<br/>usaf/wban = 673460/99999","BEITBRIDGE<br/>years = 1962 to 2020<br/>usaf/wban = 679910/99999","EROS<br/>years = 1973 to 2020<br/>usaf/wban = 680020/99999","ORANJEMUND<br/>years = 2009 to 2015<br/>usaf/wban = 680026/99999","AUS<br/>years = 2009 to 2015<br/>usaf/wban = 680027/99999","ARANOS<br/>years = 2008 to 2015<br/>usaf/wban = 680035/99999","OOTMOED<br/>years = 2009 to 2018<br/>usaf/wban = 680065/99999","NOORDOEWER<br/>years = 2010 to 2015<br/>usaf/wban = 680066/99999","MALTAHOHE<br/>years = 2012 to 2015<br/>usaf/wban = 680067/99999","AROAB<br/>years = 2012 to 2018<br/>usaf/wban = 680072/99999","KARASBURG<br/>years = 2008 to 2015<br/>usaf/wban = 680151/99999","SELIBE-PHIKWE<br/>years = 2001 to 2006<br/>usaf/wban = 680560/99999","SELEBI-PHIKWE<br/>years = 2001 to 2020<br/>usaf/wban = 680700/99999","MARIENTAL<br/>years = 2005 to 2020<br/>usaf/wban = 681041/99999","BITTERWASSER<br/>years = 2008 to 2009<br/>usaf/wban = 681090/99999","WINDHOEK/EROS(SAAF)<br/>years = 1957 to 2020<br/>usaf/wban = 681100/99999","WINDHOEK (MET)<br/>years = 1988 to 1991<br/>usaf/wban = 681105/99999","REHOBETH<br/>years = 2009 to 2018<br/>usaf/wban = 681115/99999","HOSEA KUTAKO INTL<br/>years = 1973 to 2020<br/>usaf/wban = 681120/99999","GOBABIS<br/>years = 1960 to 2020<br/>usaf/wban = 681160/99999","MAHALAPYE<br/>years = 1975 to 2020<br/>usaf/wban = 681480/99999","LEPHEPE<br/>years = 2012 to 2020<br/>usaf/wban = 681510/99999","ELLISRAS<br/>years = 1997 to 2020<br/>usaf/wban = 681550/99999","ELLISRAS<br/>years = 1988 to 2005<br/>usaf/wban = 681560/99999","CUMBERLAND<br/>years = 1998 to 2004<br/>usaf/wban = 681590/99999","MARNITZ<br/>years = 1956 to 2005<br/>usaf/wban = 681620/99999","MARKEN<br/>years = 2004 to 2020<br/>usaf/wban = 681630/99999","ALLDAYS<br/>years = 1998 to 2005<br/>usaf/wban = 681710/99999","POLOKWANE<br/>years = 1949 to 2008<br/>usaf/wban = 681740/99999","MARA<br/>years = 1959 to 2020<br/>usaf/wban = 681760/99999","LOUIS TRICHARDT<br/>years = 1997 to 2005<br/>usaf/wban = 681780/99999","MESSINA-MACUVILLE<br/>years = 1965 to 2009<br/>usaf/wban = 681800/99999","TSHIPISE<br/>years = 1998 to 2016<br/>usaf/wban = 681810/99999","LEVUBU<br/>years = 1973 to 2020<br/>usaf/wban = 681820/99999","THOHOYANDOU<br/>years = 1997 to 2020<br/>usaf/wban = 681830/99999","LYDENBURG<br/>years = 1962 to 2020<br/>usaf/wban = 681840/99999","MAIEPSKOP(SAAFB)<br/>years = 1988 to 1988<br/>usaf/wban = 681844/99999","LYDENBURG<br/>years = 1998 to 2020<br/>usaf/wban = 681850/99999","TZANEEN<br/>years = 2002 to 2020<br/>usaf/wban = 681860/99999","TZANEEN<br/>years = 2002 to 2015<br/>usaf/wban = 681863/99999","TZANEEN-GRENSHOEK<br/>years = 1998 to 2020<br/>usaf/wban = 681880/99999","PHALABORWA<br/>years = 1958 to 2014<br/>usaf/wban = 681900/99999","GRAVELOTTE<br/>years = 1988 to 1990<br/>usaf/wban = 681903/99999","PHALABORWA<br/>years = 1997 to 2014<br/>usaf/wban = 681910/99999","THOHOYANDOU<br/>years = 1994 to 2020<br/>usaf/wban = 681920/99999","PAFURI<br/>years = 1998 to 2001<br/>usaf/wban = 681940/99999","PUNDA MARIA<br/>years = 2008 to 2020<br/>usaf/wban = 681960/99999","MARIENTAL<br/>years = 1960 to 2020<br/>usaf/wban = 682120/99999","KHUTSE<br/>years = 2004 to 2005<br/>usaf/wban = 682200/99999","TSHANE<br/>years = 1959 to 2020<br/>usaf/wban = 682260/99999","MABUASEHUBE<br/>years = 2001 to 2005<br/>usaf/wban = 682300/99999","KHUTSE<br/>years = 2002 to 2004<br/>usaf/wban = 682320/99999","JWANENG<br/>years = 1988 to 2020<br/>usaf/wban = 682340/99999","POMFRET<br/>years = 1998 to 2005<br/>usaf/wban = 682390/99999","SIR SERETSE KHAMA INTL<br/>years = 1985 to 2020<br/>usaf/wban = 682400/99999","MADIKWE GAME RESERVE<br/>years = 2008 to 2020<br/>usaf/wban = 682410/99999","LOKALENG<br/>years = 1987 to 1991<br/>usaf/wban = 682413/99999","MAFIKENG<br/>years = 1958 to 2020<br/>usaf/wban = 682420/99999","MAFIKENG<br/>years = 1988 to 1990<br/>usaf/wban = 682425/99999","DOORNLAAGTE<br/>years = 1998 to 2005<br/>usaf/wban = 682430/99999","GABORONE<br/>years = 1958 to 2016<br/>usaf/wban = 682440/99999","PILANSBERG<br/>years = 1988 to 2004<br/>usaf/wban = 682500/99999","BREDASDORP<br/>years = 1988 to 1989<br/>usaf/wban = 682513/99999","RUSTENBURG<br/>years = 1958 to 2005<br/>usaf/wban = 682520/99999","THABAZIMBI<br/>years = 1998 to 2020<br/>usaf/wban = 682530/99999","RUSTENBURG<br/>years = 1998 to 2020<br/>usaf/wban = 682550/99999","PILANESBERG<br/>years = 2004 to 2020<br/>usaf/wban = 682570/99999","GOEDEHOOP<br/>years = 1973 to 2020<br/>usaf/wban = 682580/99999","BOLEPI HOUSE<br/>years = 2013 to 2019<br/>usaf/wban = 682610/99999","PRETORIA(MET)<br/>years = 1949 to 2019<br/>usaf/wban = 682620/99999","WATERKLOOF (SAAF)<br/>years = 1987 to 1990<br/>usaf/wban = 682623/99999","PRETORIA/IRENE<br/>years = 1991 to 2020<br/>usaf/wban = 682630/99999","LANSERIA<br/>years = 1990 to 2020<br/>usaf/wban = 682635/99999","WATERKLOOF AFB<br/>years = 1991 to 2019<br/>usaf/wban = 682640/99999","WONDERBOOM<br/>years = 2006 to 2020<br/>usaf/wban = 682643/99999","MAKHADO AFB<br/>years = 2005 to 2019<br/>usaf/wban = 682645/99999","GRAND CENTRAL<br/>years = 2013 to 2015<br/>usaf/wban = 682650/99999","ERMELO<br/>years = 1998 to 2020<br/>usaf/wban = 682670/99999","GRAND CENTRAL<br/>years = 2004 to 2017<br/>usaf/wban = 682671/99999","JOHANNESBURG B/G<br/>years = 2004 to 2020<br/>usaf/wban = 682672/99999","RUSTENBURG<br/>years = 2004 to 2013<br/>usaf/wban = 682673/99999","SPRINGS<br/>years = 2004 to 2020<br/>usaf/wban = 682674/99999","MAHALAPYE<br/>years = 2004 to 2008<br/>usaf/wban = 682675/99999","SELEBI PHIKWE<br/>years = 2004 to 2020<br/>usaf/wban = 682676/99999","PIETERSBURG<br/>years = 2005 to 2020<br/>usaf/wban = 682677/99999","GREYTOWN<br/>years = 2015 to 2015<br/>usaf/wban = 682678/99999","WARMBAD TOWOOMBA<br/>years = 1963 to 2020<br/>usaf/wban = 682680/99999","PRETORIA-UNISA<br/>years = 2003 to 2020<br/>usaf/wban = 682690/99999","KOPANE<br/>years = 1997 to 2020<br/>usaf/wban = 682710/99999","OUDESTAD<br/>years = 1988 to 2020<br/>usaf/wban = 682720/99999","WITBANK<br/>years = 1998 to 2020<br/>usaf/wban = 682730/99999","POTGIETERSRUS<br/>years = 1973 to 2005<br/>usaf/wban = 682760/99999","MIDDELBURG DAM<br/>years = 1998 to 2005<br/>usaf/wban = 682770/99999","BELFAST<br/>years = 2013 to 2019<br/>usaf/wban = 682850/99999","GRASKOP-SKOOL<br/>years = 2002 to 2002<br/>usaf/wban = 682860/99999","GRASKOP<br/>years = 1998 to 2020<br/>usaf/wban = 682870/99999","NELSPRUIT<br/>years = 1973 to 2006<br/>usaf/wban = 682880/99999","NELSPRUIT         &<br/>years = 1987 to 1988<br/>usaf/wban = 682883/99999","HOEDSPRUIT (SAAF)<br/>years = 1987 to 1991<br/>usaf/wban = 682884/99999","NELSPRUIT<br/>years = 1998 to 2020<br/>usaf/wban = 682890/99999","HOEDSPRUIT AFB<br/>years = 1992 to 2020<br/>usaf/wban = 682900/99999","GARIEP DAM<br/>years = 2015 to 2015<br/>usaf/wban = 682903/99999","KRUGER MPUMALANGA INTL<br/>years = 2006 to 2020<br/>usaf/wban = 682904/99999","PILANESBERG INTL<br/>years = 2005 to 2020<br/>usaf/wban = 682905/99999","HOEDSPRUIT<br/>years = 1998 to 2020<br/>usaf/wban = 682910/99999","FLEUR DE LYS<br/>years = 1974 to 2004<br/>usaf/wban = 682920/99999","SKUKUZA AWS<br/>years = 2016 to 2016<br/>usaf/wban = 682950/99999","SKUKUZA<br/>years = 1959 to 2020<br/>usaf/wban = 682960/99999","BARBERTON<br/>years = 1988 to 1991<br/>usaf/wban = 682965/99999","KOMATIDRAAI<br/>years = 1998 to 2020<br/>usaf/wban = 682970/99999","WITBANK<br/>years = 1999 to 2015<br/>usaf/wban = 682974/99999","LOMAHASHA<br/>years = 2008 to 2015<br/>usaf/wban = 682980/99999","PIGGS PEAK<br/>years = 2007 to 2020<br/>usaf/wban = 682990/99999","VEREENIGING<br/>years = 1999 to 2020<br/>usaf/wban = 683007/99999","KEETMANSHOOP<br/>years = 1949 to 2020<br/>usaf/wban = 683120/99999","WERDA<br/>years = 2003 to 2020<br/>usaf/wban = 683200/99999","SWARTKOPS AFB<br/>years = 2004 to 2017<br/>usaf/wban = 683210/99999","TWEE RIVIEREN<br/>years = 1973 to 2020<br/>usaf/wban = 683220/99999","GOOD HOPE<br/>years = 2004 to 2020<br/>usaf/wban = 683250/99999","TSABONG<br/>years = 1958 to 2020<br/>usaf/wban = 683280/99999","VAN ZYLSRUS<br/>years = 1998 to 2020<br/>usaf/wban = 683290/99999","VANZYLSRUS<br/>years = 1987 to 2004<br/>usaf/wban = 683300/99999","LOUIS TRICHARDT AFB<br/>years = 1990 to 2008<br/>usaf/wban = 683304/99999","KATHU<br/>years = 1998 to 2020<br/>usaf/wban = 683310/99999","KURUMAN<br/>years = 1957 to 2004<br/>usaf/wban = 683320/99999","KURUMAN<br/>years = 2006 to 2020<br/>usaf/wban = 683330/99999","TAUNG<br/>years = 1998 to 2020<br/>usaf/wban = 683350/99999","SISHEN<br/>years = 1999 to 2015<br/>usaf/wban = 683354/99999","VRYBURG<br/>years = 1956 to 2020<br/>usaf/wban = 683380/99999","LICHTENBURG<br/>years = 1998 to 2020<br/>usaf/wban = 683410/99999","OTTOSDAL<br/>years = 1973 to 2020<br/>usaf/wban = 683420/99999","BLOEMHOF<br/>years = 1998 to 2020<br/>usaf/wban = 683430/99999","PLESSISDRAAI<br/>years = 1957 to 2002<br/>usaf/wban = 683440/99999","WELKOM<br/>years = 1998 to 2020<br/>usaf/wban = 683450/99999","WELKOM<br/>years = 1973 to 2003<br/>usaf/wban = 683460/99999","RAND<br/>years = 1987 to 2020<br/>usaf/wban = 683463/99999","ERMELO<br/>years = 1988 to 2020<br/>usaf/wban = 683465/99999","P C PELSER<br/>years = 1998 to 2020<br/>usaf/wban = 683470/99999","VENTERSDORP<br/>years = 1998 to 2020<br/>usaf/wban = 683490/99999","POTCHEFSTROOM<br/>years = 1956 to 2020<br/>usaf/wban = 683500/99999","POTCHEFSTROOM<br/>years = 1980 to 2015<br/>usaf/wban = 683510/99999","KROONSTAD<br/>years = 1960 to 2012<br/>usaf/wban = 683520/99999","VEREENIGING<br/>years = 1998 to 2020<br/>usaf/wban = 683530/99999","KROONSTAD<br/>years = 1998 to 2020<br/>usaf/wban = 683550/99999","JOHANNESBURG BOT. GARDENS<br/>years = 2004 to 2020<br/>usaf/wban = 683610/99999","FRANKFORT<br/>years = 1949 to 2020<br/>usaf/wban = 683620/99999","SPRINGS<br/>years = 2004 to 2020<br/>usaf/wban = 683630/99999","HENDRINA/PRIVATE<br/>years = 2004 to 2004<br/>usaf/wban = 683670/99999","JOHANNESBURG INTL<br/>years = 1956 to 2020<br/>usaf/wban = 683680/99999","MARGATE<br/>years = 1997 to 2003<br/>usaf/wban = 683685/99999","GERMISTON<br/>years = 2005 to 2005<br/>usaf/wban = 683690/99999","BETHAL<br/>years = 1973 to 2019<br/>usaf/wban = 683700/99999","HEIDELBERG<br/>years = 2004 to 2005<br/>usaf/wban = 683710/99999","STANDERTON<br/>years = 1959 to 2008<br/>usaf/wban = 683720/99999","VREDE<br/>years = 2004 to 2020<br/>usaf/wban = 683750/99999","NEWCASTLE<br/>years = 1998 to 2017<br/>usaf/wban = 683770/99999","NEWCASTLE<br/>years = 1956 to 2005<br/>usaf/wban = 683780/99999","NEWCASTLE<br/>years = 1987 to 2007<br/>usaf/wban = 683783/99999","VRYHEID<br/>years = 1997 to 2003<br/>usaf/wban = 683784/99999","CAROLINA<br/>years = 1958 to 2019<br/>usaf/wban = 683800/99999","COOKHOUSE<br/>years = 2005 to 2018<br/>usaf/wban = 683801/99999","JERICHO<br/>years = 2011 to 2020<br/>usaf/wban = 683820/99999","NDZEVANE<br/>years = 2011 to 2020<br/>usaf/wban = 683830/99999","PIET RETIEF<br/>years = 1998 to 2006<br/>usaf/wban = 683850/99999","NYONYANE<br/>years = 2011 to 2020<br/>usaf/wban = 683860/99999","VRYHEID<br/>years = 1998 to 2019<br/>usaf/wban = 683870/99999","PIET RETIEF<br/>years = 1956 to 2006<br/>usaf/wban = 683880/99999","MAYIWANNE<br/>years = 2007 to 2020<br/>usaf/wban = 683900/99999","MBABANE<br/>years = 2007 to 2016<br/>usaf/wban = 683910/99999","NHLANGANO<br/>years = 2007 to 2020<br/>usaf/wban = 683920/99999","MOTI<br/>years = 2011 to 2020<br/>usaf/wban = 683923/99999","MUSI<br/>years = 2011 to 2018<br/>usaf/wban = 683924/99999","VUVULANE<br/>years = 2011 to 2018<br/>usaf/wban = 683925/99999","LAVUMISA<br/>years = 2007 to 2019<br/>usaf/wban = 683930/99999","NSOKO AIRFIELD<br/>years = 2010 to 2010<br/>usaf/wban = 683935/99999","HLATHIKHULU<br/>years = 2007 to 2017<br/>usaf/wban = 683950/99999","MATSAPHA<br/>years = 1973 to 2020<br/>usaf/wban = 683960/99999","MBAZWANA AIRFIELD<br/>years = 2009 to 2020<br/>usaf/wban = 683970/99999","SITEKI<br/>years = 2003 to 2020<br/>usaf/wban = 683980/99999","BIG BEND<br/>years = 2007 to 2020<br/>usaf/wban = 683990/99999","MAKATINI<br/>years = 1994 to 2020<br/>usaf/wban = 684000/99999","ALEXANDER BAY<br/>years = 1997 to 2020<br/>usaf/wban = 684030/99999","ALEXANDER BAY<br/>years = 1956 to 2005<br/>usaf/wban = 684060/99999","PORT NOLLOTH<br/>years = 1949 to 2020<br/>usaf/wban = 684080/99999","VIOOLSDRIF<br/>years = 1998 to 2020<br/>usaf/wban = 684110/99999","DURNACOL<br/>years = 2004 to 2004<br/>usaf/wban = 684150/99999","POFADDER<br/>years = 1955 to 2020<br/>usaf/wban = 684160/99999","LIME ACRES FINSCH MINE<br/>years = 2016 to 2016<br/>usaf/wban = 684164/99999","UPINGTON<br/>years = 1956 to 2020<br/>usaf/wban = 684240/99999","AUGRABIES FALLS<br/>years = 2013 to 2020<br/>usaf/wban = 684250/99999","POSTMASBURG<br/>years = 1998 to 2020<br/>usaf/wban = 684290/99999","POSTMASBURG<br/>years = 2004 to 2005<br/>usaf/wban = 684300/99999","KIMBERLEY<br/>years = 1949 to 2020<br/>usaf/wban = 684380/99999","KOMATIPOORT<br/>years = 2008 to 2008<br/>usaf/wban = 684381/99999","BLOEMFONTEIN INTL<br/>years = 1949 to 2020<br/>usaf/wban = 684420/99999","BLOEMFONTEIN CITY<br/>years = 2006 to 2020<br/>usaf/wban = 684430/99999","GLEN COLLEGE AWS<br/>years = 2013 to 2020<br/>usaf/wban = 684470/99999","FICKSBURG<br/>years = 1998 to 2020<br/>usaf/wban = 684490/99999","MOKHOTLONG<br/>years = 1984 to 2005<br/>usaf/wban = 684520/99999","MOSHOESHOE I INTL<br/>years = 1987 to 2020<br/>usaf/wban = 684533/99999","MEJAMETALANA<br/>years = 1974 to 2020<br/>usaf/wban = 684540/99999","QACHA'S NEK<br/>years = 1984 to 2007<br/>usaf/wban = 684560/99999","BETHLEHEM<br/>years = 1980 to 2020<br/>usaf/wban = 684610/99999","BETHLEHEM<br/>years = 1957 to 2005<br/>usaf/wban = 684620/99999","VAN REENEN<br/>years = 1998 to 2020<br/>usaf/wban = 684710/99999","ROYAL NATAL NAT. PARK<br/>years = 1998 to 2020<br/>usaf/wban = 684740/99999","ESHOWE<br/>years = 2004 to 2005<br/>usaf/wban = 684750/99999","LADYSMITH<br/>years = 1984 to 2015<br/>usaf/wban = 684760/99999","ESTCOURT<br/>years = 1957 to 2019<br/>usaf/wban = 684780/99999","LADYSMITH<br/>years = 1997 to 2020<br/>usaf/wban = 684790/99999","PONGOLA<br/>years = 1997 to 2020<br/>usaf/wban = 684810/99999","MOOI RIVER<br/>years = 2013 to 2020<br/>usaf/wban = 684850/99999","GREYTOWN<br/>years = 1997 to 2020<br/>usaf/wban = 684870/99999","BABANANGO<br/>years = 1995 to 2020<br/>usaf/wban = 684880/99999","CHARTERS CREEK<br/>years = 1998 to 2020<br/>usaf/wban = 684910/99999","PRINCE MANGOSUTHU BUTHELEZI<br/>years = 1997 to 2020<br/>usaf/wban = 684930/99999","MANDINI<br/>years = 1998 to 2020<br/>usaf/wban = 684940/99999","RICHARDS BAY AIRPORT<br/>years = 1997 to 2020<br/>usaf/wban = 684950/99999","CAPE ST. LUCIA<br/>years = 1949 to 2015<br/>usaf/wban = 684960/99999","PIETERMARITZBURG<br/>years = 1997 to 2019<br/>usaf/wban = 684963/99999","MTUNZINI<br/>years = 1998 to 2020<br/>usaf/wban = 684970/99999","RICHARD'S BAY<br/>years = 1994 to 2004<br/>usaf/wban = 684980/99999","SPRINGBOK<br/>years = 1955 to 2020<br/>usaf/wban = 685120/99999","STANDERTON<br/>years = 2004 to 2008<br/>usaf/wban = 685121/99999","KOINGNAAS<br/>years = 1998 to 2020<br/>usaf/wban = 685130/99999","HENKRIES<br/>years = 2001 to 2013<br/>usaf/wban = 685140/99999","BRANDVLEI<br/>years = 1997 to 2020<br/>usaf/wban = 685230/99999","VANWYKSVLEI<br/>years = 1955 to 2020<br/>usaf/wban = 685240/99999","PRIESKA<br/>years = 1998 to 2020<br/>usaf/wban = 685270/99999","PRIESKA<br/>years = 1957 to 2005<br/>usaf/wban = 685280/99999","DOUGLAS<br/>years = 1974 to 2005<br/>usaf/wban = 685300/99999","DE AAR<br/>years = 1957 to 2005<br/>usaf/wban = 685360/99999","DEAAR(UA)<br/>years = 1993 to 2020<br/>usaf/wban = 685380/99999","FAURESMITH<br/>years = 2013 to 2020<br/>usaf/wban = 685410/99999","FAURESMITH<br/>years = 1956 to 1999<br/>usaf/wban = 685420/99999","GARIEP DAM<br/>years = 2013 to 2020<br/>usaf/wban = 685430/99999","VENTERSTAD<br/>years = 1998 to 2003<br/>usaf/wban = 685450/99999","ALIWAL NORTH<br/>years = 1955 to 2020<br/>usaf/wban = 685460/99999","WEPENER<br/>years = 2013 to 2020<br/>usaf/wban = 685490/99999","WEPENER<br/>years = 1955 to 2005<br/>usaf/wban = 685500/99999","BARKLY EAST<br/>years = 1998 to 2020<br/>usaf/wban = 685580/99999","BURGERSDORP<br/>years = 2005 to 2005<br/>usaf/wban = 685630/99999","SHEEPRUN<br/>years = 1962 to 2005<br/>usaf/wban = 685640/99999","MATATIELE<br/>years = 1995 to 2012<br/>usaf/wban = 685700/99999","SHALEBURN<br/>years = 1962 to 2020<br/>usaf/wban = 685720/99999","KOKSTAD<br/>years = 1973 to 2004<br/>usaf/wban = 685740/99999","IXOPO<br/>years = 1998 to 2020<br/>usaf/wban = 685750/99999","KOKSTAD<br/>years = 2005 to 2020<br/>usaf/wban = 685770/99999","PADDOCK<br/>years = 2004 to 2020<br/>usaf/wban = 685790/99999","CEDARA<br/>years = 1959 to 2020<br/>usaf/wban = 685800/99999","PIETERMARITZBURG<br/>years = 1997 to 2020<br/>usaf/wban = 685810/99999","ORIBI AIRPORT<br/>years = 2013 to 2020<br/>usaf/wban = 685820/99999","MOUNT EDGECOMBE<br/>years = 1998 to 2020<br/>usaf/wban = 685830/99999","PORT SHEPSTONE<br/>years = 1973 to 2005<br/>usaf/wban = 685840/99999","DURBAN/VIRGINIA<br/>years = 1988 to 1990<br/>usaf/wban = 685845/99999","PENNINGTON SOUTH<br/>years = 2004 to 2020<br/>usaf/wban = 685850/99999","PORT EDWARD<br/>years = 1998 to 2020<br/>usaf/wban = 685870/99999","DURBAN INTL<br/>years = 1956 to 2020<br/>usaf/wban = 685880/99999","GIANTS CASTLE<br/>years = 1997 to 2020<br/>usaf/wban = 685890/99999","ADDINGTON<br/>years = 1949 to 1953<br/>usaf/wban = 685900/99999","MARGATE<br/>years = 1997 to 2020<br/>usaf/wban = 685910/99999","KING SHAKA INTL AIRPORT<br/>years = 2010 to 2020<br/>usaf/wban = 685920/99999","VIRGINIA<br/>years = 1998 to 2020<br/>usaf/wban = 685930/99999","LAMBERTS BAY<br/>years = 1998 to 2020<br/>usaf/wban = 686130/99999","VREDENDAL<br/>years = 1957 to 2020<br/>usaf/wban = 686140/99999","VANRHYSDORP<br/>years = 1986 to 2005<br/>usaf/wban = 686160/99999","CALVINIA<br/>years = 1956 to 2020<br/>usaf/wban = 686180/99999","NIEUWOUDTVILLE<br/>years = 2013 to 2020<br/>usaf/wban = 686190/99999","FRASERBURG<br/>years = 1973 to 2020<br/>usaf/wban = 686240/99999","VICTORIA / WEST<br/>years = 2004 to 2006<br/>usaf/wban = 686300/99999","NOUPOORT<br/>years = 1998 to 2020<br/>usaf/wban = 686330/99999","MIDDELBURG<br/>years = 1957 to 2003<br/>usaf/wban = 686380/99999","WILLOW PARK<br/>years = 1973 to 1973<br/>usaf/wban = 686460/99999","QUEENSTOWN<br/>years = 1997 to 2020<br/>usaf/wban = 686470/99999","QUEENSTOWN<br/>years = 1957 to 2005<br/>usaf/wban = 686480/99999","JAMESTOWN<br/>years = 1997 to 2020<br/>usaf/wban = 686490/99999","ELLIOT<br/>years = 1997 to 2020<br/>usaf/wban = 686510/99999","MTHATHA<br/>years = 1973 to 2020<br/>usaf/wban = 686680/99999","PORT ST JOHNS<br/>years = 1949 to 2020<br/>usaf/wban = 686740/99999","COFFEE BAY<br/>years = 2013 to 2020<br/>usaf/wban = 686770/99999","CAPE COLUMBINE<br/>years = 1949 to 2020<br/>usaf/wban = 687120/99999","PAARL<br/>years = 2004 to 2020<br/>usaf/wban = 687130/99999","LANGEBAANWEG<br/>years = 1973 to 2020<br/>usaf/wban = 687140/99999","MALMESBURY<br/>years = 1997 to 2020<br/>usaf/wban = 687150/99999","PORTERVILLE<br/>years = 1998 to 2020<br/>usaf/wban = 687170/99999","ROBERTSON<br/>years = 1973 to 2020<br/>usaf/wban = 687180/99999","EXCELSIOR<br/>years = 2004 to 2020<br/>usaf/wban = 687190/99999","SUTHERLAND<br/>years = 1959 to 2020<br/>usaf/wban = 687220/99999","LAINGSBURG<br/>years = 1998 to 2020<br/>usaf/wban = 687230/99999","BEAUFORT WEST<br/>years = 1998 to 2020<br/>usaf/wban = 687270/99999","BEAUFORT WEST(MET)<br/>years = 1949 to 2015<br/>usaf/wban = 687280/99999","BEAUFORT WEST (MET)<br/>years = 1988 to 1991<br/>usaf/wban = 687285/99999","GRAAFF REINET<br/>years = 1973 to 2003<br/>usaf/wban = 687360/99999","GRAAFF-REINET<br/>years = 1998 to 2020<br/>usaf/wban = 687370/99999","JANSENVILLE<br/>years = 1973 to 2005<br/>usaf/wban = 687380/99999","SOMERSET EAST<br/>years = 1960 to 2005<br/>usaf/wban = 687420/99999","CRADOCK<br/>years = 1994 to 2020<br/>usaf/wban = 687440/99999","FORT BEAUFORT<br/>years = 1997 to 2020<br/>usaf/wban = 687470/99999","BHISHO<br/>years = 1987 to 2020<br/>usaf/wban = 687520/99999","BISHO<br/>years = 1991 to 1996<br/>usaf/wban = 687523/99999","DOHNE<br/>years = 1973 to 2020<br/>usaf/wban = 687540/99999","MBASHE<br/>years = 1973 to 1975<br/>usaf/wban = 687680/99999","GEELBEK<br/>years = 2004 to 2020<br/>usaf/wban = 688110/99999","ROBBEN ISLAND<br/>years = 2004 to 2020<br/>usaf/wban = 688130/99999","DASSEN ISLAND<br/>years = 1998 to 2012<br/>usaf/wban = 688140/99999","LANGEBAAN<br/>years = 1997 to 2020<br/>usaf/wban = 688150/99999","CAPE TOWN INTL<br/>years = 1949 to 2020<br/>usaf/wban = 688160/99999","CAPE TOWN - PORTNET<br/>years = 1998 to 2020<br/>usaf/wban = 688170/99999","TOUWS RIVER<br/>years = 1949 to 2006<br/>usaf/wban = 688180/99999","PRINCE ALBERT ROAD<br/>years = 1989 to 1989<br/>usaf/wban = 688183/99999","MOLTENO RESERVIOR<br/>years = 2013 to 2020<br/>usaf/wban = 688190/99999","WORCESTER<br/>years = 1998 to 2020<br/>usaf/wban = 688210/99999","PRINS ALBERT<br/>years = 1997 to 2020<br/>usaf/wban = 688230/99999","LADISMITH<br/>years = 2013 to 2020<br/>usaf/wban = 688250/99999","OUDTSHOORN<br/>years = 1973 to 2018<br/>usaf/wban = 688260/99999","YSTERPLANT(SAAFB)<br/>years = 2004 to 2020<br/>usaf/wban = 688270/99999","GEORGE<br/>years = 1949 to 2020<br/>usaf/wban = 688280/99999","WILLOWMORE<br/>years = 1959 to 2020<br/>usaf/wban = 688320/99999","JOUBERTINA<br/>years = 2004 to 2020<br/>usaf/wban = 688330/99999","PATENSIE<br/>years = 1998 to 2020<br/>usaf/wban = 688350/99999","NGQURA (COEGA)<br/>years = 2013 to 2020<br/>usaf/wban = 688370/99999","UITENHAGE<br/>years = 1997 to 2020<br/>usaf/wban = 688390/99999","SOMERSET<br/>years = 2013 to 2020<br/>usaf/wban = 688400/99999","ADDO ELEPHANT PARK<br/>years = 2013 to 2020<br/>usaf/wban = 688410/99999","PORT ELIZABETH INTL<br/>years = 1949 to 2020<br/>usaf/wban = 688420/99999","PORT ALFRED AIRPORT<br/>years = 2007 to 2020<br/>usaf/wban = 688430/99999","BIRD ISLAND<br/>years = 2013 to 2018<br/>usaf/wban = 688450/99999","PORT ALFRED<br/>years = 1997 to 2005<br/>usaf/wban = 688470/99999","GRAHAMSTOWN<br/>years = 1998 to 2020<br/>usaf/wban = 688490/99999","EAST LONDON<br/>years = 1949 to 2020<br/>usaf/wban = 688580/99999","STRAND<br/>years = 2004 to 2020<br/>usaf/wban = 689110/99999","SLANGKOP<br/>years = 1998 to 2020<br/>usaf/wban = 689120/99999","SIMONSTOWN<br/>years = 1949 to 1950<br/>usaf/wban = 689140/99999","CAPE POINT (AUTO)<br/>years = 2004 to 2006<br/>usaf/wban = 689150/99999","CAPE POINT<br/>years = 1973 to 2020<br/>usaf/wban = 689160/99999","HERMANUS<br/>years = 1998 to 2020<br/>usaf/wban = 689180/99999","CAPE AGULHAS<br/>years = 1949 to 2020<br/>usaf/wban = 689200/99999","BREDASDORP<br/>years = 1989 to 2019<br/>usaf/wban = 689203/99999","STRUISBAAI<br/>years = 1998 to 2020<br/>usaf/wban = 689210/99999","TIGERHOEK<br/>years = 2004 to 2020<br/>usaf/wban = 689230/99999","ELGIN EXP FARM<br/>years = 1998 to 2020<br/>usaf/wban = 689250/99999","RIVERSDALE<br/>years = 1973 to 2020<br/>usaf/wban = 689260/99999","OVERBERG<br/>years = 1990 to 2020<br/>usaf/wban = 689263/99999","STILBAAI<br/>years = 2004 to 2020<br/>usaf/wban = 689270/99999","MOSSEL BAY (LGT-H)<br/>years = 1949 to 2020<br/>usaf/wban = 689280/99999","HUMANSDORP<br/>years = 2004 to 2006<br/>usaf/wban = 689290/99999","PLETTENBERG BAY<br/>years = 1998 to 2020<br/>usaf/wban = 689310/99999","TSITSIKAMMA<br/>years = 2004 to 2020<br/>usaf/wban = 689330/99999","KNYSNA<br/>years = 1998 to 2020<br/>usaf/wban = 689350/99999","CAPE ST. FRANCIS<br/>years = 1973 to 2006<br/>usaf/wban = 689380/99999","CAPE ST FRANCIS<br/>years = 2004 to 2020<br/>usaf/wban = 689390/99999","BISHO             &<br/>years = 1988 to 1991<br/>usaf/wban = 689945/99999","CT-AWS<br/>years = 2004 to 2020<br/>usaf/wban = 689990/99999"],{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[-34.833,-22.05],"lng":[16.292,33.633]}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+
+Note that hovering your cursor over the blue circles gives the name of the station, the years operational and the *usaf* and *wban* codes required to pull them out of the database (see further down).
+
+There's also a function for searching for all stations within a specified radius of a point of interest.
+
+
+```r
+out <- isd_stations_search(lat = -34.1, lon = 18.45, radius = 40)
+head(out)
+```
+
+```
+## # A tibble: 6 x 12
+##   usaf  wban  station_name ctry  state icao    lat   lon elev_m  begin
+##   <chr> <chr> <chr>        <chr> <chr> <chr> <dbl> <dbl>  <dbl>  <dbl>
+## 1 6891… 99999 SIMONSTOWN   SF    ""    ""    -34.2  18.4    293 1.95e7
+## 2 6891… 99999 SLANGKOP     SF    ""    ""    -34.2  18.3      8 2.00e7
+## 3 6881… 99999 MOLTENO RES… SF    ""    ""    -33.9  18.4     97 2.01e7
+## 4 6899… 99999 CT-AWS       SF    ""    ""    -34.0  18.6     46 2.00e7
+## 5 6881… 99999 CAPE TOWN I… SF    ""    "FAC… -34.0  18.6     46 1.95e7
+## 6 6881… 99999 CAPE TOWN -… SF    ""    ""    -33.9  18.4      2 2.00e7
+## # … with 2 more variables: end <dbl>, distance <dbl>
+```
+
+And if we visualize the area searched...
+
+
+```r
+pt <- lawn::lawn_point(c(18.45, -34.1))
+lawn::lawn_buffer(pt, dist = 40) %>% view
+```
+
+<!--html_preserve--><div id="htmlwidget-97c50d8f7fabf93ca1ec" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-97c50d8f7fabf93ca1ec">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addGeoJSON","args":[{"type":"Feature","properties":{},"geometry":{"type":"Polygon","coordinates":[[[18.7130349418597,-33.9399912321583],[18.6704232533911,-33.9006370532161],[18.6194391015686,-33.8688795050021],[18.5620072948909,-33.8459214761841],[18.5002908734164,-33.8326389072171],[18.4366146044137,-33.829548066388],[18.3733826821452,-33.8367848228785],[18.3129927592298,-33.8540968483277],[18.2577486685664,-33.8808494307065],[18.2097744687025,-33.9160452545823],[18.1709327217429,-33.9583580750503],[18.1427501375208,-34.0061796887348],[18.1263538298008,-34.0576790017204],[18.1224213697827,-34.1108713459719],[18.131147539523,-34.1636955527514],[18.1522301531245,-34.214095714031],[18.1848765246366,-34.2601041145549],[18.2278311499273,-34.2999215566491],[18.2794240012776,-34.3319912720709],[18.337637604192,-34.3550628437189],[18.4001898917614,-34.3682430417196],[18.4646288329699,-34.3710311816206],[18.5284341139388,-34.3633374795436],[18.5891207903969,-34.3454838334787],[18.6443398568704,-34.3181874158358],[18.6919710752286,-34.2825283372532],[18.7302041088775,-34.2399033671345],[18.7576049220542,-34.1919682270043],[18.7731654130883,-34.140571290599],[18.7763352455842,-34.0876816388303],[18.7670357309266,-34.0353143600802],[18.7456563385909,-33.9854558030319],[18.7130349418597,-33.9399912321583]]]}},null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":5,"opacity":0.5,"fill":true,"fillColor":"#03F","fillOpacity":0.2,"smoothFactor":1,"noClip":false}]}],"fitBounds":[-34.3710311816206,18.1224213697827,-33.829548066388,18.7763352455842,[]]},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+
+
+Ok, now let's get a smattering of stations from across the Cape Peninsula that have data for 2019, combine them into one object and plot
+
+
+```r
+###Pull data from online database to local file and then read in
+res1 <- isd(usaf=out$usaf[2], wban="99999", year=2019, force = T)
+res2 <- isd(usaf=out$usaf[3], wban="99999", year=2019, force = T)
+res3 <- isd(usaf=out$usaf[5], wban="99999", year=2019, force = T)
+res4 <- isd(usaf=out$usaf[9], wban="99999", year=2019, force = T)
+
+###Combine data into one dataframe
+res_all <- bind_rows(res1, res2, res3, res4) #Note that not all stations have all variables and bind_rows() fills empty columns with NAs
+
+###Create a combined date + time column
+res_all$date_time <- ymd_hm(
+  sprintf("%s %s", as.character(res_all$date), res_all$time)
+)
+
+###Convert "temperature" column from codes to numeric and divide by 10 (the data come in tenths of a degree)
+res_all$temperature <- as.numeric(substr(res_all$temperature, 2, 5))/10
+
+###Remove the "NA" values, which NOAA code as "999"
+res_all$temperature[which(res_all$temperature > 900)] <- NA
+
+###Visualize the data
+ggplot(res_all, aes(date_time, temperature)) +
+  geom_line() + 
+  facet_wrap(~usaf_station, scales = "free_x")
+```
+
+<img src="/docs/datasets/weatherstations_files/figure-html/compare2019-1.png" width="672" />
+
+Recall that the ISD dataset is hourly (or mostly 3-hourly in this case), so perhaps better to look at daily max or min temperatures and precipitation?
+
+
+```r
+###Some dodgy cleaning of the rainfall data - CHECK MY ASSUMPTION THAT NA = 0mm RAINFALL 
+res_all$AA1_depth[is.na(res_all$AA1_depth)] <- 0
+res_all$AA1_depth[which(res_all$AA1_depth == 9999)] <- NA
+res_all$AA1_depth <- as.numeric(res_all$AA1_depth)
+
+res_all$date <- as.Date(res_all$date, format = "%Y%m%d")
+
+###Summarize Tmin, Tmax and Precipitation
+dayres <- res_all %>% group_by(usaf_station, date) %>% summarise(tmax = max(temperature, na.rm = T), tmin = min(temperature, na.rm = T), prec = max(AA1_depth, na.rm = T)/10) #note I take max precip and divide by ten, because it seems to be a hourly cumulative sum in tenths of a mm (Check this!)
+
+###Melt and plot
+dayres %>% melt(id = c("usaf_station", "date")) %>% ggplot(aes(date, value, colour = usaf_station)) +
+  geom_line() + 
+  facet_wrap(~variable, scales = "free_y")
+```
+
+<img src="/docs/datasets/weatherstations_files/figure-html/isd_summary-1.png" width="672" />
+
+Or monthly...
+
+
+```r
+###Fix dates
+res_all$month <- month(res_all$date_time) #note this is all in 2019
+
+###Summarize Tmin, Tmax and Precipitation
+monthres <- res_all %>% group_by(usaf_station, month) %>% summarise(tmax = max(temperature, na.rm = T), tmin = min(temperature, na.rm = T), prec = sum(AA1_depth, na.rm = T)/30)
+
+###Melt and plot
+monthres %>% melt(id = c("usaf_station", "month")) %>% ggplot(aes(month, value, colour = usaf_station)) +
+  geom_line() + 
+  facet_wrap(~variable, scales = "free_y")
+```
+
+<img src="/docs/datasets/weatherstations_files/figure-html/isd_monthly-1.png" width="672" />
+
+Note that the rnoaa functions save files in a local cache. If you repeat a search, they usually just read in that cache rather than redoing the search and download. Some functions allow you to specify `force = TRUE` to force a new download, but others don't. In this case you will need to clear the cache manually. You can find the cache on your machine by calling `rappdirs::user_cache_dir("rnoaa/ghcnd")`.
+
+What if we wanted to look at a longer record? The `isd()` function only allows us to pull one year at a time so we need to automate using a loop or similar.
+
+We may also be keen to see the names? Or select stations by name rather than usaf/wban codes. You can easily pick your own station names by exploring the interactive map we made above. Then we'll loop through a few years for each station to get a multi-year record.
+
+Here's the daily Tmin and Tmax for the period 2013 to 2020 for a few stations around Cape Town.
+
+
+```r
+###Select stations by name and filter
+stations <- c("SLANGKOP", "MOLTENO RESERVIOR", "CAPE TOWN INTL", "CAPE POINT")
+sout <- filter(out, station_name %in% stations)
+
+###Set date range
+yr <- 2013:2020
+
+###Ok, now I'll use 2 nested "for" loops to extract data for all years for each station. "for" loops can often be slower than other approaches like writing functions, but in this case its not a problem because the API call and data download are the slow bit. Using a "for" loop is perhaps easier to follow what I'm doing too. 
+
+drtdat <- list() #Make list object to capture outputs (elements will be stations)
+
+#For each station
+for (i in 1:nrow(sout)) { 
+  
+  res <- list() #Make list object to capture interim outputs stations by station (elements will be years)
+  
+  #For each year (j), extract the data for station (i)
+  for (j in 1:length(yr)) {
+    res[[j]] <- tryCatch({
+      isd(usaf=sout$usaf[i], wban=sout$wban[i], year=yr[j]) }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+  }
+  
+  res <- bind_rows(res) #Convert the interim list object into a dataframe
+  drtdat[[i]] <- res #Add the dataframe for station i to the output list
+}
+
+###Convert output to a dataframe and add the station names
+names(drtdat) <- stations
+dat <- bind_rows(drtdat)
+dat <- right_join(sout[,c("station_name", "usaf")], dat, by = c("usaf"="usaf_station"))
+
+###Create a combined date + time column and year/month/day columns
+dat$date_time <- ymd_hm(
+  sprintf("%s %s", as.character(dat$date), dat$time)
+)
+dat$year <- year(dat$date_time) #note this is NOT all in 2019 this time
+dat$month <- month(dat$date_time) 
+dat$day <- month(dat$date_time) 
+dat$date <- as.Date(dat$date, format = "%Y%m%d")
+
+###Convert "temperature" column from codes to numeric
+dat$temperature <- as.numeric(substr(dat$temperature, 2, 5))/10
+
+###Remove the "NA" values, which NOAA code as "999"
+dat$temperature[which(dat$temperature > 900)] <- NA
+
+###Some dodgy cleaning of the rainfall data - CHECK MY ASSUMPTION THAT NA = 0mm RAINFALL 
+dat$AA1_depth[is.na(dat$AA1_depth)] <- 0
+dat$AA1_depth[which(dat$AA1_depth == 9999)] <- NA
+dat$AA1_depth <- as.numeric(dat$AA1_depth)
+
+###Daily summary of Tmin and Tmax
+daydat <- dat %>% group_by(station_name, date) %>% summarise(tmax = max(temperature, na.rm = T), tmin = min(temperature, na.rm = T)) 
+
+###Melt and plot
+daydat %>% melt(id = c("station_name", "date")) %>% ggplot(aes(date, value, colour = variable)) +
+  geom_line() + 
+  facet_wrap(~station_name)
+```
+
+<img src="/docs/datasets/weatherstations_files/figure-html/compare2013_2019-1.png" width="672" />
+
+Or precipitation by month?
+
+
+```r
+###Summarize Tmin, Tmax and Precipitation
+monthdat <- dat %>% group_by(station_name, year, month) %>% summarise(prec = sum(AA1_depth, na.rm = T)/30)
+monthdat$date <- as.Date(paste(monthdat$year, monthdat$month, "01", sep = "/"), format = "%Y/%m/%d")
+
+###Melt and plot
+monthdat %>% select(station_name, date, prec) %>% ggplot(aes(date, prec)) +
+  geom_line() + 
+  facet_wrap(~station_name, scales = "free_y")
+```
+
+<img src="/docs/datasets/weatherstations_files/figure-html/compare2014_2019_monthly-1.png" width="672" />
+
+
+Ok, what about looking at even longer records? Most of South Africa has experienced pretty extreme drought in the past 5 years or so, so let's pull out a few major cities and towns that give us good coverage of the country.
+
+
+***
+
+## The Global Historical Climatology Network
+
+***
+
+Note that the Integrated Surface Dataset (ISD) gives us hourly data, which is overkill for looking at longer records as the dataset gets very large. For this operation it is better to query the Global Historical Climatology Network as described by [**Menne et al. 2012**](https://doi.org/10.1175/JTECH-D-11-00103.1). CAVEAT: I take no responsibility for the data. Have a look at the paper for details on error corrections, biases, etc.
+
+Let's have a look at Cape Town International Airport
+
+
+```r
+ct <- meteo_tidy_ghcnd(stationid = "SFM00068816", var = c("TMAX", "TMIN", "PRCP"))
+
+head(ct)
+```
+
+```
+## # A tibble: 6 x 5
+##   id          date        prcp  tmax  tmin
+##   <chr>       <date>     <dbl> <dbl> <dbl>
+## 1 SFM00068816 1973-06-01    NA    NA    NA
+## 2 SFM00068816 1973-06-02    NA    NA    NA
+## 3 SFM00068816 1973-06-03    NA    NA    NA
+## 4 SFM00068816 1973-06-04    NA    NA    NA
+## 5 SFM00068816 1973-06-05    NA    NA    NA
+## 6 SFM00068816 1973-06-06    NA    NA    NA
+```
+
+Note that I had to know the station ID "SFM00068816". For some reason you can't query the database of stations using the same method as for the ISD and you have to download the entire list of all ~630 000 global weather stations and query that locally to get the station ID.
+
+
+```r
+station_data <- ghcnd_stations() # Takes a while to run
+head(station_data)
+```
+
+```
+## # A tibble: 6 x 11
+##   id    latitude longitude elevation state name  gsn_flag wmo_id element
+##   <chr>    <dbl>     <dbl>     <dbl> <chr> <chr> <chr>    <chr>  <chr>  
+## 1 ACW0…     17.1     -61.8      10.1 ""    ST J… ""       ""     TMAX   
+## 2 ACW0…     17.1     -61.8      10.1 ""    ST J… ""       ""     TMIN   
+## 3 ACW0…     17.1     -61.8      10.1 ""    ST J… ""       ""     PRCP   
+## 4 ACW0…     17.1     -61.8      10.1 ""    ST J… ""       ""     SNOW   
+## 5 ACW0…     17.1     -61.8      10.1 ""    ST J… ""       ""     SNWD   
+## 6 ACW0…     17.1     -61.8      10.1 ""    ST J… ""       ""     PGTM   
+## # … with 2 more variables: first_year <int>, last_year <int>
+```
+
+You can now query this database using the `meteo_nearby_stations()` function, which allows you to find all stations within a certain radius of a coordinate or the closest `x` stations. Here are the closest stations to Cape Point lighthouse.
+
+
+```r
+lat_lon_df <- data.frame(id = "somewhere",
+                         latitude = -34.35,
+                         longitude = 18.48)
+nearby_stations <-  meteo_nearby_stations(lat_lon_df = lat_lon_df,
+                    station_data = station_data, radius = 100)
+
+nearby_stations$somewhere
+```
+
+```
+## # A tibble: 23 x 5
+##    id          name                      latitude longitude distance
+##    <chr>       <chr>                        <dbl>     <dbl>    <dbl>
+##  1 SF000047220 GROOT CONSTANTIA             -34.0      18.4     36.0
+##  2 SF000213300 EERSTERIVIER (BOS)           -34.0      18.7     41.0
+##  3 SF000206890 TABLE.MTN WOODHEAD TUNNEL    -34.0      18.4     42.2
+##  4 SFM00068816 CAPE TOWN INTL               -34.0      18.6     44.3
+##  5 SF000207470 TABLE.MTN PLATTEKLIP         -34.0      18.4     44.8
+##  6 SF000208660 ROYAL OBSERVATORY            -33.9      18.5     46.7
+##  7 SF000207760 CAPE TOWN FIRE STATION       -33.9      18.4     46.9
+##  8 SF000207460 TABL.MTN MOLTENO RSV         -33.9      18.4     47.0
+##  9 SF000210550 CAPE TOWN MAITLAND (CEM)     -33.9      18.5     48.0
+## 10 SF000216550 STELLENBOSCH (TNK)           -33.9      18.9     58.9
+## # … with 13 more rows
+```
+
+Interesting... Cape Point lighthouse isn't on the list, even though it's a Global Atmospheric Watch station (GAWS) and is in the ISD data. I have no idea why...
+
+Note that you can also just do a good old text search for the names of a few stations you know. This also allows you to filter by multiple criteria at once, e.g. we can filter for `element = PRCP` to only get rainfall data. You can use the map we made earlier to get your own list of names, but note that like "CAPE POINT" they're not all in the GHCND database.
+
+Since most of South Africa has experienced extreme drought in the past few years, perhaps we should pull out and compare the rainfall for a few stations from around the country? In this case I've selected a few of the larger towns and cities. 
+
+
+```r
+###Select stations by name and filter
+stations <- c("CAPE TOWN INTL",
+"SPRINGBOK",
+"BLOEMFONTEIN AIRPOR",
+"PORT ELIZABETH INTL",
+"DURBAN INTL", 
+"JOHANNESBURG INTL")
+
+stas <- station_data %>% filter(element == "PRCP") %>%
+  filter(name %in% stations)
+
+stas
+```
+
+```
+## # A tibble: 6 x 11
+##   id    latitude longitude elevation state name  gsn_flag wmo_id element
+##   <chr>    <dbl>     <dbl>     <dbl> <chr> <chr> <chr>    <chr>  <chr>  
+## 1 SF00…    -29.7      17.9    1007   ""    SPRI… "GSN"    68512  PRCP   
+## 2 SF00…    -29.1      26.3    1354   ""    BLOE… "GSN"    68442  PRCP   
+## 3 SFM0…    -26.1      28.2    1694.  ""    JOHA… ""       68368  PRCP   
+## 4 SFM0…    -30.0      31.0      10.1 ""    DURB… ""       68588  PRCP   
+## 5 SFM0…    -34.0      18.6      46   ""    CAPE… "GSN"    68816  PRCP   
+## 6 SFM0…    -34.0      25.6      68.9 ""    PORT… "GSN"    68842  PRCP   
+## # … with 2 more variables: first_year <int>, last_year <int>
+```
+
+Looks like we should be able to compare the period 1980 to 2019 for all stations. Let's download the data.
+
+
+```r
+dat <- meteo_pull_monitors(stas$id, var = c("TMAX", "TMIN", "PRCP"), date_min = "1980-01-01", date_max = "2019-12-31")
+
+dat[1:5,]
+```
+
+```
+## # A tibble: 5 x 5
+##   id          date        prcp  tmax  tmin
+##   <chr>       <date>     <dbl> <dbl> <dbl>
+## 1 SF002146700 1980-01-01     0    NA    NA
+## 2 SF002146700 1980-01-02     0    NA    NA
+## 3 SF002146700 1980-01-03     0    NA    NA
+## 4 SF002146700 1980-01-04     0    NA    NA
+## 5 SF002146700 1980-01-05     0    NA    NA
+```
+
+Ok, now let's add our station names, summarize by year, and plot.
+
+
+```r
+stas$shortname <- c("SBK", "BFN", "JHB", "DBN", "CPT", "PE")
+dat <- left_join(dat, stas[,c("id", "name", "shortname")])
+dat$year <- substr(dat$date,1,4)
+
+mdat <- dat %>% group_by(shortname, year) %>% summarise(rain = sum(prcp, na.rm = T)/10) #Get annual totals
+
+mdat$year <- as.numeric(mdat$year)
+mdat$rain <- as.numeric(mdat$rain)
+
+###Visualize the data
+ggplot(mdat, aes(x = year, y = rain)) +
+  geom_line() + 
+  facet_wrap(~shortname)
+```
+
+<img src="/docs/datasets/weatherstations_files/figure-html/plot_ghcnd-1.png" width="672" />
+
+Or something prettier?
+
+
+```r
+###calculate average rainfall and yearly anomalies
+ymean <- mdat %>% group_by(shortname) %>% summarise(mean = mean(rain, na.rm = T))
+mdat <- left_join(mdat, ymean, by = "shortname")
+mdat$positive <- mdat$rain - mdat$mean
+mdat$positive[which(mdat$positive<0)] <- 0
+mdat$negative <- mdat$rain - mdat$mean
+mdat$negative[which(mdat$negative>0)] <- 0
+
+###Plot
+ggplot(mdat, aes(x = year)) + 
+  geom_ribbon(aes(ymin = 0, ymax = positive, fill="positive")) + geom_ribbon(aes(ymin = negative, ymax = 0 ,fill="negative")) +
+  scale_fill_manual(name="",values=c("#D6604D", "#4393C3")) +
+  facet_grid(shortname ~ ., scales = "free_y") +
+  ylab("rainfall anomaly in mm")
+```
+
+<img src="/docs/datasets/weatherstations_files/figure-html/pretty_ghcnd-1.png" width="672" />
+
+I haven't dealt with data gaps, data quality verification, etc etc, but this quick and dirty analysis suggests it's been a pretty dismal decade for South Africa all round...
+

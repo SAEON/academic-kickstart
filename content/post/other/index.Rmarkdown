@@ -1,15 +1,15 @@
 ---
 title: Other news
 author: jasper
-date: '2020-05-11'
+date: '2020-07-11'
 slug: other
 categories: []
 tags:
   - 
 subtitle: ''
-summary: ''
+summary: 'Conferences, awards, new students or staff'
 authors: []
-lastmod: '2020-05-11T21:40:30+02:00'
+lastmod: '2020-07-11T21:40:30+02:00'
 featured: no
 image:
   caption: ''
@@ -18,7 +18,7 @@ image:
 projects: []
 ---
 
-General news from the Fynbos Node reported in [SAEON's eNewsletter](https://enews.saeon.ac.za/) over the past few years:
+General news on conferences, awards, new students or staff etc as reported in [SAEON's eNewsletter](https://enews.saeon.ac.za/) over the past few years:
 
 2020
 

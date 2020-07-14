@@ -1,15 +1,15 @@
 ---
 title: Outreach
 author: jasper
-date: '2020-05-11'
+date: '2020-07-11'
 slug: outreach
 categories: []
 tags:
   - 
 subtitle: ''
-summary: ''
+summary: 'News on recent outreach and training events'
 authors: []
-lastmod: '2020-05-11T21:40:30+02:00'
+lastmod: '2020-07-11T21:40:30+02:00'
 featured: no
 image:
   caption: ''
@@ -18,7 +18,7 @@ image:
 projects: []
 ---
 
-News on recent outreach and training events from the Fynbos Node reported in [SAEON's eNewsletter](https://enews.saeon.ac.za/) over the past few years:
+News on recent outreach and training events as reported in [SAEON's eNewsletter](https://enews.saeon.ac.za/) over the past few years:
 
 2020
 

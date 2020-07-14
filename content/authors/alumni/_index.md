@@ -99,7 +99,7 @@ supervised by [Helen De Klerk](http://www0.sun.ac.za/geography/people/dr-helen-d
 
 **Ebrahiem Abrahams**, 2020, University of the Western Cape, supervised by Dr Michael Grenfell and Dr Julia Glenday for his dissertation *An analysis of post-fire catchment erosion dynamics under different land cover types, Jonkershoek, Western Cape*
 
-**Francois Becker**, 2017, University of Cape Town, supervised by [Krystal Tolley](http://krystaltolley.wixsite.com/krystaltolley), [Res Altwegg](http://www.stats.uct.ac.za/stats/people/academic/altwegg), [John Measey](http://john.measey.com/) and Jasper Slingsby for his dissertation "Estimating the global population size of animals that are hard to find: the case of Rose's mountain toadlet.*
+**Francois Becker**, 2017, University of Cape Town, supervised by [Krystal Tolley](http://krystaltolley.wixsite.com/krystaltolley), [Res Altwegg](http://www.stats.uct.ac.za/stats/people/academic/altwegg), [John Measey](http://john.measey.com/) and Jasper Slingsby for his dissertation *Estimating the global population size of animals that are hard to find: the case of Rose's mountain toadlet.*
 
 **Annabelle Rogers**, 2017, University of Cape Town, supervised by Prof [Ed February](http://www.biologicalsciences.uct.ac.za/bio/staff/academic/february), Glenn Moncrieff and Jasper Slingsby for her thesis *Modification of fire catchments drive vegetation change on the Cape Peninsula*
 
