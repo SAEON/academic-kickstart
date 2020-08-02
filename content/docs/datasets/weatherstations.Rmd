@@ -1,5 +1,5 @@
 ---
-title: Weatherstation data
+title: Weather stations
 author: jasper
 date: '2020-07-14'
 slug: weatherstations
@@ -9,10 +9,9 @@ tags:
   - climate
   - data
   - R-tutorial
-linktitle: Weatherstation Data
+linktitle: Weather stations
 summary: ~
 lastmod: '2020-07-14T22:31:54+02:00'
-toc: yes
 type: docs
 menu:
   docs:
@@ -20,13 +19,11 @@ menu:
     weight: 10
 ---
 
-I have found that one of the biggest challenges as a scientist working on global change issues in South Africa has been not having access to my country's long-term weather records. Our weather service charges a hefty fee for data. 
+One of the biggest challenges of working on global change issues in South Africa is not having easy access to the country's long-term weather records. One can occasionally access data for research purposes, especially if there's a student involved, but otherwise our weather service charges a hefty fee for data. 
 
-While one can occassionally access data for research purposes, this is usually only if there's a student involved, and requires tracking down an individual within the organization who's willing to field your query. 
+Fortunately, we can access a lot of South Africa's data through the National Oceanic and Atmospheric Administration of the USA (NOAA) for free here (https://www.ncei.noaa.gov/access/search/dataset-search)!!!
 
-Thus it is with great excitement that I've discovered that we can access a lot of South Africa's data through the National Oceanic and Atmospheric Administration of the USA (NOAA) for free here (https://www.ncei.noaa.gov/access/search/dataset-search)!!!
-
-NOAA serve a massive range of datasets, but my explorations so far have found the following to be the most useful in terms of station data:
+NOAA serve a massive range of data sets, but the following appear to be the most useful in terms of station data:
 
 - The Integrated Surface Dataset (Global) (https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00532), 
  
@@ -38,9 +35,9 @@ NOAA serve a massive range of datasets, but my explorations so far have found th
 BUT WAIT, THERE'S MORE! If you call now, you'll get this dedicated R package written by the amazing fellows at rOpenSci (https://ropensci.org/) absolutely free!!!
 
 
-I've put together a quick demo for using library(rnoaa) below, largely using repurposed and updated code from Scott Chamberlain's blog posts here (https://recology.info/2015/10/noaa-isd/) and here (https://recology.info/2015/07/weather-data-with-rnoaa/), and from the package vignette.
+Here's a quick demo for using library(rnoaa) below, largely using repurposed and updated code from Scott Chamberlain's blog posts here (https://recology.info/2015/10/noaa-isd/) and here (https://recology.info/2015/07/weather-data-with-rnoaa/), and from the package vignette.
 
-*DISCLAIMER: I haven't read the documentation for the datasets and make no guarantee of their accuracy or of the validity of my assumptions when summarizing and presenting the data. This applies to data quality, gaps, units, etc. etc*
+*DISCLAIMER: We haven't read the documentation for the datasets and make no guarantee of their accuracy or of the validity of my assumptions when summarizing and presenting the data. This applies to data quality, gaps, units, etc. etc*
 
 Let's get set up...
 
@@ -89,6 +86,7 @@ name <- paste(sep = "<br/>", out$station_name, out$period, out$uw)
 leaflet(data = out) %>%
   addTiles() %>%
   addCircleMarkers(label = lapply(name, HTML), radius = 3)
+
 ```
 
 Note that hovering your cursor over the blue circles gives the name of the station, the years operational and the *usaf* and *wban* codes required to pull them out of the database (see further down).
@@ -265,7 +263,7 @@ Ok, what about looking at even longer records? Most of South Africa has experien
 
 ***
 
-Note that the Integrated Surface Dataset (ISD) gives us hourly data, which is overkill for looking at longer records as the dataset gets very large. For this operation it is better to query the Global Historical Climatology Network as described by [**Menne et al. 2012**](https://doi.org/10.1175/JTECH-D-11-00103.1). CAVEAT: I take no responsibility for the data. Have a look at the paper for details on error corrections, biases, etc.
+Note that the Integrated Surface Dataset (ISD) gives us hourly data, which is overkill for looking at longer records as the dataset gets very large. For this operation it is better to query the Global Historical Climatology Network as described by [**Menne et al. 2012**](https://doi.org/10.1175/JTECH-D-11-00103.1). CAVEAT: We take no responsibility for the data. Have a look at the paper for details on error corrections, biases, etc.
 
 Let's have a look at Cape Town International Airport
 
@@ -275,7 +273,7 @@ ct <- meteo_tidy_ghcnd(stationid = "SFM00068816", var = c("TMAX", "TMIN", "PRCP"
 head(ct)
 ```
 
-Note that I had to know the station ID "SFM00068816". For some reason you can't query the database of stations using the same method as for the ISD and you have to download the entire list of all ~630 000 global weather stations and query that locally to get the station ID.
+Note that we had to know the station ID "SFM00068816". For some reason you can't query the database of stations using the same method as for the ISD and you have to download the entire list of all ~630 000 global weather stations and query that locally to get the station ID.
 
 ```{r get_ghcnd_stations, warning = F, message = F}
 station_data <- ghcnd_stations() # Takes a while to run
@@ -294,11 +292,11 @@ nearby_stations <-  meteo_nearby_stations(lat_lon_df = lat_lon_df,
 nearby_stations$somewhere
 ```
 
-Interesting... Cape Point lighthouse isn't on the list, even though it's a Global Atmospheric Watch station (GAWS) and is in the ISD data. I have no idea why...
+Interesting... Cape Point lighthouse isn't on the list, even though it's a Global Atmospheric Watch station (GAWS) and is in the ISD data. No idea why...
 
 Note that you can also just do a good old text search for the names of a few stations you know. This also allows you to filter by multiple criteria at once, e.g. we can filter for `element = PRCP` to only get rainfall data. You can use the map we made earlier to get your own list of names, but note that like "CAPE POINT" they're not all in the GHCND database.
 
-Since most of South Africa has experienced extreme drought in the past few years, perhaps we should pull out and compare the rainfall for a few stations from around the country? In this case I've selected a few of the larger towns and cities. 
+Since most of South Africa has experienced extreme drought in the past few years, perhaps we should pull out and compare the rainfall for a few stations from around the country? In this case we've selected a few of the larger towns and cities. 
 
 ```{r select_regional_capitals, warning = F, message = F}
 ###Select stations by name and filter
@@ -361,5 +359,5 @@ ggplot(mdat, aes(x = year)) +
   ylab("rainfall anomaly in mm")
 ```
 
-I haven't dealt with data gaps, data quality verification, etc etc, but this quick and dirty analysis suggests it's been a pretty dismal decade for South Africa all round...
+We haven't dealt with data gaps, data quality verification, etc etc, but this quick and dirty analysis suggests it's been a pretty dismal decade for South Africa all round...
 
