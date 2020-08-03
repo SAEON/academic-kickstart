@@ -7,7 +7,7 @@ categories: []
 tags:
   - 
 subtitle: ''
-summary: 'Upcoming events (conferemces, etc)'
+summary: 'Upcoming events (conferences, etc)'
 authors: []
 lastmod: '2020-07-11T21:40:30+02:00'
 featured: no
