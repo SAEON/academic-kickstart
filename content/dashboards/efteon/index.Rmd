@@ -1,0 +1,223 @@
+---
+title: EFTEON Landscapes
+author: jasper
+date: '2020-08-09'
+slug: efteon
+categories: []
+tags: ['dashboards', 'climate', 'hydrology', 'data']
+subtitle: ''
+summary: 'A map of existing meteorological, hydrological and ecological datasets and infrastructure to assist with EFTEON proposals.'
+authors: ['jasper']
+lastmod: '2020-08-09T16:42:39+02:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+<br>
+
+The Department of Science and Innovation has recently tasked SAEON with rolling out the [Expanded Freshwater and Terrestrial Environmental Observation Network (EFTEON)](https://efteon.saeon.ac.za/); a modular, highly-networked, national environmental research infrastructure.
+
+EFTEON aims to provide and operate a network of six instrumented landscape level platforms representing important South African Ecosystem-Human complexes for the South African environmental research community. The focus is on socially-relevant terrestrial landscapes and their coupled hydrological systems.
+
+There are currently 19 landscapes from across the country that have been nominated to submit full proposals for consideration as EFTEON sites. We have put together the map below to help the proposal teams be aware of some of the existing meteorological, hydrological and ecological datasets and infrastructure.
+
+The SAEON Fynbos Node is currently supporting four of these landscape proposals within the Fynbos Biome. These are situated on the Agulhas Plain, the Baviaanskloof and Kromme catchments, and the Boland Mountains. If any of these interest you, please [contact us](/#contact) and we'll put you in touch with the lead authors of each proposal.
+
+You can switch background maps or turn overlays on and off using the toggles in the legend. The names of the quaternary catchments or details of each point location can be viewed by hovering your cursor over them.
+
+<br>
+
+## A brief description of the datasets presented in the map.
+
+A shapefile of and metadata for the **quaternary catchments** for the country are available [here](http://www.sasdi.net/metaview.aspx?uuid=d83ff9c0965b1a2d4a1457b80677ce1f).
+
+**Meteorological and surface hydrological stations and borehole locations** were obtained from the National Inventory report of the National Water Resources Monitoring (NWRM) Network Project available [here](http://www.dwa.gov.za/Projects/NWRM/documents.aspx). Note that we only included sites that were indicated as "Open" at the time that the dataset was published (April 2015). We cannot vouch for any of these being operational or having useful historical data. You will need to verify the sites and their datasets yourself. Also please note that SAEON do not hold these data and you will need to contact the [Department of Water and Sanitation](http://www.dwa.gov.za/) or other indicated party to negotiate access to them.
+
+The **vegetation** layer indicates the approximate location of vegetation survey plots that are part of the [National Vegetation Database](http://www.scielo.org.za/scielo.php?script=sci_abstract&pid=S0038-23532012000100013&lng=en&nrm=iso&tlng=es) hosted by [SANBI](https://www.sanbi.org/). Please note that some of the plot datasets may be embargoed or otherwise unavailable.
+
+Note that this is a first pass at this. If you have any recommended changes or datasets you'd like us to add, please feel free to [contact us](/#contact).
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(readxl)
+library(reshape2)
+library(sp)
+library(rgdal)
+library(rgeos)
+library(raster)
+library(cowplot)
+library(wesanderson)
+library(leaflet)
+library(htmltools)
+library(rosm)
+library(ggspatial)
+library(readxl)
+library(leaflet)
+library(htmltools)
+
+
+###CoCT Tile servers
+#https://citymaps.capetown.gov.za/agsext1/rest/services/Aerial_Photography_Cached/AP_2018_Feb/MapServer?f=jsapi
+#http://emap.capetown.gov.za/agsext/rest/services/Aerial_Photography_Cached_Ext/AP_2015_Feb/ImageServer?f=jsapi
+
+
+###Get NVD plots
+NVD <- read.csv("/home/jasper/Documents/Datasets/NVD/NVD_16_09_2016/HeaderData_NVD2014.csv")
+NVD <- NVD %>% filter(Long > 15 &
+                         Long < 33 &
+                         Lat < -20 &
+                         Lat > -35)
+#NVD <- NVD %>% filter(BiomeGIS == "F")
+# NVD <- NVD %>% filter(Long > 18.773 & 
+#                          Long < 19.313 &
+#                          Lat < -33.883 &
+#                          Lat > -34.229) # &
+                        # `Open / Closed` == "Open")
+
+pname <- paste0(NVD$ORIG_DB, "_", NVD$PlotYear)
+pdat <- data.frame(lat = NVD$Lat, lon = NVD$Long)
+
+###Get DWS data
+#Water quantity
+wqn <- read_xlsx("/home/jasper/Documents/Datasets/DWS Network/Copy of NWRM_Data Catalogue_20150430.xlsx", sheet = 1, skip = 7, col_types = "text")
+
+wqn$Longitude <- as.numeric(wqn$Longitude)
+wqn$Latitude <- as.numeric(wqn$Latitude)
+
+# wqns <- wqn %>% filter(Longitude > 18.773 &
+#                          Longitude < 19.313 &
+#                          Latitude < -33.883 &
+#                          Latitude > -34.229 &
+#                          `Open / Closed` == "Open")
+
+#c(18.773, 19.313, -34.229, -33.883)
+
+wqb <- wqn %>% filter(Longitude > 15 &
+                         Longitude < 33 &
+                         Latitude < -20 &
+                         Latitude > -35 &
+                        `Open / Closed` == "Open"&
+                        `Station Type` == "Borehole") 
+
+#Boreholes
+bname <- paste0(wqb$`Station Type`, " <br/> ", "(DWS ", wqb$`Station Number`, ")")
+bdat <- data.frame(lat = wqb$Latitude, lon = wqb$Longitude)
+
+
+wqns <- wqn %>% filter(Longitude > 15 &
+                         Longitude < 33 &
+                         Latitude < -20 &
+                         Latitude > -35 &
+                         `Open / Closed` == "Open" &
+                        `Station Type` != "Borehole") 
+
+wqname <- paste0(wqns$`Station Type`, " <br/> ", "(DWS ", wqns$`Station Number`, ")")
+wqdat <- data.frame(lat = wqns$Latitude, lon = wqns$Longitude)
+
+#Hydromet
+met <- read_xlsx("/home/jasper/Documents/Datasets/DWS Network/Copy of NWRM_Data Catalogue_20150430.xlsx", sheet = 4, skip = 7, col_types = "text")
+met$Longitude <- as.numeric(met$Longitude)
+met$Latitude <- as.numeric(met$Latitude)
+mets <- met %>% filter(Longitude > 15 &
+                         Longitude < 33 &
+                         Latitude < -20 &
+                         Latitude > -35 &
+                         `Open / Closed` == "Open") 
+mtname <- paste0(mets$`Station Type`, " <br/> ", "(", mets$Source, " ", mets$`Station Number`, ")")
+mtdat <- data.frame(lat = mets$Latitude, lon = mets$Longitude)
+
+# ###Get Jonkershoek data
+# dat <- read_xlsx("/home/jasper/Dropbox/SAEON/Management/Website/SAEON_field instrument list.xlsx", sheet = 1)
+# 
+# mdat <- dat[which(dat$Site == "Jonkershoek" & dat$Owner == "SAEON"  & dat$Class %in% c("Meteorological", "Micro meteorological")),]
+# mname = paste0(mdat$`Station name`, " <br/> ", "(", mdat$Variables, ")")
+# mdat <- data.frame(lat = mdat$Latitude, lon = mdat$Longitude)
+# 
+# hdat <- dat[which(dat$Site == "Jonkershoek" & dat$Owner == "SAEON"  & dat$Class == "Hydrological"),]
+# hname = paste0(hdat$`Station name`, " <br/> ", "(", hdat$Variables, ")")
+# hdat <- data.frame(lat = hdat$Latitude, lon = hdat$Longitude)
+
+###Group sets
+#Surface Water
+hdat <- wqdat #rbind(hdat, wqdat)
+hname <- wqname #c(hname, wqname)
+
+#Meteorology
+mdat <- mtdat #rbind(mdat, mtdat)
+mname <- mtname #c(mname, mtname)
+
+#offering <- c("Hourly Rainfall and Temperature", "Hourly Rainfall, Temperature, RH, Wind, Solar Rad", 	"Hourly Rainfall and Temperature")
+
+###Get quaternary catchments
+
+#Get data and layer and merge with Le Maitre data
+layer <- readOGR(dsn = "/home/jasper/Dropbox/BlogData/QuaternCatchments/Quatern.shp", layer = "Quatern", verbose = F)
+
+# dat <- read_xlsx("/home/jasper/Documents/Datasets/NIAPS/NIAPS based flow reductions for all invasions in all qcats.xlsx", sheet = 1)
+# 
+# names(dat)[which(names(dat)=="Qcat")] <- "QUARTERN"
+# 
+# layer@data <- merge(layer@data, dat, all.x = T)
+# layer@data$Tot_redn_pct <- round(layer@data$Tot_redn_pct, digits = 2)
+# layer@data$Tot_redn_ML <- round(layer@data$Tot_redn_m3/1000, digits = 0)
+# layer@data$Tot_redn_ML[layer@data$Tot_redn_ML==0] <- NA
+
+###Set up popup markers
+centroids = gCentroid(layer,byid=TRUE)
+layer@data <- cbind(layer@data, coordinates(centroids))
+
+
+###Plot the map
+leaflet() %>%
+  addTiles(group = "Default") %>%  # Add default OpenStreetMap map tiles
+#  addProviderTiles(provider = "Esri.WorldImagery", group = "Satellite") %>%
+#  addProviderTiles(provider = "Esri.WorldTopoMap", group = "Topo") %>%
+
+  addPolygons(data=layer, color = "#999999", weight = 1, smoothFactor = 0.5,
+                            opacity = 0.75, fillOpacity = 0.15,
+                            #fillColor = ~pal(1), #log(Tot_redn_pct+1)
+                            highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = F),
+                            label=~layer$QUARTERN,              
+                            group = "Quaternaries") %>%
+  
+  addCircleMarkers(data = pdat,
+                   label = 
+                     lapply(pname, HTML), 
+                   group = "Vegetation",
+                   radius = 3, 
+                   color = "green") %>%
+  
+  addCircleMarkers(data = bdat,
+                   label = 
+                     lapply(bname, HTML), 
+                   group = "Groundwater",
+                   radius = 3, 
+                   color = "purple") %>%
+  
+  addCircleMarkers(data = mdat,
+                   label = 
+                     lapply(mname, HTML), 
+                   group = "Meteorological",
+                   radius = 3) %>%
+  
+  addCircleMarkers(data = hdat,
+                   label = 
+                     lapply(hname, HTML), 
+                   group = "Surface water",
+                   radius = 3, 
+                   color = "red") %>%
+  
+  addLayersControl(overlayGroups =
+                     c("Quaternaries", "Vegetation", "Meteorological", "Surface water", "Groundwater"),
+          #           baseGroups =
+           #            c("Default", "Satellite"), #, "Topo") ,
+                   options = layersControlOptions(collapsed = FALSE)) #%>%
+#  hideGroup(c("Default", "Satellite"))
+##########
+```
+
