@@ -32,7 +32,7 @@ You can switch background maps or turn overlays on and off using the toggles in 
 
 <br>
 
-## A brief description of the datasets presented in the map.
+### A brief description of the datasets presented
 
 A shapefile of and metadata for the **quaternary catchments** for the country are available [here](http://www.sasdi.net/metaview.aspx?uuid=d83ff9c0965b1a2d4a1457b80677ce1f).
 
@@ -41,6 +41,10 @@ A shapefile of and metadata for the **quaternary catchments** for the country ar
 The **vegetation** layer indicates the approximate location of vegetation survey plots that are part of the [National Vegetation Database](http://www.scielo.org.za/scielo.php?script=sci_abstract&pid=S0038-23532012000100013&lng=en&nrm=iso&tlng=es) hosted by [SANBI](https://www.sanbi.org/). Please note that some of the plot datasets may be embargoed or otherwise unavailable.
 
 Note that this is a first pass at this. If you have any recommended changes or datasets you'd like us to add, please feel free to [contact us](/#contact).
+
+<br>
+
+### WARNING! The map can take a minute or so to load...
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
