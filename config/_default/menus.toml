@@ -13,10 +13,10 @@
 #  url = "#slider"
 #  weight = 12
 
-[[main]]
-  name = "People"
-  url = "#people"
-  weight = 15
+# [[main]]
+#  name = "People"
+#  url = "#people"
+#  weight = 15
 
 [[main]]
   name = "Dashboards"
@@ -24,14 +24,14 @@
   weight = 20
 
 [[main]]
-  name = "Sites & Datasets"
+  name = "Research"
   url = "#sites"
   weight = 25
 
-[[main]]
-  name = "Projects"
-  url = "#projects"
-  weight = 27
+# [[main]]
+#   name = "Projects"
+#   url = "#projects"
+#   weight = 27
 
 [[main]]
   name = "Data skills"

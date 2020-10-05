@@ -1,7 +1,7 @@
 ---
 title: Catchment Monitor
 author: 'jasper'
-date: '2020-09-04'
+date: '2020-10-05'
 slug: catchment
 categories: []
 tags:
@@ -13,7 +13,7 @@ tags:
 subtitle: ''
 summary: "Rainfall and streamflow from the catchments that feed Cape Town's major dams"
 authors: [jasper, abri]
-lastmod: '2020-09-04T21:36:22+02:00'
+lastmod: '2020-10-05T21:36:22+02:00'
 featured: yes
 image:
   caption: ''
@@ -25,14 +25,14 @@ projects: []
 
 <br>
 
-Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of August 2020. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams that feed Cape Town and surrounds.
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of September 2020. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams that feed Cape Town and surrounds.
 
 <!--more-->
 
 We plan to update this page monthly. For live weather data and the record over the past month please access the [Dwarsberg weather station directly](http://lognet.saeon.ac.za:8088/Dwarsberg/index.html). You may also be interested in our [Constantiaberg weather station](http://lognet.saeon.ac.za:8088/Constantiaberg/index.html) on the Cape Peninsula or our [Engelsmanskloof weather station](http://lognet.saeon.ac.za:8088/EngCed/index.html) in the Cederberg.
 
 
-*PLEASE NOTE: We cannot guarantee that these data or analyses are error free, particularly with regards to the older historical data and the comparability of the older and newer instrumentation. Gaps in the data were filled using linear interpolation from the most recent data for up to a 30 day period. This filled all gaps other than the period August 2008 to September 2011 - these data exist in hardcopy, but are still being digitized. There are much better gap-filling techniques, but the appropriate method depends on the question being asked.*
+*PLEASE NOTE: We cannot guarantee that these data or analyses are error free, particularly with regards to the older historical data and the comparability of the older and newer instrumentation. Gaps in the data were filled using linear interpolation from the most recent data for up to a 30 day period. This filled all gaps other than the period August 2008 to September 2011 - these data exist in hard copy, but need to be digitized. There are much better gap-filling techniques, but the appropriate method depends on the question being asked.*
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
