@@ -1,6 +1,6 @@
 ---
 # Course title, summary, and position.
-linktitle: R basics
+linktitle: R Intro
 summary: Learn the basics of the R statistical computing environment.
 weight: 1
 
@@ -18,7 +18,7 @@ type: docs  # Do not modify.
 # - weight: Position of link in menu.
 menu:
   docs:
-    name: R basics
+    name: R Intro
     weight: 1
 ---
 

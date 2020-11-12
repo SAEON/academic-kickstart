@@ -13,7 +13,7 @@ toc: yes
 type: docs
 menu:
   docs:
-    parent: R basics
+    parent: R Intro
     weight: 10
 ---
 

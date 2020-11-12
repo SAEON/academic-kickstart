@@ -21,21 +21,21 @@ menu:
 
 One of the biggest challenges of working on global change issues in South Africa is not having easy access to the country's long-term weather records. One can occasionally access data for research purposes, especially if there's a student involved, but otherwise our weather service charges a hefty fee for data. 
 
-Fortunately, we can access a lot of South Africa's data through the National Oceanic and Atmospheric Administration of the USA (NOAA) for free here (https://www.ncei.noaa.gov/access/search/dataset-search)!!!
+Fortunately, we can access a lot of South Africa's data through the National Oceanic and Atmospheric Administration of the USA (NOAA) for free [here](https://www.ncei.noaa.gov/access/search/dataset-search)!!!
 
 NOAA serve a massive range of data sets, but the following appear to be the most useful in terms of station data:
 
-- The Integrated Surface Dataset (Global) (https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00532), 
+- [The Integrated Surface Dataset (Global)](https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00532), 
  
-- The Global Historical Climatology Network (https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00861), 
+- [The Global Historical Climatology Network](https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00861), 
  
-- Global Summaries of the Day/Month/Year (https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00946)
+- [Global Summaries of the Day/Month/Year](https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00946)
 
 
-BUT WAIT, THERE'S MORE! If you call now, you'll get this dedicated R package written by the amazing fellows at rOpenSci (https://ropensci.org/) absolutely free!!!
+BUT WAIT, THERE'S MORE! If you call now, you'll get this dedicated R package written by the amazing fellows at [rOpenSci](https://ropensci.org/) absolutely free!!!
 
 
-Here's a quick demo for using library(rnoaa) below, largely using repurposed and updated code from Scott Chamberlain's blog posts here (https://recology.info/2015/10/noaa-isd/) and here (https://recology.info/2015/07/weather-data-with-rnoaa/), and from the package vignette.
+Here's a quick demo for using library(rnoaa) below, largely using repurposed and updated code from Scott Chamberlain's blog posts [here](https://recology.info/2015/10/noaa-isd/) and [here](https://recology.info/2015/07/weather-data-with-rnoaa/), and from the package vignette.
 
 *DISCLAIMER: We haven't read the documentation for the datasets and make no guarantee of their accuracy or of the validity of my assumptions when summarizing and presenting the data. This applies to data quality, gaps, units, etc. etc*
 

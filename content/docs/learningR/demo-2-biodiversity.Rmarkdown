@@ -1,7 +1,7 @@
 ---
-title: 'R Intro 2: Biodiversity'
+title: 'Analysing biotic communities'
 author: jasper
-date: '2020-05-01'
+date: '2020-11-12'
 slug: r-intro-2-biodiversity
 authors: [jasper]
 categories: []
@@ -10,18 +10,20 @@ tags:
   - Cape Peninsula
   - data
   - R-tutorial
-linktitle: R Intro 2
+linktitle: Community data
 summary: ~
-lastmod: '2020-05-01T22:38:34+02:00'
+lastmod: '2020-11-12T22:38:34+02:00'
 toc: yes
 type: docs
 menu:
   docs:
-    parent: R basics
+    parent: R Intro
     weight: 30
 ---
 
-Ok. So the previous tutorial covered a bunch of the basics with some pretty straightforward data, and was more focused on how R works. Now we’ll be looking at slightly more complicated data (species data), which will require learning some fancier data handling.
+The previous tutorial covered a bunch of the basics with some pretty straightforward data, and was more focused on how R works. Now we’ll be looking at slightly more complicated data (species data), which will require learning some fancier data handling. 
+
+R has a ridiculous number of libraries and functions for analyzing environmental and biodiversity data - check out the [Environmetrics Task View](https://cran.r-project.org/view=Environmetrics) for a primer on a small sample. The issue is that many of them have their own specific data format requirements, requiring an inordinate amount of data wrangling. My aim for this session is to walk you through an example dataset, sharing a few `tidyverse` and base R data wrangling tricks, and highlighting some common perils and pitfalls when analysing patterns and change in biotic community survey data.
 
 First, let’s get the R packages we need and set our working directory
 
@@ -31,21 +33,37 @@ opts_knit$set(root.dir = "/home/jasper/GIT/academic-kickstart/static/datasets/")
 ```
 
 
-```{r}
+```{r, message=F, warning=F}
 library(tidyverse)
 library(readxl)
-library(vegan) #comment out with "#" if you don't have this installed
+library(vegan) #comment out with "#" if you don't have this installed - or run install.packages("vegan")
 
-setwd("/home/jasper/GIT/academic-kickstart/static/datasets/")
+setwd("/home/jasper/GIT/academic-kickstart/static/datasets/") 
+#Change to your local path to the folder where you put the dataset
 ```
 
-Now we need the data. Let’s look at the sheets in our Excel workbook again
+<br>
+
+## Description of community data
+
+We're going to use the same dataset from [Slingsby et al. 2017](http://dx.doi.org/10.1073/pnas.1619014114) that we used in the previous tutorial. The data can be downloaded [here](https://www.pnas.org/highwire/filestream/29863/field_highwire_adjunct_files/0/pnas.1619014114.sd01.xlsx). It's a ~10MB .xlsx file. 
+
+This is a vegetation survey of 81 plots, each 5 by 10m, from across the Cape of Good Hope section of Table Mountain National Park. For more information check out the worksheet labeled `METADATA` and/or read the paper.
+
+Let’s look at the sheets in our Excel workbook.
 
 ```{r}
 excel_sheets("pnas.1619014114.sd01.xlsx")
 ```
 
-So we probably need "Species" and "% cover", but we can have a glimpse at them to doublecheck they’re the data we want by including a range in read_excel() like so
+There's quite a few sheets in the workbook, but the datasets most commonly used in analyses of biotic communities are three separate data objects (usually matrices, but see below) that include:
+1) Species by sites - also called the community data matrix (where values are one of presence/absence, counts/abundance, %cover, biomass or similar
+2) Environmental variables by site (e.g. soils, climate, location, etc)
+3) Traits by species (e.g. growth form or other qualitative or quantitative life history or functional traits)
+
+We have `environment` and `traits`, which are the second and third matrices, and in this case we have three community matrices (`veg1966`, `veg1996` and `veg2010`), because the sites were first surveyed in 1966 and then resurveyed in 1996 and 2010.
+
+Note that if you ever want to see what data are in a sheet, but don't want to open the file in Excel, you can easily have a glimpse at them to by just selecting a small range in read_excel() like so
 
 ```{r}
 read_excel("pnas.1619014114.sd01.xlsx", sheet = "veg1966", range = "A1:K5")
@@ -53,9 +71,9 @@ read_excel("pnas.1619014114.sd01.xlsx", sheet = "veg1966", range = "A1:K5")
 read_excel("pnas.1619014114.sd01.xlsx", sheet = "veg2010", range = "A1:K5")
 ```
 
-Ok, so it looks like `veg1966`, `veg1996` and `veg2010` are what we call community data matrices. These are site by species matrices with measures of abundance, % cover, or similar values for each species in each plot. In this case the `veg1966` and `veg1996` data were Braun-Blanquet cover-abundance classes, which I have converted to abundance using the midpoint of each class. THIS IS NOT NECESSARILY DEFENSIBLE!!! but I just did it for the purposes of this tutorial. The `veg2010` dataset did not use the BB classes and have actual counts.
+In this case the `veg1966` and `veg1996` data were Braun-Blanquet cover-abundance classes, which I have converted to abundance using the midpoint of each class. THIS IS NOT NECESSARILY DEFENSIBLE!!! but it's fine for the purposes of this tutorial. The `veg2010` dataset is actual counts of individuals.
 
-Let’s read them in and have a closer look
+Let’s read them in and have a closer look.
 
 ```{r}
 species66 <- read_excel("pnas.1619014114.sd01.xlsx", sheet = "veg1966")
@@ -69,10 +87,44 @@ head(species10)
 
 Yup, that looks about right.
 
-Let’s start by playing with the 1966 data.
+We're going to start playing with the 1966 data in a second, but first, what if your data aren't in a species by site matrix? 
+
+Often biodiversity data are stored in "long" or "list" format with three columns like `Site`, `Species` and `Abundance` or similar. This is also the `tidy` data format preferred by the various packages that adopt a `tidyverse` approach, so it is worth taking a second to explore a few tricks that help convert between formats.
+
+In our case we have the data in matrix format, so first let's convert it to long format.
+
+```{r}
+hmm <- species66 %>% pivot_longer(cols = -1, 
+                                  names_to = "Species", 
+                                  values_to = "Abundance")
+
+hmm
+```
+
+Note that the `names_to` command sets a name for the column where the column names from the matrix are stored, while 'values_to' names the value column. You also have to select the columns you want to gather, and in this case we wanted to exclude the first column (the sites) as they are not abundance data.
+
+Now let's convert the long format data back to a matrix.
+
+```{r}
+hmm <- hmm %>% pivot_wider(id_cols = 1, 
+                           names_from = Species, 
+                           values_from = Abundance, 
+                           values_fill = 0)
+
+hmm
+```
+
+Note that I added the `values_fill` = 0 command, because a major advantage of long format biodiversity data is you don't usually retain records of species with zero abundance at a site (i.e. absences) as these are usually implicit. They do need to be present in a matrix, so this command simply tells the function to fill absence records with 0.
+
+Is the output the same as our original data?
+
+```{r}
+identical(hmm, species66)
+```
 
 Ok, so what do we want to know?
 
+<br>
 
 ## Summarizing community data
 
@@ -108,13 +160,16 @@ This just highlights that R almost always provides a number of ways to do the sa
 species66[,-1] %>% rowwise() %>% pmap_dbl(.,sum)
 ```
 
-Either way, a vector of numbers is not very informative... Let’s plot it in a histogram
+Either way, a vector of numbers is not very informative... Let’s plot it in a histogram to look at the frequency of plots with different abundances.
 
 ```{r}
 ggplot(data.frame(abundance = rowSums(species66[,-1])), 
        aes(abundance)) +
  geom_histogram()
 ```
+Wow! It ranges from `r min(rowSums(species66[,-1]))` to `r max(rowSums(species66[,-1]))`! The reasons will become clear later on.
+
+<br>
 
 ## Species diversity
 
@@ -133,15 +188,18 @@ What about the relationship between the two?
 ```{r}
 ggplot(data.frame(species_number = rowSums(species66[,-1]>0),
                   abundance = rowSums(species66[,-1])),
-       aes(species_number, abundance)) +
+       aes(abundance, species_number)) +
   geom_point() + 
-  geom_smooth(method = "lm")
+  geom_smooth(method = "lm", formula = y ~ log(x))
 ```
 
-A strong positive relationship. One would usually expect a close relationship between abundance and species number, because having more plants in your plot means greater potential to sample more species. E.g. if you only have 10 individuals, the maximum number of species you can sample is 10... In Fynbos, the number of individuals you sample in a set area depends on the vegetation age, with greater numbers of smaller individuals in younger plots.
+A strong positive relationship. One would usually expect a close relationship between abundance and species number in a vegetation survey, because having more plants in your plot means greater potential to sample more species. E.g. if you only have 10 individuals, the maximum number of species you can sample is 10... In Fynbos, the number of individuals you sample in a set area depends on the vegetation age since fire, with greater numbers in younger plots, because the individuals are smaller.
 
-SIDE NOTE ON SPECIES DIVERSITY MEASURES: This is why I have been referring to **species number** and not **species richness**. Species richness, when one looks across all taxonomic groups that use the term, is typically defined as the number of species encountered for a given number of individuals sampled. This accounts for any differences in the amount of effort invested in each sampling event (e.g. trawl netting, mist netting, aerial counts, etc). It is only when working with sedentary organisms like plants that we typically sample per unit area, in which case we are actually sampling **species density** and NOT species richness. While useful, species density has different properties to species richness that we should always bear in mind - e.g. species density typically declines with the size of the organism sampled (which depends on the kind of organism (tree vs grass) or the age of the organism (seedling vs adult)). One can estimate species richness from vegetation plot data, but that requires counting the number of individuals and estimating the average number of species on samples for a given number of individuals. Read Gotelli and Colwell 2001. Ecology Letters if you think this is important to your work…
+SIDE NOTE ON SPECIES DIVERSITY MEASURES: This is why I have been referring to **species number** and not **species richness**. Species richness, when one looks across all taxonomic groups that use the term, is typically defined as the number of species encountered for a given number of individuals sampled. This accounts for any differences in the amount of effort invested in each sampling event (e.g. trawl netting, mist netting, aerial counts, etc). 
 
+It is only when working with sedentary organisms like plants that we typically sample per unit area, in which case we are actually sampling **species density** and NOT species richness. While useful, species density has different properties to species richness that we should always bear in mind - e.g. species density typically declines with the size of the organism sampled, which depends on the kind of organism (tree vs grass) or the age of the organism (seedling vs adult). One can estimate species richness from vegetation plot data, but that requires having counts of the number of individuals and estimating the average number of species one samples for a given number of individuals. I highly recommend you read [Gotelli and Colwell 2001. Ecology Letters](https://doi.org/10.1046/j.1461-0248.2001.00230.x) if you are ever working with diversity data.
+
+<br>
 
 ## Comparison between surveys
 
@@ -149,7 +207,7 @@ So let's have a look at the change in diversity within sites between surveys. We
 
 ```{r, error = TRUE}
 ggplot(data.frame(species_number66 = rowSums(species66[,-1]>0), 
-                  species_number10 = rowSums(species10[,-1])), 
+                  species_number10 = rowSums(species10[,-1]>0)), 
        aes(species_number66, species_number10)) +
   geom_point() + 
   geom_smooth(method = "lm")
@@ -161,9 +219,7 @@ Oh dear! The number of plots surveyed in each year was different for some reason
 (plots <- intersect(species66$...1, species10$...1))
 ```
 
-Note how putting `()` around the statement printed the results instead of just assigning the values to `plot`.
-
-Also note, that if you get an error, it may be because you don't have a column called '...1'. This was an automatic name R gave the column. On Mac it may be 'X__1'. If you get an error, run the code `names(species66)[1]` to see what it called it on your computer and change the column name in the lines of code above and below.
+Note that if you get an error, it may be because you don't have a column called '...1'. This was an automatic name R gave the column. On Mac it may be 'X__1'. If you get an error, run the code `names(species66)[1]` to see what it called it on your computer and change the column name in the lines of code above and below. Sorry about that.
 
 Now we need to extract these "intersect()ing" plots from each survey's community data matrix, like so
 
@@ -183,7 +239,7 @@ ggplot(data.frame(species_number66 = rowSums(species66c>0),
 ```
 
 
-Ok, a lot of difference between the two surveys. One thing we haven't accounted for is the fact that the surveys record all species, but we exclude the "seasonally apparent" species and only analyze the data for the "permanently apparent" species. This is because some species are only visible for a few weeks or less (annuals, some geophytes, etc), but we only survey the plots once - and not every week for a full year. We also exclude alien species.
+Ok, a lot of difference between the two surveys. One thing we haven't accounted for is the fact that the surveys record all species, but in Fynbos we usually exclude the "seasonally apparent" species like geophytes or annuals and only analyze the data for the "permanently apparent" species. This is because some species are only visible for a few weeks or less, but we only survey the plots once - and not every week for a full year. In this analysis we also want to exclude alien species.
 
 You'll note that one of the spreadsheets in our dataset is called "excluded_spp"
 
@@ -212,14 +268,15 @@ ggplot(data.frame(species_number66 = rowSums(species66c>0),
   geom_smooth(method = "lm")
 ```
 
-...very similar. So why the difference?
+...very similar. So why the difference among surveys?
 
 Well it could be the differences in post-fire vegetation age and the impacts on the numbers of individuals, and thus species sampled. Let's look at the relationship between the change in numbers of species and change in vegetation age.
 
+<br>
 
 ## Environmental data
 
-Vegetation age for each plot at the time of each survey is in the `enviroment` spreadsheet. NOTE that I spelled it incorrectly in the data I submitted...
+Vegetation age for each plot at the time of each survey is in the `enviroment` spreadsheet. NOTE that I spelled it incorrectly in the data I submitted to PNAS... Nobody's perfect...
 
 ```{r}
 env <- read_excel("pnas.1619014114.sd01.xlsx", sheet = "enviroment", na = "NA")
@@ -227,31 +284,38 @@ env <- read_excel("pnas.1619014114.sd01.xlsx", sheet = "enviroment", na = "NA")
 head(env)
 ```
 
-Ok, first we need to match the plots in the `env` object to those in the community data matrices. This is a little tricky, because the `Plot` column in the `env` object only has numbers, whereas in the community data matrices they were prefixed with "CP_". We'll have to `paste()` them in, lie so
+Ok, first we need to match the plots in the `env` object to those in the community data matrices. This is a little tricky, because the `Plot` column in the `env` object only has numbers, whereas in the community data matrices they were prefixed with "CP_". We'll have to `paste()` them in, like so
 
 ```{r}
 (env$...1 <- paste("CP_", env$Plot, sep = ""))
 ```
 
-Note that you may need to change the '...1' above to whatever your first column of the `species10` dataframe is named. Otherwise the next line of code returns an empty object and the plotting fails.
+And then join the `species10` column names to `env`. Note that the `left_join` function retains only the rows that were matched, and it sorts them into the same order as the first object supplied.
+
+Note that you may need to change the '...1' above to whatever your first column of the `species10` dataframe is named as mentioned earlier. Otherwise the next line of code returns an empty object and the plotting fails.
 
 ```{r}
-env <- merge(species10[,1], env)
+env <- left_join(species10[,1], env)
 ```
 
-Note that I named the plot label column "X__1" to match the name in `species10`. This was essential because the `merge()` function operates only on the matched column names, of which "X__1" was the only one. The advantage of using `merge()` is that it retains only the rows that were matched, and it sorts them into the same order as the first object supplied to `merge()`.
+Ok, now we're ready to plot the change in numbers of species with the change in vegetation age.
 
 ```{r}
-ggplot(data.frame(change_in_species_number = rowSums(species66c>0) - rowSums(species10c>0), 
-                  change_in_age = env$Age1966 - env$Age2010), 
+ggplot(data.frame(
+    change_in_species_number = rowSums(species66c>0) - rowSums(species10c>0), 
+    change_in_age = env$Age1966 - env$Age2010), 
        aes(change_in_species_number, change_in_age)) +
   geom_point() + 
   geom_smooth(method = "lm")
 ```
 
-So vegetation age clearly is an issue, with numbers of species declining as the vegetation ages, or increasing after a plot burns.
+Ignore the error. This is because some the plots don't have a known vegetation age as they have never burnt on record.
 
-Another approach is to "rarefy" the samples. This involves estimating each plot's expected species richness by randomly sampling a set number of individuals from each community. In this case we'll sample 50 individuals, because that is the minimum abundance recorded in our plots.
+So vegetation age clearly is an issue, with numbers of species declining as the vegetation ages (or increasing after a plot burns).
+
+One approach to deal with this is to "rarefy" the samples. This involves estimating each plot's expected species richness by randomly sampling a set number of individuals from each community. Again, I highly recommend you read [Gotelli and Colwell 2001. Ecology Letters](https://doi.org/10.1046/j.1461-0248.2001.00230.x).
+
+In this case we'll sample 50 individuals, because that is the minimum abundance recorded in our plots.
 
 ```{r}
 ggplot(data.frame(species_richness66 = rarefy(x = ceiling(species66c), sample = 50), 
@@ -278,5 +342,84 @@ We can also test this using a paired T test
 t.test(sr66, sr10, paired = T)
 ```
 
-Yup, there was a significant drop in species numbers between 1966 and 2010, even once we accounted for differences in vegetation age/numbers of individuals.
+Yup, there was a significant drop in species numbers between 1966 and 2010, even once we accounted for differences in vegetation age/numbers of individuals. Bear in mind that these results are not necessarily defensible (and do not appear in the paper), because the 1966 "abundance" data is only an estimate made by taking the mid-point of the categorical abundance classes recorded in the original survey. This may well bias the rarefaction results.
+
+<br>
+
+## The Fourth Corner...
+
+I'm not going to delve into this much, but since one of the biggest topics community ecologists are interested in is the relationship between species' traits and environmental variables I feel it bears mentioning.
+
+Why is this called "the fourth corner"? I mentioned that analyses of biotic community data typically involve 3 data matrices:
+1) Species by sites
+2) Environmental variables by site 
+3) Traits by species
+
+The "fourth corner" is the matrix we have to estimate from the other matrices, because we can't observe it directly - that of traits by environment. 
+
+There are a multitude of methods out there for looking at the fourth corner, and covering this is beyond the scope of this tutorial, but I thought I'd demonstrate one of the simplest approaches - that of comparing the relative dominance of different functional types across different environments.
+
+First we need to read in the trait data, which is the worksheet called `traits`.
+
+```{r}
+traits <- read_excel("pnas.1619014114.sd01.xlsx", sheet = "traits")
+
+head(traits)
+```
+
+You'll see we have a column called `resprout_postfire`, which contains information on the postfire regeneration strategy for all species, indicating whether they are killed by fire and have to recruit from seed (0 = obligate seeder) or can persist through fire and resprout from remaining material (1 = sprouter).
+
+First we pull out vectors of the species names matching each regeneration type. I'm sure there's an easier way, but this at least is relatively transparent.
+
+```{r}
+sprouters <- unlist(na.omit(traits[traits$resprout_postfire == 1,]$species))
+
+seeders <- unlist(na.omit(traits[traits$resprout_postfire == 0,]$species))
+
+sprouters[1:10]
+```
+
+Now we use the sets of species names to extract the species counts and abundances for each regeneration type for each plot and bind them into a new dataframe that includes the soil moisture classes. The classes are labelled 1 to 5 representing:
+1 = Permanently Wet, 2 = Seasonally Wet, 3 = Seasonally Moist (typically bordering a seasonal wetland with indicators of some influence such as the presence of a few wetland species), 4 = Well-drained (no evidence of topographic influence on soil moisture and likely reliant on mist/fog and rain only), 5 = Dry (essentially class 4 combined with other factors like N aspect and shallow soil that would affect plant water stress).
+
+```{r}
+regen <- data.frame(
+  sprouter_spp = as_tibble(species10c>0) %>% select(any_of(sprouters)) %>% rowwise() %>% pmap_dbl(.,sum),
+  seeder_spp = as_tibble(species10c>0) %>% select(any_of(seeders)) %>% rowwise() %>% pmap_dbl(.,sum),
+  sprouter_abund = as_tibble(species10c) %>% select(any_of(sprouters)) %>% rowwise() %>% pmap_dbl(.,sum),
+  seeder_abund = as_tibble(species10c) %>% select(any_of(seeders)) %>% rowwise() %>% pmap_dbl(.,sum),
+  soil_moisture = as.factor(env$Moisture_class))
+```
+
+Turn it into `tidy` (i.e. long format) data for plotting.
+
+```{r}
+regen <- regen %>% pivot_longer(
+  cols = c("sprouter_spp", "seeder_spp", "sprouter_abund", "seeder_abund"), 
+  names_to = c("Regeneration mode", "Variable"),
+  names_pattern = "(.*)_(.*)",
+  values_to = "Number")
+
+regen
+```
+
+Note the regexpression passed to `names_pattern` to convert the column names ("sprouter_spp", "seeder_spp", "sprouter_abund", "seeder_abund") into two columns ("Regeneration mode", "Variable") filled with "seeder"/"sprouter" and "spp"/"abund" respectively.
+
+Now we can plot them
+
+```{r}
+pal <- c("#56B4E9", "#CC79A7")#, "#009E73", "#0072B2", "#E69F00") #colourblind palette
+
+ggplot(data = regen, aes(y = `Number`, x = soil_moisture, fill = `Regeneration mode`)) +
+  geom_boxplot() +
+  facet_wrap(~Variable, scales = "free") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+  scale_fill_manual(values=rev(pal)) 
+```
+
+Interestingly, the abundance of seeders is much higher in wetter sites and decreases towards drier sites, while the sprouters show little difference. In contrast, specis counts for both regeneration types increase towards the drier sites. What have I not done (or accounted for) here and how may it confound these results?
+
+
+
 

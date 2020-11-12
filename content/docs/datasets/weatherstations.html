@@ -31,15 +31,15 @@ menu:
 
 
 <p>One of the biggest challenges of working on global change issues in South Africa is not having easy access to the country’s long-term weather records. One can occasionally access data for research purposes, especially if there’s a student involved, but otherwise our weather service charges a hefty fee for data.</p>
-<p>Fortunately, we can access a lot of South Africa’s data through the National Oceanic and Atmospheric Administration of the USA (NOAA) for free here (<a href="https://www.ncei.noaa.gov/access/search/dataset-search" class="uri">https://www.ncei.noaa.gov/access/search/dataset-search</a>)!!!</p>
+<p>Fortunately, we can access a lot of South Africa’s data through the National Oceanic and Atmospheric Administration of the USA (NOAA) for free <a href="https://www.ncei.noaa.gov/access/search/dataset-search">here</a>!!!</p>
 <p>NOAA serve a massive range of data sets, but the following appear to be the most useful in terms of station data:</p>
 <ul>
-<li><p>The Integrated Surface Dataset (Global) (<a href="https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00532" class="uri">https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00532</a>),</p></li>
-<li><p>The Global Historical Climatology Network (<a href="https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00861" class="uri">https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00861</a>),</p></li>
-<li><p>Global Summaries of the Day/Month/Year (<a href="https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00946" class="uri">https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00946</a>)</p></li>
+<li><p><a href="https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00532">The Integrated Surface Dataset (Global)</a>,</p></li>
+<li><p><a href="https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00861">The Global Historical Climatology Network</a>,</p></li>
+<li><p><a href="https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.ncdc:C00946">Global Summaries of the Day/Month/Year</a></p></li>
 </ul>
-<p>BUT WAIT, THERE’S MORE! If you call now, you’ll get this dedicated R package written by the amazing fellows at rOpenSci (<a href="https://ropensci.org/" class="uri">https://ropensci.org/</a>) absolutely free!!!</p>
-<p>Here’s a quick demo for using library(rnoaa) below, largely using repurposed and updated code from Scott Chamberlain’s blog posts here (<a href="https://recology.info/2015/10/noaa-isd/" class="uri">https://recology.info/2015/10/noaa-isd/</a>) and here (<a href="https://recology.info/2015/07/weather-data-with-rnoaa/" class="uri">https://recology.info/2015/07/weather-data-with-rnoaa/</a>), and from the package vignette.</p>
+<p>BUT WAIT, THERE’S MORE! If you call now, you’ll get this dedicated R package written by the amazing fellows at <a href="https://ropensci.org/">rOpenSci</a> absolutely free!!!</p>
+<p>Here’s a quick demo for using library(rnoaa) below, largely using repurposed and updated code from Scott Chamberlain’s blog posts <a href="https://recology.info/2015/10/noaa-isd/">here</a> and <a href="https://recology.info/2015/07/weather-data-with-rnoaa/">here</a>, and from the package vignette.</p>
 <p><em>DISCLAIMER: We haven’t read the documentation for the datasets and make no guarantee of their accuracy or of the validity of my assumptions when summarizing and presenting the data. This applies to data quality, gaps, units, etc. etc</em></p>
 <p>Let’s get set up…</p>
 <pre class="r"><code>library(&quot;rnoaa&quot;)

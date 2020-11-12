@@ -1,19 +1,19 @@
 ---
-title: 'R Intro 1: Weather Data'
+title: 'R Basics: Weather Data'
 author: jasper
 date: '2020-05-01'
 slug: demo-1-weather
 authors: [jasper]
 categories: []
 tags: ["R-tutorial", "Cape Peninsula", "data", "climate"]
-linktitle: R Intro 1
+linktitle: R Basics
 summary: ~
 lastmod: '2020-05-01T21:49:48+02:00'
 toc: yes
 type: docs
 menu:
   docs:
-    parent: R basics
+    parent: R Intro
     weight: 20
 ---
 
@@ -192,18 +192,18 @@ library(tidyverse)
 ```
 
 ```
-## ── Attaching packages ───────────────────────────────────────── tidyverse 1.2.1 ──
+## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──
 ```
 
 ```
-## ✓ ggplot2 3.2.1     ✓ purrr   0.3.3
-## ✓ tibble  2.1.3     ✓ dplyr   0.8.3
-## ✓ tidyr   1.0.0     ✓ stringr 1.4.0
-## ✓ readr   1.3.1     ✓ forcats 0.4.0
+## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.3     ✓ dplyr   1.0.0
+## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0
 ```
 
 ```
-## ── Conflicts ──────────────────────────────────────────── tidyverse_conflicts() ──
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()
 ```
@@ -356,7 +356,13 @@ Here we use the `group_by()` and `summarise()` functions provided by `library(dp
 
 ```r
 annualrain <- weather %>% group_by(Year) %>% summarise(Rainfall = sum(Rain))
+```
 
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```r
 head(annualrain) #to see what we get
 ```
 
@@ -395,6 +401,13 @@ i.e. without `%>%` this code would have to be written
 ```r
 step1 <- group_by(weather, Year)
 step2 <- summarise(step1, Rainfall = sum(Rain))
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```r
 head(step2)
 ```
 
@@ -464,6 +477,10 @@ Unless you add a trend line, like a loess spline
 r + geom_point() + geom_smooth(method = 'loess')
 ```
 
+```
+## `geom_smooth()` using formula 'y ~ x'
+```
+
 <img src="/docs/learningR/demo-1-weather_files/figure-html/unnamed-chunk-30-1.png" width="672" />
 
 So there have been spells of wetter and dryer years, but no clear trend. What about if we wanted to see if there've been any changes in seasonality? I.e. particular months show patterns of getting wetter or dryer?
@@ -475,7 +492,13 @@ To summarise the data by month is very easy, all we need do is add **Month** to 
 
 ```r
 monthlyrain <- weather %>% group_by(Year, Month) %>% summarise(Rainfall = sum(Rain))
+```
 
+```
+## `summarise()` regrouping output by 'Year' (override with `.groups` argument)
+```
+
+```r
 head(monthlyrain)
 ```
 
@@ -519,7 +542,13 @@ like so
 
 ```r
 monthlymean <- monthlyrain %>% group_by(Month) %>% summarise(MeanMonthlyRainfall = mean(Rainfall))
+```
 
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
+
+```r
 head(monthlymean)
 ```
 
@@ -684,6 +713,15 @@ Now see if you can adapt the code above to develop the same figure using the `Te
 Note that you'll need to calculate monthly means, not sum the totals, and better to swap the colours so red is the positive anomaly (hotter) and blue the negative (cooler).
 
 It should look like this:
+
+
+```
+## `summarise()` regrouping output by 'Year' (override with `.groups` argument)
+```
+
+```
+## `summarise()` ungrouping output (override with `.groups` argument)
+```
 
 <img src="/docs/learningR/demo-1-weather_files/figure-html/unnamed-chunk-43-1.png" width="672" />
 

@@ -5,7 +5,7 @@ summary: Access and analyze SAEON datasets and other resources.
 weight: 5
 
 # Page metadata.
-title: Overview
+title: Datasets
 date: "2020-05-01T00:00:00Z"
 lastmod: "2020-05-01T00:00:00Z"
 author: jasper
@@ -22,4 +22,4 @@ menu:
     weight: 5
 ---
 
-This set of tutorials are aimed at helping you access and analyze SAEON datasets and other useful resources provided by others. Most tutorials use the R statistical computing language, but they should still contain useful info on the datasets and how to access them even ifyou don't use R. If you'd like to learn to use R, we recommend you start with the [R basics](/docs/learningr/) section.
+This set of tutorials are aimed at helping you access and analyze SAEON datasets and other useful resources provided by others. Most tutorials use the R statistical computing language, but they should still contain useful info on the datasets and how to access them even if you don't use R. If you'd like to learn to use R, we recommend you start with the [R Intro](/docs/learningr/) material.

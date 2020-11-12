@@ -1,19 +1,19 @@
 ---
-title: 'R Intro 1: Weather Data'
+title: 'R Basics: Weather Data'
 author: jasper
 date: '2020-05-01'
 slug: demo-1-weather
 authors: [jasper]
 categories: []
 tags: ["R-tutorial", "Cape Peninsula", "data", "climate"]
-linktitle: R Intro 1
+linktitle: R Basics
 summary: ~
 lastmod: '2020-05-01T21:49:48+02:00'
 toc: yes
 type: docs
 menu:
   docs:
-    parent: R basics
+    parent: R Intro
     weight: 20
 ---
 
