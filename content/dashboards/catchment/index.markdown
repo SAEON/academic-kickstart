@@ -1,7 +1,7 @@
 ---
 title: Catchment Monitor
 author: 'jasper'
-date: '2020-12-08'
+date: '2021-01-08'
 slug: catchment
 categories: []
 tags:
@@ -13,7 +13,7 @@ tags:
 subtitle: ''
 summary: "Rainfall and streamflow from the catchments that feed Cape Town's major dams"
 authors: [jasper, abri]
-lastmod: '2020-12-08T21:36:22+02:00'
+lastmod: '2021-01-08T21:36:22+02:00'
 featured: yes
 image:
   caption: ''
@@ -25,7 +25,7 @@ projects: []
 
 <br>
 
-Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of November 2020. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams that feed Cape Town and surrounds.
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of December 2020. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams that feed Cape Town and surrounds.
 
 <!--more-->
 
@@ -46,7 +46,7 @@ We plan to update this page monthly. For live weather data and the record over t
 
 Here are the recent monthly streamflow values for Langrivier relative to averages across the entire time period (1961 to current).
 
-<img src="/dashboards/catchment/index_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" />
+<img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" />
 
 Black error bars around the mean (grey column) indicate 95% confidence intervals. Monthly values lower than the lower bar are among the lowest 5% of recorded flows for that month. Note that missing months (e.g. October-November 2015) are those that overlap a data gap of over 30 days.
 
@@ -54,13 +54,13 @@ Black error bars around the mean (grey column) indicate 95% confidence intervals
 We can also view this cumulatively:
 
 
-<img src="/dashboards/catchment/index_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" />
+<img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" />
 
 
 Or compare across all years on record:
 
 
-<img src="/dashboards/catchment/index_files/figure-html/unnamed-chunk-4-1.png" width="768" style="display: block; margin: auto;" />
+<img src="index_files/figure-html/unnamed-chunk-4-1.png" width="768" style="display: block; margin: auto;" />
 
 
 Note that the latest season is not yet complete. We just indicate it for reference. "Summer" denotes the Austral summer (here defined as October - March), overlapping 2 years. In this figure we have lumped summers by the preceding year, e.g. summer 2016 represents the period October 2016 to March 2017, which incidentally was the driest summer on record in terms of streamflow.
@@ -84,7 +84,7 @@ Note that the latest season is not yet complete. We just indicate it for referen
 
 Here are the recent monthly rainfall values relative to averages across the entire time period (1945 to current):
 
-<img src="/dashboards/catchment/index_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" />
+<img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" />
 
 Black error bars around the mean (grey column) indicate 95% confidence intervals. Monthly values lower than the lower bar are among the lowest 5% of recorded flows for that month.
 
@@ -95,13 +95,13 @@ Black error bars around the mean (grey column) indicate 95% confidence intervals
 And if we view this cumulatively:
 
 
-<img src="/dashboards/catchment/index_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" />
+<img src="index_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" />
 
 
 Or compare across all years on record:
 
 
-<img src="/dashboards/catchment/index_files/figure-html/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;" />
+<img src="index_files/figure-html/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;" />
 
 
 So 2015 and 2016 have been the lowest rainfall years on record, while 2017 and 2014 were not far behind... Note that data for the period 1992-2013 were collected by volunteers and were not necessarily collected on the first of the month or every month, creating issues in the split between years and between summer vs winter data. This appears to be more of an issue in the 2000s. Nevertheless, the low rainfall reported for 2000-2004 does coincide with a period of low streamflow.
@@ -125,7 +125,7 @@ There have been various calls for some sort of indication as to how streamflow r
 
 Firstly, cumulative monthly streamflow as a function of monthly rainfall:
 
-<img src="/dashboards/catchment/index_files/figure-html/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" />
+<img src="index_files/figure-html/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" />
 
 <br>
 
@@ -134,7 +134,7 @@ While it looks messy, one clear pattern is that a rainfall event in a winter mon
 What does this look like if we aggregate months by season (following the Summer = October to March, Winter = April to September approach from above).
 
 
-<img src="/dashboards/catchment/index_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" />
+<img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" />
 
 The trend shows an inflection reflecting in increase in streamflow for a given unit of rainfall as the total amount of rainfall increases. This could relate to seasonal soil moisture accumulation, but may also relate to groundwater deficit over longer periods.
 
@@ -148,7 +148,7 @@ The trend shows an inflection reflecting in increase in streamflow for a given u
 
 Here we present soil moisture data from soil moisture probes at three different depths (10, 20 and 30cm) at Dwarsberg from 2013 to current. Data are presented as Volumetric Water Content (VWC) converted to percentage.
 
-<img src="/dashboards/catchment/index_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" />
+<img src="index_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" />
 
 Notice the late onset of wetter soils in 2015 and 2017, and early drying in 2015 and 2016. 
 
