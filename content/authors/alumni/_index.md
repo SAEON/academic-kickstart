@@ -73,6 +73,10 @@ user_groups:
 
 ### Postdocs
 
+[**Martina Treurnicht**](https://fynbosser.wordpress.com), 2019-2021, explored range-wide demographic and functional trait variation of serotinous Proteaceae, focusing on using long-term monitoring to quantify climate-induced changes in their demography.
+
+**Brigitte Melly**, 2017-2020, worked on understanding the hydrological dynamics of the wetland systems along the Heuningness River system and its tributaries, and their vulnerability to global change. 
+
 **Glenn Moncrieff**, 2015-2017, worked on various projects relating to Dynamic Vegetation Models, developing biodiversity monitoring tools based on remote-sensing, and scaling up between vegetation community data and broader ecosystem properties.
 
 **Nicola Stevens**, 2014-2015, started a postdoc working on developing Fynbos biodiversity monitoring tools based on remote-sensing and scaling up between vegetation community data and broader ecosystem properties.
@@ -121,6 +125,8 @@ supervised by Dr Andrew Knight, Prof. Karen Esler and Dr Nicky Allsopp for his d
 
 ### BSc(Hons)
 
+**Harry Randell**, 2020, Stellenbosch University, supervised by Martina Treurnicht and Jasper Slingsby, looking at changes in the distribution and population demography of the Snow Protea, *Protea cryophila*.
+
 **Hannah Simon**, 2017, University of Cape Town, supervised by [Adam West](http://agwest.yolasite.com/) and Jasper Slingsby, looking at *Unpacking a pixel. The role of biodiversity in driving seasonal NDVI values in Fynbos*.
 
 **Eleanor Weideman**, 2017, University of Cape Town, supervised by [Bernard Coetzee](https://scholar.google.co.za/citations?user=sRFFlPAAAAAJ&hl=en), [Robert Thomson](http://www.biologicalsciences.uct.ac.za/bio/staff/academic/thomson) and Jasper Slingsby, for her dissertation *Land use and land cover change promotes local avian diversity at the expense of community heterogeneity*
@@ -129,4 +135,4 @@ supervised by Dr Andrew Knight, Prof. Karen Esler and Dr Nicky Allsopp for his d
 
 **Thomas Morris**, 2012, University of Cape Town, supervised by Prof Jeremy Midgley and Jasper Slingsby on a project titled *Monitoring the Knysna forest; species, community and forest responses*
 
-**Stuart Hall**, 2010, University of Cape Town, supervised by Prof Jeremy Midgley and Jasper Slingsby on a project titled *Vegetation change and vegetation type stability in the Cape of Good Hope Nature Reserve 1966–2010*
+**Stuart Hall**, 2010, University of Cape Town, supervised by Prof Jeremy Midgley and Jasper Slingsby on a project titled *Vegetation change and vegetation type stability in the Cape of Good Hope Nature Reserve 1966–2010* 

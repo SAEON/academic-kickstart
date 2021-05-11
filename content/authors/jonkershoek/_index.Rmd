@@ -66,7 +66,7 @@ user_groups:
 ---
 ## Overview
 
-SAEON have focussed on establishing Jonkershoek as an open, long term, cross-disciplinary platform with comprehensive equipment arrays for observing climate, water, carbon and biodiversity, where the longevity and quality of the data are assured and readily accessible. We have also focused on capturing and making available the historical archives of hydrological and ecological datasets. You can explore, plot and download most of the long term rainfall and stream flow data sets [**here**](https://ecologi.shinyapps.io/Jonkershoek_Hydro/). These are described in detail in a manuscript which is currently in review (Slingsby et al *"Jonkershoek: Africa’s Oldest Catchment Experiment - 80 Years and Counting"*).
+SAEON have focussed on establishing Jonkershoek as an open, long term, cross-disciplinary platform with comprehensive equipment arrays for observing climate, water, carbon and biodiversity, where the longevity and quality of the data are assured and readily accessible. We have also focused on capturing and making available the historical archives of hydrological and ecological datasets. You can explore, plot and download most of the long term rainfall and stream flow data sets [**here**](https://ecologi.shinyapps.io/Jonkershoek_Hydro/). These are described in [Slingsby/de Buys et al 2021. Jonkershoek: Africa’s Oldest Catchment Experiment - 80 Years and Counting. *Hydrological Processes*](https://doi.org/10.1002/hyp.14101)).
 
 Some of the long term rainfall and stream flow data are also presented in our [**Catchment Monitor**](/dashboards/catchment/) and you can view real time data from our high altitude weather station [**here**](http://lognet.saeon.ac.za:8088/Dwarsberg/index.html). 
 
@@ -87,7 +87,7 @@ library(readxl)
 library(leaflet)
 library(htmltools)
 
-dat <- read_xlsx("/home/jasper/Dropbox/SAEON/Management/Website/SAEON_field instrument list.xlsx", sheet = 1)
+dat <- read_xlsx("/home/jasper/GIT/academic-kickstart/static/datasets/SAEON_field instrument list.xlsx", sheet = 1)
 
 mdat <- dat[which(dat$Site == "Jonkershoek" & dat$Owner == "SAEON"  & dat$Class %in% c("Meteorological", "Micro meteorological")),]
 mname = paste0(mdat$`Station name`, " <br/> ", "(", mdat$Variables, ")")

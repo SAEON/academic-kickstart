@@ -7,18 +7,18 @@ authors:
 - jasper
 
 # Order in display
-weight: 15
+weight: 500
 
 # Is this the primary user of the site?
 superuser: true
 
 # Role/position
-role: Scientist (Acting Manager)
+role: Research Associate
 
 # Organizations/Affiliations
 organizations:
-- name: South African Environmental Observation Network
-  url: http://www.saeon.ac.za
+- name: University of Cape Town and SAEON
+  url: http://www.biologicalsciences.uct.ac.za/
 
 # Short bio (displayed in user profile at end of posts)
 bio: An ecologist working on global change.
@@ -68,11 +68,12 @@ email: ""
 # Organizational groups that you belong to (for People widget)
 #   Set this to `[]` or comment out if you are not using People widget.
 user_groups:
- - Staff
+# - Staff
+ - Postdocs, Associates and Fellows
 # - Researchers
 # - Visitors
 ---
 
-My current research is focused on global change in South African ecosystems and revolves around field studies and spatial data analyses with the goal of informing policy and management. Most of my projects predominantly focus on fire, water, land cover (including invasive species) and climate change, but I've increasingly included people in the mix as I've come to accept that sustainable management of ecosystems has little to do with ecology.
+Jasper was formerly SAEON staff, but moved to the Department of Biological Sciences at the University of Cape Town in 2021 and continues as a SAEON Research Associate. His research is focused on global change in South African ecosystems and revolves around field studies and spatial data analyses with the goal of informing policy and management. Most of his projects focus on fire, water, land cover (including invasive species) and climate change, but have increasingly included people in the mix as he's come to accept that sustainable management of ecosystems has little to do with ecology.
 
-Check out my [personal blog](https://www.ecologi.st/) for more.
+Check out his [personal website](https://www.ecologi.st/) for more.

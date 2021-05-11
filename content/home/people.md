@@ -18,7 +18,7 @@ subtitle = ""
                  "Staff",
                  "Administration",
                  "Visitors",
-                 "Postdocs and Fellows",
+                 "Postdocs, Associates and Fellows",
                  "Students"]
 
 [design]

@@ -40,7 +40,7 @@ subtitle = ""
 
 [design.spacing]
   # Customize the section spacing. Order is top, right, bottom, left.
-  padding = ["200px", "0", "200px", "0"]
+  padding = ["300px", "0", "300px", "0"]
 
 [advanced]
  # Custom CSS. 
@@ -48,12 +48,13 @@ subtitle = ""
  
  # CSS class.
  css_class = ""
+
+  # Move to below +++ and remove #'s to activate an alert note
+  # {{% alert note %}}
+  # Please note that South Africa is under lockdown due to the COVID-19 pandemic. See [**sacoronavirus.co.za**](https://sacoronavirus.co.za/) for official statistics and goverment communications. 
+
+
+  # To keep in line with the call to minimize exposure and risk of transmission the SAEON Fynbos Node is working from home as far as is possible. Most staff are maintaining regular working hours and can be contacted via email using the format firstname_at_saeon.ac.za. You can also email us using the [contact form](/#contact).
+  # {{% /alert %}}
+
 +++
-
-{{% alert note %}}
-Please note that South Africa is under lockdown due to the COVID-19 pandemic. See [**sacoronavirus.co.za**](https://sacoronavirus.co.za/) for official statistics and goverment communications. 
-
-
-To keep in line with the call to minimize exposure and risk of transmission the SAEON Fynbos Node is working from home as far as is possible. Most staff are maintaining regular working hours and can be contacted via email using the format firstname_at_saeon.ac.za. You can also email us using the [contact form](/#contact).
-{{% /alert %}}
-

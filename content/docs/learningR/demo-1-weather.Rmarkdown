@@ -173,7 +173,7 @@ There are 11 different sheets. Let's start with the weather
 ```{r}
 weather <- read_excel("pnas.1619014114.sd01.xlsx", sheet = "weather")
 
-#Let's have a look at teh first few lines?
+#Let's have a look at the first few lines?
 head(weather) #
 ```
 

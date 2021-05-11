@@ -192,14 +192,14 @@ library(tidyverse)
 ```
 
 ```
-## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──
+## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
 ```
 
 ```
-## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
-## ✓ tibble  3.0.3     ✓ dplyr   1.0.0
-## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
-## ✓ readr   1.3.1     ✓ forcats 0.5.0
+## ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
+## ✓ tibble  3.1.0     ✓ dplyr   1.0.5
+## ✓ tidyr   1.1.3     ✓ stringr 1.4.0
+## ✓ readr   1.4.0     ✓ forcats 0.5.1
 ```
 
 ```
@@ -258,7 +258,7 @@ list.files()
 ```
 
 ```
-## [1] "pnas.1619014114.sd01.xlsx"
+## [1] "pnas.1619014114.sd01.xlsx"        "SAEON_field instrument list.xlsx"
 ```
 
 And in this case we want to read data from `pnas.1619014114.sd01.xlsx`, but given that this is an excel workbook, it may have multiple separate worksheets of data. Let's have a quick glimpse the lazy way
@@ -288,7 +288,7 @@ weather <- read_excel("pnas.1619014114.sd01.xlsx", sheet = "weather")
 ```
 
 ```r
-#Let's have a look at teh first few lines?
+#Let's have a look at the first few lines?
 head(weather) #
 ```
 
@@ -356,13 +356,7 @@ Here we use the `group_by()` and `summarise()` functions provided by `library(dp
 
 ```r
 annualrain <- weather %>% group_by(Year) %>% summarise(Rainfall = sum(Rain))
-```
 
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```r
 head(annualrain) #to see what we get
 ```
 
@@ -401,13 +395,6 @@ i.e. without `%>%` this code would have to be written
 ```r
 step1 <- group_by(weather, Year)
 step2 <- summarise(step1, Rainfall = sum(Rain))
-```
-
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```r
 head(step2)
 ```
 
@@ -495,7 +482,7 @@ monthlyrain <- weather %>% group_by(Year, Month) %>% summarise(Rainfall = sum(Ra
 ```
 
 ```
-## `summarise()` regrouping output by 'Year' (override with `.groups` argument)
+## `summarise()` has grouped output by 'Year'. You can override using the `.groups` argument.
 ```
 
 ```r
@@ -542,13 +529,7 @@ like so
 
 ```r
 monthlymean <- monthlyrain %>% group_by(Month) %>% summarise(MeanMonthlyRainfall = mean(Rainfall))
-```
 
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
-```
-
-```r
 head(monthlymean)
 ```
 
@@ -716,11 +697,7 @@ It should look like this:
 
 
 ```
-## `summarise()` regrouping output by 'Year' (override with `.groups` argument)
-```
-
-```
-## `summarise()` ungrouping output (override with `.groups` argument)
+## `summarise()` has grouped output by 'Year'. You can override using the `.groups` argument.
 ```
 
 <img src="/docs/learningR/demo-1-weather_files/figure-html/unnamed-chunk-43-1.png" width="672" />
