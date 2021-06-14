@@ -73,7 +73,7 @@ user_groups:
 
 ### Postdocs
 
-[**Martina Treurnicht**](https://fynbosser.wordpress.com), 2019-2021, explored range-wide demographic and functional trait variation of serotinous Proteaceae, focusing on using long-term monitoring to quantify climate-induced changes in their demography.
+[**Martina Treurnicht**](https://fynbosser.wordpress.com), 2019-2021, explored range-wide demographic and functional trait variation of serotinous Proteaceae, focusing on using long-term monitoring to quantify climate-induced changes in their demography. Since May 2021, Martina is based as a Postdoctoral Researcher at the Department of Conservation Ecology, Stellenbosch University, working on understanding abiotic and biotic drivers of demography, niches and geographical ranges of Cape Proteaceae.
 
 **Brigitte Melly**, 2017-2020, worked on understanding the hydrological dynamics of the wetland systems along the Heuningness River system and its tributaries, and their vulnerability to global change. 
 

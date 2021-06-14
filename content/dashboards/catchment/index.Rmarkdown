@@ -1,7 +1,7 @@
 ---
 title: Catchment Monitor
 author: 'jasper'
-date: '2021-02-02'
+date: '2021-06-14'
 slug: catchment
 categories: []
 tags:
@@ -13,7 +13,7 @@ tags:
 subtitle: ''
 summary: "Rainfall and streamflow from the catchments that feed Cape Town's major dams"
 authors: [jasper, abri]
-lastmod: '2021-02-02T21:36:22+02:00'
+lastmod: '2021-06-14T21:36:22+02:00'
 featured: yes
 image:
   caption: ''
@@ -25,7 +25,7 @@ projects: []
 
 <br>
 
-Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of January 2021. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams that feed Cape Town and surrounds.
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of May 2021. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams that feed Cape Town and surrounds.
 
 <!--more-->
 
@@ -50,6 +50,8 @@ suppressWarnings(suppressMessages(library(reshape2, quietly=T, warn.conflicts=F)
 suppressWarnings(suppressMessages(library(lubridate, quietly=T, warn.conflicts=F)))
 suppressWarnings(suppressMessages(library(RColorBrewer, quietly=T, warn.conflicts=F)))
 suppressWarnings(suppressMessages(library(wesanderson, quietly=T, warn.conflicts=F)))
+suppressWarnings(suppressMessages(library(plotly, quietly=T, warn.conflicts=F)))
+
 
 ### Get Langrivier stream flow from the different instruments
 #Orpheus Mini
@@ -103,7 +105,7 @@ langIa <- apply.yearly(langI, "sum", na.rm=F)
 langIa <- langIa[-nrow(langIa),] #Remove most recent (i.e. incomplete) year
 
 #Make summaries for barplot
-x <- tbl_df(data.frame(Streamflow = langIm[,1], Date = time(langIm)))
+x <- as_tibble(data.frame(Streamflow = langIm[,1], Date = time(langIm)))
 mmeans <- summarise(group_by(x, months(Date, abbreviate=T)), mean(Streamflow.Volume, na.rm=T))
 colnames(mmeans) <- c("Month", "Streamflow")
 mmeans$Month <- as.factor(mmeans$Month)
@@ -133,7 +135,10 @@ m2018 <- data.frame(Month = levels(mmeans$Month)[1:length(m2018)], Streamflow = 
 m2019 <- as.numeric(langIm["2019"])
 m2019 <- data.frame(Month = levels(mmeans$Month)[1:length(m2019)], Streamflow = m2019, StreamflowCI = NA) # All months in 2019
 m2020 <- as.numeric(langIm["2020"])
-m2020 <- data.frame(Month = levels(mmeans$Month)[1:length(m2020)], Streamflow = m2020, StreamflowCI = NA) # All months in 2019
+m2020 <- data.frame(Month = levels(mmeans$Month)[1:length(m2020)], Streamflow = m2020, StreamflowCI = NA) # All months in 2020
+m2021 <- as.numeric(langIm["2021"])
+m2021 <- data.frame(Month = levels(mmeans$Month)[1:length(m2021)], Streamflow = m2021, StreamflowCI = NA) # All months in 2021
+
 
 mmeans$Cumulative_Streamflow <- cumsum(mmeans$Streamflow)
 m2015$Cumulative_Streamflow <- cumsum(m2015$Streamflow)
@@ -142,9 +147,10 @@ m2017$Cumulative_Streamflow <- cumsum(m2017$Streamflow)
 m2018$Cumulative_Streamflow <- cumsum(m2018$Streamflow)
 m2019$Cumulative_Streamflow <- cumsum(m2019$Streamflow)
 m2020$Cumulative_Streamflow <- cumsum(m2020$Streamflow)
+m2021$Cumulative_Streamflow <- cumsum(m2021$Streamflow)
 
-monthvals <- rbind(mmeans, m2015, m2016, m2017, m2018, m2019, m2020) 
-monthvals$Time <- c(rep("Mean (1961 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)), rep("2018", nrow(m2018)), rep("2019", nrow(m2019)), rep("2020", nrow(m2020)))
+monthvals <- rbind(mmeans, m2015, m2016, m2017, m2018, m2019, m2020, m2021) 
+monthvals$Time <- c(rep("Mean (1961 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)), rep("2018", nrow(m2018)), rep("2019", nrow(m2019)), rep("2020", nrow(m2020)), rep("2021", nrow(m2021)))
 
 #Calculate annual summer and winter streamflow
 
@@ -241,7 +247,7 @@ dbga <- apply.yearly(dbgm, "sum", na.rm=F)
 dbga <- dbga[-nrow(dbga),] #Drop last current (incomplete) year
 
 #Make summaries for barplot
-xR <- tbl_df(data.frame(Rainfall = dbgm[,1], Date = time(dbgm)))
+xR <- as_tibble(data.frame(Rainfall = dbgm[,1], Date = time(dbgm)))
 sumsR <- summarise(group_by(xR, months(Date, abbreviate=T)), mean(Summed.rainfall, na.rm=T))
 colnames(sumsR) <- c("Month", "Rainfall")
 sumsR$Month <- as.factor(sumsR$Month)
@@ -276,8 +282,9 @@ m2018 <- data.frame(Month = levels(sumsR$Month)[1:length(m2018)], Rainfall = m20
 m2019 <- as.numeric(dbgm["2019"])
 m2019 <- data.frame(Month = levels(sumsR$Month)[1:length(m2019)], Rainfall = m2019, RainfallCI = NA) # All months in 2019
 m2020 <- as.numeric(dbgm["2020"])
-m2020 <- data.frame(Month = levels(sumsR$Month)[1:length(m2020)], Rainfall = m2020, RainfallCI = NA) # All months in 2019
-
+m2020 <- data.frame(Month = levels(sumsR$Month)[1:length(m2020)], Rainfall = m2020, RainfallCI = NA) # All months in 2020
+m2021 <- as.numeric(dbgm["2021"])
+m2021 <- data.frame(Month = levels(sumsR$Month)[1:length(m2021)], Rainfall = m2021, RainfallCI = NA) # All months in 2021
 
 sumsR$Cumulative_Rainfall <- cumsum(sumsR$Rainfall)
 m2015$Cumulative_Rainfall <- cumsum(m2015$Rainfall)
@@ -286,9 +293,10 @@ m2017$Cumulative_Rainfall <- cumsum(m2017$Rainfall)
 m2018$Cumulative_Rainfall <- cumsum(m2018$Rainfall)
 m2019$Cumulative_Rainfall <- cumsum(m2019$Rainfall)
 m2020$Cumulative_Rainfall <- cumsum(m2020$Rainfall)
+m2021$Cumulative_Rainfall <- cumsum(m2021$Rainfall)
 
-monthvalsR <- rbind(sumsR, m2015, m2016, m2017, m2018, m2019, m2020) 
-monthvalsR$Time <- c(rep("Mean (1945 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)), rep("2018", nrow(m2018)), rep("2019", nrow(m2019)), rep("2020", nrow(m2020)))
+monthvalsR <- rbind(sumsR, m2015, m2016, m2017, m2018, m2019, m2020, m2021) 
+monthvalsR$Time <- c(rep("Mean (1945 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)), rep("2018", nrow(m2018)), rep("2019", nrow(m2019)), rep("2020", nrow(m2020)), rep("2021", nrow(m2021)))
 monthvalsR$Missing <- ""
 monthvalsR$Missing[which(monthvalsR$Time==2015 & monthvalsR$Month %in% c("May", "Jun", "Jul"))] <- "*"
 
@@ -355,15 +363,19 @@ ar <- ggplot(dat, aes(Year, y = Summed.rainfall, fill=as.factor(Season))) +
 
 Here are the recent monthly streamflow values for Langrivier relative to averages across the entire time period (1961 to current).
 
+ 
 ```{r, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
 g <- ggplot(monthvals, aes(Month, Streamflow, fill=Time), na.rm=TRUE) +
-geom_bar(stat="identity", position="dodge", na.rm=TRUE) + scale_fill_manual(values = c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000","darkgrey")) + 
+geom_bar(stat="identity", position="dodge", na.rm=TRUE) + scale_fill_manual(values = #c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")) +
+c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000","#CC79A7", "darkgrey")) + 
   #c(wes_palette("Zissou1", 6, type = "continuous"), "darkgrey")) 
 ggtitle("Monthly Streamflow") + ylab(bquote("Streamflow (ML)")) +
 geom_errorbar(aes(ymin=Streamflow-StreamflowCI, ymax=Streamflow+StreamflowCI), width=.2, position=position_dodge(.9), na.rm =T)
 
-g
+ggplotly(g) 
+
 ```
+
 
 Black error bars around the mean (grey column) indicate 95% confidence intervals. Monthly values lower than the lower bar are among the lowest 5% of recorded flows for that month. Note that missing months (e.g. October-November 2015) are those that overlap a data gap of over 30 days.
 
@@ -374,9 +386,12 @@ We can also view this cumulatively:
 ```{r, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
 monthvalsNA <- monthvals[!is.na(monthvals$Streamflow),]
 
-ggplot(monthvalsNA, aes(x = Month, y = Cumulative_Streamflow, colour=Time)) + geom_point() + scale_colour_manual(values = c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000","darkgrey")) + 
+cs <- ggplot(monthvalsNA, aes(x = Month, y = Cumulative_Streamflow, colour=Time)) + geom_point() + scale_colour_manual(values = #c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")) +
+c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000", "#CC79A7", "darkgrey")) + 
   #c(wes_palette("Zissou1", 6, type = "continuous"), "darkgrey")) +
   ylab(bquote("Cumulative Streamflow (ML)"))
+
+ggplotly(cs)
 ```
 
 
@@ -384,7 +399,7 @@ Or compare across all years on record:
 
 
 ```{r, echo = F, fig.align="center", message=FALSE, warning=FALSE, fig.width=8, fig.height=4}
-as
+ggplotly(as)
 ```
 
 
@@ -392,17 +407,15 @@ Note that the latest season is not yet complete. We just indicate it for referen
 
 *Data for October - December from the summer of 2015/2016 are missing due to vandalism of the weir, but January - March 2016 was among the lowest 10% of flows for that period, suggesting that 2015 was likely the driest year on record. Of those with complete data, 2003 was the driest year, followed by 1974.
 
-```{r, echo=FALSE}
-#The following dynamic figures illustrate the mean monthly stream flow. You can hover over a piece of the time series to get the date and streamflow value, and adjust and zoom the window of interest by sliding the toggles in the bar at the bottom of each figure. Note the historical data (pre September 2011) has been infilled previously, but we still need to ascertain where the gaps were and what method was used.
-```
+The following dynamic figures illustrate the mean monthly stream flow. You can hover over a piece of the time series to get the date and streamflow value, and adjust and zoom the window of interest by sliding the toggles in the bar at the bottom of each figure. Note the historical data (pre September 2011) has been infilled previously, but we still need to ascertain where the gaps were and what method was used.
 
 ```{r, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
-# dygraph(langIm, ylab = "Streamflow (ML)", xlab = "Date", main = "Langrivier Monthly Streamflow")  %>% 
-#   dyRangeSelector() %>%
-#   dyLimit(mean(langIm, na.rm=T), label = "Mean", labelLoc = "left", color = "black", strokePattern = "dashed") %>%
-#   dyLimit(min(mmeans[,2]), labelLoc = "left", color = "#D6604D", strokePattern = "dashed", label = "Mean Flow of Driest Month") %>%
-#   dyLimit(max(mmeans[,2]), labelLoc = "left", color = "#4393C3", strokePattern = "dashed", label = "Mean Flow of Wettest Month")  %>%
-#   dyShading(from = beginom, to = endom)
+dygraph(langIm, ylab = "Streamflow (ML)", xlab = "Date", main = "Langrivier Monthly Streamflow")  %>%
+  dyRangeSelector() %>%
+  dyLimit(mean(langIm, na.rm=T), label = "Mean", labelLoc = "left", color = "black", strokePattern = "dashed") %>%
+  dyLimit(min(mmeans[,2]), labelLoc = "left", color = "#D6604D", strokePattern = "dashed", label = "Mean Flow of Driest Month") %>%
+  dyLimit(max(mmeans[,2]), labelLoc = "left", color = "#4393C3", strokePattern = "dashed", label = "Mean Flow of Wettest Month")  %>%
+  dyShading(from = beginom, to = endom)
 ```
 
 
@@ -426,11 +439,12 @@ Here are the recent monthly rainfall values relative to averages across the enti
 ```{r, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
 g <- ggplot(monthvalsR, aes(Month, Rainfall, fill=Time))
 g <- g + geom_bar(stat="identity", position="dodge") + scale_fill_manual(values = #c(wes_palette("Zissou1", 6, type = "continuous"), "darkgrey")) +  
-  c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000", "darkgrey")) + 
+ # c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")) +
+c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000", "#CC79A7", "darkgrey")) + 
   ggtitle("Monthly Rainfall") + ylab("Rainfall (mm)") + geom_text(data=monthvalsR, aes(label=Missing), vjust=0, hjust=1) +
   geom_errorbar(aes(ymin=Rainfall-RainfallCI, ymax=Rainfall+RainfallCI), width=.2, position=position_dodge(.9), na.rm =T)
 
-g
+ggplotly(g)
 ```
 
 Black error bars around the mean (grey column) indicate 95% confidence intervals. Monthly values lower than the lower bar are among the lowest 5% of recorded flows for that month.
@@ -443,11 +457,14 @@ And if we view this cumulatively:
 
 
 ```{r, echo=FALSE, fig.align="center"}
-ggplot(monthvalsR, aes(x = Month, y = Cumulative_Rainfall, colour=Time)) + 
+rc <- ggplot(monthvalsR, aes(x = Month, y = Cumulative_Rainfall, colour=Time)) + 
   geom_point() + scale_colour_manual(values = 
   #c(wes_palette("Zissou1", 6, type = "continuous"), "darkgrey")) +
-  c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000", "darkgrey")) + 
+ # c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")) +
+c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000", "#CC79A7", "darkgrey")) + 
   ylab(bquote("Cumulative Rainfall (mm)"))
+
+ggplotly(rc)
 ```
 
 
@@ -455,20 +472,19 @@ Or compare across all years on record:
 
 
 ```{r, echo = F, fig.align="center", message=FALSE, warning=FALSE, fig.width=8, fig.height=4}
-ar
+ggplotly(ar)
 ```
 
 
 So 2015 and 2016 have been the lowest rainfall years on record, while 2017 and 2014 were not far behind... Note that data for the period 1992-2013 were collected by volunteers and were not necessarily collected on the first of the month or every month, creating issues in the split between years and between summer vs winter data. This appears to be more of an issue in the 2000s. Nevertheless, the low rainfall reported for 2000-2004 does coincide with a period of low streamflow.
 
+Or dynamically:
 
 ```{r, echo=FALSE, fig.align="center"}
-#Or dynamically:
-  
-# dygraph(dbgm, ylab = "Rainfall (mm)", xlab = "Date", main = "Monthly Rainfall record for Dwarsberg")  %>% 
-# dyRangeSelector() %>%
-# dyLimit(mean(dbgm, na.rm=T), label = "Mean", labelLoc = "left", color = "black", strokePattern = "dashed") %>%
-# dyShading(from = "1991-09-01", to = "2013-03-03")
+dygraph(dbgm, ylab = "Rainfall (mm)", xlab = "Date", main = "Monthly Rainfall record for Dwarsberg")  %>%
+dyRangeSelector() %>%
+dyLimit(mean(dbgm, na.rm=T), label = "Mean", labelLoc = "left", color = "black", strokePattern = "dashed") %>%
+dyShading(from = "1991-09-01", to = "2013-03-03")
 ```
 
 <br>
@@ -503,11 +519,13 @@ rscomp <- data.frame(Rainfall = as.numeric(rscomp$dbgm.Open),
                     Month = factor(months(index(rscomp)), levels = month.name), 
                     Year = year(index(rscomp)))
 
-ggplot(rscomp, aes(x = Rainfall, y = Streamflow, colour=Month)) + 
+cscr <- ggplot(rscomp, aes(x = Rainfall, y = Streamflow, colour=Month)) + 
   geom_point() + 
   facet_wrap(facets = ~Month) + 
   ylab(bquote("Streamflow (ML)")) +
   xlab(bquote("Rainfall (mm)"))
+
+ggplotly(cscr)
 ```
 
 <br>
@@ -527,12 +545,14 @@ sdat$Season[which(sdat$Season == "Summer (lowest 10%)")] <- "Summer"
 rsdat <- merge(dat, sdat)
 colnames(rsdat)[3:4] <- c("Rainfall", "Streamflow")
 
-ggplot(rsdat, aes(x = Rainfall, y = Streamflow, colour=Season)) + 
+crcs <- ggplot(rsdat, aes(x = Rainfall, y = Streamflow, colour=Season)) + 
   geom_point() +
   xlim(0, NA) + 
   ylim(0, NA) + 
   ylab(bquote("Streamflow (ML)")) +
   xlab(bquote("Rainfall (mm)"))
+
+ggplotly(crcs)
 ```
 
 The trend shows an inflection reflecting in increase in streamflow for a given unit of rainfall as the total amount of rainfall increases. This could relate to seasonal soil moisture accumulation, but may also relate to groundwater deficit over longer periods.
