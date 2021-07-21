@@ -1,7 +1,7 @@
 ---
 title: Catchment Monitor
 author: 'jasper'
-date: '2021-06-14'
+date: '2021-07-21'
 slug: catchment
 categories: []
 tags:
@@ -13,7 +13,7 @@ tags:
 subtitle: ''
 summary: "Rainfall and streamflow from the catchments that feed Cape Town's major dams"
 authors: [jasper, abri]
-lastmod: '2021-06-14T21:36:22+02:00'
+lastmod: '2021-07-21T21:36:22+02:00'
 featured: yes
 image:
   caption: ''
@@ -25,7 +25,7 @@ projects: []
 
 <br>
 
-Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of May 2021. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams that feed Cape Town and surrounds.
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of June 2021. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams that feed Cape Town and surrounds.
 
 <!--more-->
 
@@ -38,7 +38,7 @@ We plan to update this page monthly. For live weather data and the record over t
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 
 if(Sys.getenv("USER") == "jasper") {setwd("/home/jasper/Dropbox/Shared/Jonkershoek Weather and Streamflow/")}
-
+ 
 if(Sys.getenv("USERNAME") == "abri") {setwd("C://Dropbox//Shared//jonkershoek//")}
 
 suppressWarnings(suppressMessages(library(xts, quietly=T, warn.conflicts=F))) #WARNING!!! Suppressing warnings like this is dodgy as it hides conflicts. If this script creates weird output or fails, run the internal "library(...)" separately for each package and see if it gives you important warnings...
@@ -218,15 +218,16 @@ dbgH <- xts(mcn$value, order.by = mcn$Date)
 #dbgH <- xts(dbgH$Value, order.by = dbgH$Date)
 
 #New
-dbgHrs <- read.csv("Weatherdata/Dwarsberg rainfall data_Jasper/Dwarsberg hourly rainfall.csv")
+dbgHrs <- read.csv("Weatherdata/Dwarsberg rainfall data_Jasper/Dwarsberg hourly rainfall.csv") 
 x <- gsub("T", " ", dbgHrs$Date)
 x <- gsub("+02:00", "", x, fixed=T)
 x <- gsub(".000", "", x, fixed=T)
 dbgHrs$Date <- strptime(x, format = "%Y-%m-%d %H:%M:%S")#, tz="Africa/Johannesburg")
 dbgHrs <- xts(dbgHrs$DataValue, order.by = dbgHrs$Date)
+#dbgHrs <- na.approx(dbgHrs, maxgap=720) #interpolate missing values (up to a month)
 dbgN <- apply.monthly(dbgHrs, "sum", na.rm=F)
 index(dbgN) <- as.Date(paste0(substr(index(dbgN), 1, 7), "-01"), format = "%Y-%m-%d")
-
+ 
 #Bind data
 dbgm <- c(dbgH["/2013-02-01"], dbgN)
 names(dbgm) <- "Summed.rainfall"
