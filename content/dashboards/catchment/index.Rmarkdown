@@ -1,7 +1,7 @@
 ---
 title: Catchment Monitor
 author: 'jasper'
-date: '2021-08-26'
+date: '2021-09-06'
 slug: catchment
 categories: []
 tags:
@@ -13,7 +13,7 @@ tags:
 subtitle: ''
 summary: "Rainfall and streamflow from the catchments that feed Cape Town's major dams"
 authors: [jasper, abri]
-lastmod: '2021-08-26T21:36:22+02:00'
+lastmod: '2021-09-06T21:36:22+02:00'
 featured: yes
 image:
   caption: ''
@@ -25,7 +25,7 @@ projects: []
 
 <br>
 
-Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of July 2021. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams that feed Cape Town and surrounds.
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of August 2021. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams that feed Cape Town and surrounds.
 
 <!--more-->
 
@@ -51,7 +51,6 @@ suppressWarnings(suppressMessages(library(lubridate, quietly=T, warn.conflicts=F
 suppressWarnings(suppressMessages(library(RColorBrewer, quietly=T, warn.conflicts=F)))
 suppressWarnings(suppressMessages(library(wesanderson, quietly=T, warn.conflicts=F)))
 suppressWarnings(suppressMessages(library(plotly, quietly=T, warn.conflicts=F)))
-
 
 ### Get Langrivier stream flow from the different instruments
 #Orpheus Mini
@@ -450,7 +449,7 @@ ggplotly(g)
 
 Black error bars around the mean (grey column) indicate 95% confidence intervals. Monthly values lower than the lower bar are among the lowest 5% of recorded flows for that month.
 
-*Indicates that these months were missing data in 2015 due to power supply problems. Similarly, June and July 2021 were missing data due to issues with the station after fire-damage was repaired. Data for these months were gap-filled, but may be far from accurate due to the variable nature of rainfall.
+*Indicates that these months were missing data in 2015 due to power supply problems. Similarly, June, July abd August 2021 were missing data due to issues with the station after fire-damage was repaired. Data for these months were gap-filled, but may be far from accurate due to the variable nature of rainfall.
 
 <br>
 
