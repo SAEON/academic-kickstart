@@ -10,7 +10,7 @@ tags:
 subtitle: ''
 summary: 'An application for monitoring the loss of critically endangered Renosterveld shrubland - updated every 10 days'
 authors: [glenn]
-lastmod: '2020-05-03T20:50:15+02:00'
+lastmod: '2021-11-21T20:50:15+02:00'
 featured: yes
 image:
   caption: ''
