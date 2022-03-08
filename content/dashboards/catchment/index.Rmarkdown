@@ -1,7 +1,7 @@
 ---
 title: Catchment Monitor
-author: 'jasper'
-date: '2021-09-06'
+author: 'Jasper Slingsby, Abri de Buys & Glenn Moncrieff'
+date: '2022-03-08'
 slug: catchment
 categories: []
 tags:
@@ -12,7 +12,7 @@ tags:
   - Jonkershoek
 subtitle: ''
 summary: "Rainfall and streamflow from the catchments that feed Cape Town's major dams"
-authors: [jasper, abri]
+authors: [jasper, abri, glenn]
 lastmod: '2021-09-06T21:36:22+02:00'
 featured: yes
 image:
@@ -25,7 +25,7 @@ projects: []
 
 <br>
 
-Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of August 2021. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams that feed Cape Town and surrounds.
+Here we present the record of stream flow rates for the Langrivier catchment and rainfall from the Dwarsberg weather station in the Jonkershoek Valley for the period January 1961 to the end of February 2022. The Dwarsberg weather station is at 1214 metres above sea level on the boundary of the catchments of the Eerste, Berg and Sonderend rivers and is a good indicator of rainfall feeding the Berg and Theewaterskloof dams that feed Cape Town and surrounds.
 
 <!--more-->
 
@@ -40,6 +40,8 @@ We plan to update this page monthly. For live weather data and the record over t
 if(Sys.getenv("USER") == "jasper") {setwd("/home/jasper/Dropbox/Shared/Jonkershoek Weather and Streamflow/")}
 
 if(Sys.getenv("USERNAME") == "abri") {setwd("C://Dropbox//Shared//jonkershoek//")}
+
+if(Sys.getenv("USER") == "glenn") {setwd("/Users/glenn/Documents/data/jonkershoek/")}
 
 suppressWarnings(suppressMessages(library(xts, quietly=T, warn.conflicts=F))) #WARNING!!! Suppressing warnings like this is dodgy as it hides conflicts. If this script creates weird output or fails, run the internal "library(...)" separately for each package and see if it gives you important warnings...
 suppressWarnings(suppressMessages(library(dygraphs, quietly=T, warn.conflicts=F)))
@@ -137,6 +139,8 @@ m2020 <- as.numeric(langIm["2020"])
 m2020 <- data.frame(Month = levels(mmeans$Month)[1:length(m2020)], Streamflow = m2020, StreamflowCI = NA) # All months in 2020
 m2021 <- as.numeric(langIm["2021"])
 m2021 <- data.frame(Month = levels(mmeans$Month)[1:length(m2021)], Streamflow = m2021, StreamflowCI = NA) # All months in 2021
+m2022 <- as.numeric(langIm["2022"])
+m2022 <- data.frame(Month = levels(mmeans$Month)[1:length(m2022)], Streamflow = m2022, StreamflowCI = NA) # All months in 2022
 
 
 mmeans$Cumulative_Streamflow <- cumsum(mmeans$Streamflow)
@@ -147,9 +151,11 @@ m2018$Cumulative_Streamflow <- cumsum(m2018$Streamflow)
 m2019$Cumulative_Streamflow <- cumsum(m2019$Streamflow)
 m2020$Cumulative_Streamflow <- cumsum(m2020$Streamflow)
 m2021$Cumulative_Streamflow <- cumsum(m2021$Streamflow)
+m2022$Cumulative_Streamflow <- cumsum(m2022$Streamflow)
 
-monthvals <- rbind(mmeans, m2015, m2016, m2017, m2018, m2019, m2020, m2021) 
-monthvals$Time <- c(rep("Mean (1961 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)), rep("2018", nrow(m2018)), rep("2019", nrow(m2019)), rep("2020", nrow(m2020)), rep("2021", nrow(m2021)))
+
+monthvals <- rbind(mmeans, m2015, m2016, m2017, m2018, m2019, m2020, m2021, m2022) 
+monthvals$Time <- c(rep("Mean (1961 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)), rep("2018", nrow(m2018)), rep("2019", nrow(m2019)), rep("2020", nrow(m2020)), rep("2021", nrow(m2021)), rep("2022", nrow(m2022)))
 
 #Calculate annual summer and winter streamflow
 
@@ -285,6 +291,8 @@ m2020 <- as.numeric(dbgm["2020"])
 m2020 <- data.frame(Month = levels(sumsR$Month)[1:length(m2020)], Rainfall = m2020, RainfallCI = NA) # All months in 2020
 m2021 <- as.numeric(dbgm["2021"])
 m2021 <- data.frame(Month = levels(sumsR$Month)[1:length(m2021)], Rainfall = m2021, RainfallCI = NA) # All months in 2021
+m2022 <- as.numeric(dbgm["2022"])
+m2022 <- data.frame(Month = levels(sumsR$Month)[1:length(m2022)], Rainfall = m2022, RainfallCI = NA) # All months in 2022
 
 sumsR$Cumulative_Rainfall <- cumsum(sumsR$Rainfall)
 m2015$Cumulative_Rainfall <- cumsum(m2015$Rainfall)
@@ -294,9 +302,11 @@ m2018$Cumulative_Rainfall <- cumsum(m2018$Rainfall)
 m2019$Cumulative_Rainfall <- cumsum(m2019$Rainfall)
 m2020$Cumulative_Rainfall <- cumsum(m2020$Rainfall)
 m2021$Cumulative_Rainfall <- cumsum(m2021$Rainfall)
+m2022$Cumulative_Rainfall <- cumsum(m2022$Rainfall)
 
-monthvalsR <- rbind(sumsR, m2015, m2016, m2017, m2018, m2019, m2020, m2021) 
-monthvalsR$Time <- c(rep("Mean (1945 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)), rep("2018", nrow(m2018)), rep("2019", nrow(m2019)), rep("2020", nrow(m2020)), rep("2021", nrow(m2021)))
+
+monthvalsR <- rbind(sumsR, m2015, m2016, m2017, m2018, m2019, m2020, m2021, m2022) 
+monthvalsR$Time <- c(rep("Mean (1945 to current)", 12), rep("2015", 12), rep("2016", nrow(m2016)), rep("2017", nrow(m2017)), rep("2018", nrow(m2018)), rep("2019", nrow(m2019)), rep("2020", nrow(m2020)), rep("2021", nrow(m2021)), rep("2022", nrow(m2022)))
 monthvalsR$Missing <- ""
 monthvalsR$Missing[which(monthvalsR$Time==2015 & monthvalsR$Month %in% c("May", "Jun", "Jul"))] <- "*"
 
@@ -367,7 +377,7 @@ Here are the recent monthly streamflow values for Langrivier relative to average
 ```{r, echo=FALSE, fig.align="center", message=FALSE, warning=FALSE}
 g <- ggplot(monthvals, aes(Month, Streamflow, fill=Time), na.rm=TRUE) +
 geom_bar(stat="identity", position="dodge", na.rm=TRUE) + scale_fill_manual(values = #c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")) +
-c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000","#CC79A7", "darkgrey")) + 
+c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000","#CC79A7", "cyan3","darkgrey")) + 
   #c(wes_palette("Zissou1", 6, type = "continuous"), "darkgrey")) 
 ggtitle("Monthly Streamflow") + ylab(bquote("Streamflow (ML)")) +
 geom_errorbar(aes(ymin=Streamflow-StreamflowCI, ymax=Streamflow+StreamflowCI), width=.2, position=position_dodge(.9), na.rm =T)
@@ -387,7 +397,7 @@ We can also view this cumulatively:
 monthvalsNA <- monthvals[!is.na(monthvals$Streamflow),]
 
 cs <- ggplot(monthvalsNA, aes(x = Month, y = Cumulative_Streamflow, colour=Time)) + geom_point() + scale_colour_manual(values = #c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")) +
-c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000", "#CC79A7", "darkgrey")) + 
+c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000", "#CC79A7", "cyan3","darkgrey")) + 
   #c(wes_palette("Zissou1", 6, type = "continuous"), "darkgrey")) +
   ylab(bquote("Cumulative Streamflow (ML)"))
 
@@ -440,7 +450,7 @@ Here are the recent monthly rainfall values relative to averages across the enti
 g <- ggplot(monthvalsR, aes(Month, Rainfall, fill=Time))
 g <- g + geom_bar(stat="identity", position="dodge") + scale_fill_manual(values = #c(wes_palette("Zissou1", 6, type = "continuous"), "darkgrey")) +  
  # c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")) +
-c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000", "#CC79A7", "darkgrey")) + 
+c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000", "#CC79A7", "cyan3","darkgrey")) + 
   ggtitle("Monthly Rainfall") + ylab("Rainfall (mm)") + geom_text(data=monthvalsR, aes(label=Missing), vjust=0, hjust=1) +
   geom_errorbar(aes(ymin=Rainfall-RainfallCI, ymax=Rainfall+RainfallCI), width=.2, position=position_dodge(.9), na.rm =T)
 
@@ -449,7 +459,7 @@ ggplotly(g)
 
 Black error bars around the mean (grey column) indicate 95% confidence intervals. Monthly values lower than the lower bar are among the lowest 5% of recorded flows for that month.
 
-*Indicates that these months were missing data in 2015 due to power supply problems. Similarly, June, July abd August 2021 were missing data due to issues with the station after fire-damage was repaired. Data for these months were gap-filled, but may be far from accurate due to the variable nature of rainfall.
+*Indicates that these months were missing data in 2015 due to power supply problems. Similarly, June, July and August 2021 were missing data due to issues with the station after fire-damage was repaired. Data for these months were gap-filled, but may be far from accurate due to the variable nature of rainfall.
 
 <br>
 
@@ -461,7 +471,7 @@ rc <- ggplot(monthvalsR, aes(x = Month, y = Cumulative_Rainfall, colour=Time)) +
   geom_point() + scale_colour_manual(values = 
   #c(wes_palette("Zissou1", 6, type = "continuous"), "darkgrey")) +
  # c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")) +
-c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000", "#CC79A7", "darkgrey")) + 
+c("#4393C3","#D6604D","forestgreen","darkblue", "goldenrod1", "#8B0000", "#CC79A7", "cyan3","darkgrey")) + 
   ylab(bquote("Cumulative Rainfall (mm)"))
 
 ggplotly(rc)
@@ -569,7 +579,7 @@ Here we present soil moisture data from soil moisture probes at three different 
 
 ```{r, echo=F, fig.align="center", message=FALSE, warning=FALSE}
 ###Get soil moisture data
-fls <- list.files("/home/jasper/Dropbox/Shared/Jonkershoek Weather and Streamflow/Soil moisture/", pattern = "Dwarsberg hourly VWC", full.names = T)
+fls <- list.files("/Users/glenn/Documents/data/jonkershoek/Soil moisture/", pattern = "Dwarsberg hourly VWC", full.names = T)
 
 fls <- lapply(fls, read.csv, header = T)
 
